@@ -5,8 +5,7 @@ body {
     margin: 0;
     display: flex;
     justify-content: center;
-    align-items: center;
-    height: 100vh;
+    padding-top: 20px;
 }
 
 #game-container {
@@ -18,13 +17,23 @@ button {
     background-color: var(--tg-theme-button-color, #2481cc);
     color: var(--tg-theme-button-text-color, #fff);
     border: none;
-    padding: 20px 40px;
+    padding: 15px 30px;
     font-size: 18px;
     border-radius: 12px;
     cursor: pointer;
     width: 100%;
 }
 
-button:disabled {
-    background-color: #ccc;
+button:disabled { background-color: #ccc; }
+
+#catch-history {
+    margin-top: 20px;
+    text-align: left;
+    max-height: 200px;
+    overflow-y: auto;
+    border-top: 2px solid #ccc;
+    padding-top: 10px;
 }
+
+#history-list { list-style: none; padding: 0; }
+#history-list li { padding: 5px 0; border-bottom: 1px solid #ddd; font-size: 14px; }
