@@ -1,7 +1,19 @@
-const tg = window.Telegram.WebApp;
-tg.ready();
-tg.expand();
+// Инициализация с защитой: если открыто не в Telegram, ошибки не будет
+let tg;
+try {
+    tg = window.Telegram.WebApp;
+    tg.ready();
+    tg.expand();
+} catch (e) {
+    console.log("Игра запущена в обычном браузере");
+    tg = {
+        ready: () => {},
+        expand: () => {},
+        HapticFeedback: { impactOccurred: () => {} }
+    };
+}
 
+// Настройки игры
 let attempts = 3;
 let totalWeight = 0;
 let hasMask = false;
@@ -78,6 +90,7 @@ btn.addEventListener('click', () => {
     }, 1500);
 });
 
+// Проверка при загрузке страницы
 if (!canPlayToday()) {
     message.innerText = "Ты уже рыбачил сегодня. Возвращайся завтра!";
     btn.disabled = true;
