@@ -8,85 +8,83 @@ let totalWeight = 0;
 let hasMask = false;
 let multiplier = 1;
 
-// Шансы (суммарно 1.0)
-const CHANCE_CATCH = 0.60; // 60% рыба
-const CHANCE_TRASH = 0.30; // 30% мусор
-const CHANCE_BONUS = 0.10; // 10% на все бонусы вместе взятые
+const CHANCE_CATCH = 0.60;
+const CHANCE_TRASH = 0.30;
+const CHANCE_BONUS = 0.10;
 
 const fishes = ["Палтус", "Палия", "Белый амур", "Щука", "Семга", "Солнечник", "Подкаменщик", "Сом", "Окунь"];
 const trash = ["Старый башмак", "Спутанная леска", "Сломанный поплавок", "Ржавый крючок", "Половина блесны", "Размокший кусок бумаги"];
 
-const btn = document.getElementById('action-btn');
-const message = document.getElementById('message');
-const scoreDisplay = document.getElementById('score');
+// Функция, которая сработает, когда страница полностью загрузится
+document.addEventListener('DOMContentLoaded', () => {
+    const btn = document.getElementById('action-btn');
+    const message = document.getElementById('message');
+    const scoreDisplay = document.getElementById('score');
 
-// Проверка возможности играть сегодня
-function canPlayToday() {
-    const lastPlayDate = localStorage.getItem('lastPlayDate');
-    const today = new Date().toDateString();
-    return lastPlayDate !== today;
-}
-
-function startFishing() {
-    if (!canPlayToday()) {
-        message.innerText = "Ты уже рыбачил сегодня. Приходи завтра!";
-        btn.disabled = true;
-        return;
+    function updateUI() {
+        scoreDisplay.innerText = `Улов: ${(totalWeight * multiplier).toFixed(1)} кг | Попыток: ${attempts}`;
     }
 
-    attempts--;
-    btn.disabled = true;
-    message.innerText = "Рыба клюет...";
-    
-    setTimeout(() => {
-        const rand = Math.random();
+    function canPlayToday() {
+        const lastPlayDate = localStorage.getItem('lastPlayDate');
+        const today = new Date().toDateString();
+        return lastPlayDate !== today;
+    }
 
-        if (rand < CHANCE_BONUS) {
-            // Редкие бонусы (делим 10% на 3 типа бонуса)
-            const bonusRand = Math.random();
-            if (bonusRand < 0.33) {
-                attempts++;
-                message.innerText = "Удача! Поймал катушку (+1 попытка)!";
-            } else if (bonusRand < 0.66) {
-                multiplier = 2;
-                message.innerText = "Нашел ласты! Весь улов x2!";
-            } else {
-                hasMask = true;
-                message.innerText = "Нашел маску! Следующая рыба будет крупной!";
-            }
-        } else if (rand < CHANCE_BONUS + CHANCE_TRASH) {
-            // Мусор
-            const item = trash[Math.floor(Math.random() * trash.length)];
-            message.innerText = `Ты поймал ${item}. Это хлам!`;
-        } else {
-            // Рыба
-            const fish = fishes[Math.floor(Math.random() * fishes.length)];
-            const weight = hasMask ? (Math.random() * 3.4 + 6.5) : (Math.random() * 9.8 + 0.1);
-            totalWeight += weight;
-            hasMask = false;
-            message.innerText = `Поймал ${fish}! Вес: ${weight.toFixed(1)} кг.`;
-        }
-
-        updateUI();
-        btn.disabled = false;
-
-        if (attempts <= 0) {
-            message.innerText = "Попытки закончились! Итог: " + (totalWeight * multiplier).toFixed(1) + " кг.";
+    function startFishing() {
+        if (!canPlayToday()) {
+            message.innerText = "Ты уже рыбачил сегодня. Приходи завтра!";
             btn.disabled = true;
-            localStorage.setItem('lastPlayDate', new Date().toDateString());
+            return;
         }
-    }, 1500);
-}
 
-function updateUI() {
-    scoreDisplay.innerText = `Улов: ${(totalWeight * multiplier).toFixed(1)} кг | Попыток: ${attempts}`;
-}
+        attempts--;
+        btn.disabled = true;
+        message.innerText = "Рыба клюет...";
 
-// При старте проверяем, можно ли играть
-if (!canPlayToday()) {
-    message.innerText = "Ты уже рыбачил сегодня. Возвращайся завтра!";
-    btn.disabled = true;
-} else {
-    updateUI();
-    btn.addEventListener('click', startFishing);
-}
+        setTimeout(() => {
+            const rand = Math.random();
+
+            if (rand < CHANCE_BONUS) {
+                const bonusRand = Math.random();
+                if (bonusRand < 0.33) {
+                    attempts++;
+                    message.innerText = "Удача! Поймал катушку (+1 попытка)!";
+                } else if (bonusRand < 0.66) {
+                    multiplier = 2;
+                    message.innerText = "Нашел ласты! Весь улов x2!";
+                } else {
+                    hasMask = true;
+                    message.innerText = "Нашел маску! Следующая рыба будет крупной!";
+                }
+            } else if (rand < CHANCE_BONUS + CHANCE_TRASH) {
+                const item = trash[Math.floor(Math.random() * trash.length)];
+                message.innerText = `Ты поймал ${item}. Это хлам!`;
+            } else {
+                const fish = fishes[Math.floor(Math.random() * fishes.length)];
+                const weight = hasMask ? (Math.random() * 3.4 + 6.5) : (Math.random() * 9.8 + 0.1);
+                totalWeight += weight;
+                hasMask = false;
+                message.innerText = `Поймал ${fish}! Вес: ${weight.toFixed(1)} кг.`;
+            }
+
+            updateUI();
+            btn.disabled = false;
+
+            if (attempts <= 0) {
+                message.innerText = "Попытки закончились! Итог: " + (totalWeight * multiplier).toFixed(1) + " кг.";
+                btn.disabled = true;
+                localStorage.setItem('lastPlayDate', new Date().toDateString());
+            }
+        }, 1500);
+    }
+
+    // Проверка при старте
+    if (!canPlayToday()) {
+        message.innerText = "Ты уже рыбачил сегодня. Возвращайся завтра!";
+        btn.disabled = true;
+    } else {
+        updateUI();
+        btn.addEventListener('click', startFishing);
+    }
+});
