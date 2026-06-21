@@ -220,7 +220,6 @@ function endGame() {
     
     if (state.bonuses.aquaCount > 0 && validCatches.length > 0) total = (totalBase - maxWeight) + (maxWeight * 3 * state.bonuses.aquaCount);
     if (state.bonuses.fins) total *= 2;
-    total = Math.round(total * 100) / 100;
 
     let achs = [];
     if (state.luckyFisher) achs.push("🏆 Удачливый рыбак");
