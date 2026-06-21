@@ -52,10 +52,19 @@ function startFishing() {
 function handleBonus() {
     let b = Math.random();
     if (b < 0.2) { state.attempts++; alert("Катушка!"); logCatch("Бонус: Катушка (+1)", 0, true, 'bonus'); }
-    else if (b < 0.4) { state.bonuses.fins = true; alert("Ласты!"); logCatch("Бонус: Ласты", 0, true, 'bonus'); }
+    else if (b < 0.4) { 
+        if (state.bonuses.fins) {
+            alert("Ласты уже есть!"); 
+            logCatch("Бонус: Ласты (уже есть)", 0, true, 'bonus');
+        } else {
+            state.bonuses.fins = true; 
+            alert("Ласты! x2 улов"); 
+            logCatch("Бонус: Ласты (x2)", 0, true, 'bonus'); 
+        }
+    }
     else if (b < 0.6) { state.bonuses.mask = true; alert("Маска!"); showModal(); logCatch("Бонус: Маска", 0, true, 'bonus'); }
-    else if (b < 0.8) { state.bonuses.aquaCount++; alert("Акваланг!"); logCatch("Бонус: Акваланг (x3)", 0, true, 'bonus'); }
-    else { state.bonuses.filter = true; alert("Фильтр!"); logCatch("Бонус: Фильтр", 0, true, 'bonus'); }
+    else if (b < 0.8) { state.bonuses.aquaCount++; alert("Акваланг! (+x3 к макс)"); logCatch("Бонус: Акваланг (x3)", 0, true, 'bonus'); }
+    else { state.bonuses.filter = true; alert("Фильтр! Защита от хлама"); logCatch("Бонус: Фильтр", 0, true, 'bonus'); }
 }
 
 function catchFish(isLargeBonus) {
