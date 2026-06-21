@@ -157,6 +157,14 @@ function endGame() {
     if (state.bonuses.fins) total *= 2;
     
     total = Math.round(total * 100) / 100;
-    document.getElementById('final-result').innerHTML = `<strong>Итог: ${total.toFixed(2)} кг</strong>`;
+
+    const now = new Date();
+    const dateStr = now.toLocaleDateString('ru-RU');
+    const timeStr = now.toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' });
+
+    document.getElementById('final-result').innerHTML = `
+        <strong>Итог: ${total.toFixed(2)} кг</strong><br>
+        <small style="color: #666;">${dateStr} в ${timeStr}</small>
+    `;
     document.getElementById('final-result').classList.remove('hidden');
 }
