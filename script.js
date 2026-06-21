@@ -11,6 +11,14 @@ const icons = {
     "Ржавый крючок": "🪝", "Половина блесны": "🪙", "Размокший кусок бумаги": "📄"
 };
 
+// Функция для определения медали по весу
+function getMedalEmoji(weight) {
+    if (weight <= 4.5) return "🥉";
+    if (weight <= 7.5) return "🥈";
+    if (weight <= 9.9) return "🥇";
+    return "🏆";
+}
+
 document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('action-btn').addEventListener('click', startFishing);
     document.getElementById('weather-icon').onclick = toggleWeatherHelp;
@@ -112,7 +120,10 @@ function catchFish(isMasked) {
     
     if (isRak && weight > 2.5) weight = 2.5;
     logCatch(name, weight, (weight === 0), 'catch');
-    document.getElementById('message').innerText = `Поймал: ${name} ${weight > 0 ? '(' + weight.toFixed(1) + ' кг)' : ''}`;
+    
+    // Добавлен вывод медали
+    let medal = (weight > 0) ? getMedalEmoji(weight) : "";
+    document.getElementById('message').innerText = `Поймал: ${name} ${weight > 0 ? '(' + weight.toFixed(1) + ' кг) ' + medal : ''}`;
 }
 
 function getBonusChance() { return (state.weather === 'calm') ? 0.3 : 0.15; }
@@ -147,7 +158,9 @@ function renderHistory() {
         if (c.isRemoved) li.style.color = "#ffc107";
         else if (c.isStolen) li.className = 'strikethrough';
         else li.className = c.type === 'bonus' ? 'log-bonus' : (c.type === 'debuff' ? 'log-debuff' : '');
-        li.innerText = `${icon} ${c.name} ${c.weight > 0 ? c.weight.toFixed(1)+' кг' : ''}`;
+        
+        let medal = (c.weight > 0 && !c.isTrash) ? getMedalEmoji(c.weight) : "";
+        li.innerText = `${icon} ${c.name} ${c.weight > 0 ? c.weight.toFixed(1)+' кг ' + medal : ''}`;
         list.appendChild(li);
     });
 }
