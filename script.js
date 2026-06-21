@@ -98,7 +98,6 @@ function changeWeather() {
 }
 
 function updateWeather() {
-    // Добавляем fog в массив выбора, делаем его редким (дублируем остальные)
     const weathers = ['sunny', 'sunny', 'rain', 'rain', 'calm', 'calm', 'storm', 'fog'];
     state.weather = weathers[Math.floor(Math.random() * weathers.length)];
     
@@ -118,7 +117,6 @@ function startFishing() {
 
     setTimeout(() => {
         let rand = Math.random();
-        // Шанс на легендарку: 3% в тумане, 1% в обычном режиме
         let legendaryChance = (state.weather === 'fog') ? 0.03 : 0.01;
         
         if (rand < legendaryChance) {
@@ -172,13 +170,13 @@ function handleLegendary() {
     } else if (item === "Запечатанный сундук") {
         let count = 3 + Math.floor(Math.random() * 3);
         for(let i = 0; i < count; i++) {
-            catchFish(false);
+            catchFish(false, true);
         }
         alert("Легендарная находка: Запечатанный сундук! (Внутри много рыбы)");
     }
 }
 
-function catchFish(isMasked) {
+function catchFish(isMasked, isFromChest = false) {
     let isDuck = state.activeDebuffs.some(d => d.includes("Утка"));
     let isRak = state.activeDebuffs.some(d => d.includes("Рак"));
     
@@ -214,7 +212,7 @@ function catchFish(isMasked) {
         }
     }
     
-    logCatch(name, weight, (weight === 0), 'catch', false, bonusWeight);
+    logCatch(name, weight, (weight === 0), 'catch', false, bonusWeight, isFromChest);
     document.getElementById('message').innerText = `Поймал: ${name} ${weight > 0 ? '(' + weight.toFixed(1) + ' кг)' : ''}`;
 }
 
@@ -274,7 +272,7 @@ function triggerDebuff() {
     }
 }
 
-function logCatch(name, weight, isTrash, type, isRemoved = false, bonusWeight = 0) {
+function logCatch(name, weight, isTrash, type, isRemoved = false, bonusWeight = 0, isFromChest = false) {
     state.catches.push({
         name,
         weight,
@@ -282,7 +280,8 @@ function logCatch(name, weight, isTrash, type, isRemoved = false, bonusWeight = 
         type,
         isStolen: false,
         isRemoved: isRemoved,
-        bonusWeight: bonusWeight
+        bonusWeight: bonusWeight,
+        isFromChest: isFromChest
     });
 }
 
@@ -305,18 +304,17 @@ function renderHistory() {
                 li.innerText = `${icon} ${c.name} (Вернуто: ${c.weight.toFixed(1)} кг)`;
             } else {
                 li.className = 'strikethrough';
-                // ТЕПЕРЬ ОТОБРАЖАЕМ ВЕС В СКОБКАХ:
                 li.innerText = `${icon} ${c.name} (Украдено: ${c.weight.toFixed(1)} кг)`;
             }
         } else {
             li.className = isLegendary ? 'log-legendary' : (c.type === 'bonus' ? 'log-bonus' : (c.type === 'debuff' ? 'log-debuff' : ''));
+            let chestIcon = c.isFromChest ? "📦 " : "";
             let bonusStr = c.bonusWeight > 0 ? ` <span style="color:#ff00ff">(+${c.bonusWeight.toFixed(1)}кг)</span>` : '';
-            li.innerHTML = `${icon} ${weightRank} ${c.name} ${c.weight > 0 ? c.weight.toFixed(1)+' кг' : ''} ${bonusStr}`;
+            li.innerHTML = `${chestIcon}${icon} ${weightRank} ${c.name} ${c.weight > 0 ? c.weight.toFixed(1)+' кг' : ''} ${bonusStr}`;
         }
         list.appendChild(li);
     });
 }
-
 
 function updateUI() {
     let currentSum = state.catches
