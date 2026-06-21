@@ -11,7 +11,6 @@ const icons = {
     "Ржавый крючок": "🪝", "Половина блесны": "🪙", "Размокший кусок бумаги": "📄"
 };
 
-// Функция для определения медали по весу
 function getMedalEmoji(weight) {
     if (weight <= 4.5) return "🥉";
     if (weight <= 7.5) return "🥈";
@@ -29,18 +28,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 function toggleWeatherHelp() {
     const el = document.getElementById('weather-help');
-    if (!el.classList.contains('active')) {
-        const helpText = {
-            'sunny': '☀️ Солнечно: Шанс атаки чайки!',
-            'rain': '🌧️ Дождь: Появление утки (снижает вес).',
-            'calm': '🌊 Штиль: Высокий шанс бонусов.',
-            'storm': '🌪️ Шторм: Много хлама, дебаффы не работают.'
-        };
-        document.getElementById('help-text').innerText = helpText[state.weather];
-        el.classList.add('active');
-    } else {
-        el.classList.remove('active');
-    }
+    el.classList.toggle('active');
 }
 
 function updateWeather() {
