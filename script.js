@@ -24,10 +24,15 @@ function getWeightIcon(weight) {
 
 document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('action-btn').addEventListener('click', startFishing);
+    document.getElementById('weather-icon').addEventListener('click', toggleWeatherHelp);
     updateWeather();
     setInterval(updateWeather, 7200000);
     updateUI();
 });
+
+function toggleWeatherHelp() {
+    document.getElementById('weather-help').classList.toggle('hidden');
+}
 
 function updateWeather() {
     const weathers = ['sunny', 'rain', 'calm', 'storm'];
@@ -186,25 +191,14 @@ function showModal() {
 
 function endGame() {
     document.getElementById('action-btn').disabled = true;
-    
-    // Берем только то, что реально в садке (не украдено и не удалено)
     let validCatches = state.catches.filter(c => !c.isStolen && !c.isRemoved && c.weight > 0);
-    
-    // Считаем базовый вес только этой рыбы
     let totalBase = validCatches.reduce((s, c) => s + c.weight, 0);
-    
-    // Ищем максимальный вес ТОЛЬКО среди того, что осталось
     let maxWeight = validCatches.length > 0 ? Math.max(...validCatches.map(c => c.weight)) : 0;
-    
-    // Расчет с учетом бонусов
     let total = totalBase;
     
-    // Акваланг работает только на ту рыбу, которая осталась в садке
     if (state.bonuses.aquaCount > 0 && validCatches.length > 0) {
         total = (totalBase - maxWeight) + (maxWeight * 3 * state.bonuses.aquaCount);
     }
-    
-    // Ласты множат весь итоговый результат
     if (state.bonuses.fins) total *= 2;
     
     total = Math.round(total * 100) / 100;
