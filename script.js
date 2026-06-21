@@ -11,14 +11,6 @@ const icons = {
     "Ржавый крючок": "🪝", "Половина блесны": "🪙", "Размокший кусок бумаги": "📄"
 };
 
-function getWeightIcon(weight) {
-    if (weight === 0) return "";
-    if (weight >= 10.0) return "🏆";
-    if (weight >= 7.6) return "🥇";
-    if (weight >= 4.6) return "🥈";
-    return "🥉";
-}
-
 document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('action-btn').addEventListener('click', startFishing);
     document.getElementById('weather-icon').onclick = toggleWeatherHelp;
@@ -58,7 +50,7 @@ function startFishing() {
         let trashChance = (state.weather === 'storm') ? 0.7 : 0.4;
         
         if (state.bonuses.mask) {
-            catchFish(false);
+            catchFish(true);
             state.bonuses.mask = false;
             state.attempts--;
         } else if (rand < getBonusChance()) {
@@ -76,8 +68,12 @@ function startFishing() {
         triggerDebuff();
         updateUI();
         renderHistory();
-        document.getElementById('action-btn').disabled = false;
-        if (state.attempts === 0) endGame();
+        
+        if (state.attempts === 0 && document.getElementById('modal').classList.contains('hidden')) {
+            endGame();
+        } else {
+            document.getElementById('action-btn').disabled = false;
+        }
     }, 600);
 }
 
@@ -94,22 +90,23 @@ function handleBonus() {
     else { state.bonuses.filter = true; alert("Фильтр! Защита от хлама"); logCatch("Бонус: Фильтр", 0, true, 'bonus'); }
 }
 
-function catchFish(isLargeBonus) {
+function catchFish(isMasked) {
     let isDuck = state.activeDebuffs.some(d => d.includes("Утка"));
     let isRak = state.activeDebuffs.some(d => d.includes("Рак"));
-    let name, weight;
+    let name = fishes[Math.floor(Math.random() * fishes.length)];
+    let weight;
 
     if (isDuck) {
         if (Math.random() < 0.5) { name = trash[Math.floor(Math.random() * trash.length)]; weight = 0; }
-        else { name = fishes[Math.floor(Math.random() * fishes.length)]; weight = parseFloat((0.1 + Math.random() * 0.4).toFixed(1)); }
+        else { weight = parseFloat((0.1 + Math.random() * 0.4).toFixed(1)); }
     } else {
-        if (Math.random() < 0.05) {
-            name = fishes[Math.floor(Math.random() * fishes.length)];
+        if (isMasked) {
+            weight = parseFloat((6.5 + Math.random() * 3.4).toFixed(1));
+        } else if (Math.random() < 0.05) {
             weight = parseFloat((10.0 + Math.random() * 5.0).toFixed(1));
             state.luckyFisher = true;
         } else {
-            name = fishes[Math.floor(Math.random() * fishes.length)];
-            weight = parseFloat((0.1 + Math.random() * 9.8).toFixed(1));
+            weight = parseFloat((0.1 + Math.random() * 6.4).toFixed(1));
         }
     }
     
@@ -160,6 +157,33 @@ function updateUI() {
     document.getElementById('score').innerText = `Улов: ${currentSum.toFixed(1)} кг | Попыток: ${state.attempts}`;
 }
 
+function showModal() {
+    document.getElementById('action-btn').disabled = true;
+    const list = document.getElementById('modal-fish-list');
+    list.innerHTML = '';
+    const cancelBtn = document.createElement('button');
+    cancelBtn.className = 'fish-btn';
+    cancelBtn.innerText = "Ничего не удалять";
+    cancelBtn.onclick = () => { 
+        document.getElementById('modal').classList.add('hidden'); 
+        if (state.attempts === 0) endGame(); else document.getElementById('action-btn').disabled = false; 
+    };
+    list.appendChild(cancelBtn);
+    state.catches.filter(c => !c.isStolen && !c.isRemoved && c.weight > 0).forEach((c) => {
+        const btn = document.createElement('button');
+        btn.className = 'fish-btn';
+        btn.innerText = `Удалить: ${c.name} (${c.weight.toFixed(1)} кг)`;
+        btn.onclick = () => { 
+            c.isRemoved = true; 
+            document.getElementById('modal').classList.add('hidden'); 
+            updateUI(); renderHistory(); 
+            if (state.attempts === 0) endGame(); else document.getElementById('action-btn').disabled = false; 
+        };
+        list.appendChild(btn);
+    });
+    document.getElementById('modal').classList.remove('hidden');
+}
+
 function endGame() {
     let validCatches = state.catches.filter(c => !c.isStolen && !c.isRemoved && c.weight > 0);
     let totalBase = validCatches.reduce((s, c) => s + c.weight, 0);
@@ -179,5 +203,3 @@ function endGame() {
     document.getElementById('final-result').innerHTML = `<strong>Итог: ${total.toFixed(2)} кг</strong><div style="margin-top:10px;">${achs.join('<br>')}</div>`;
     document.getElementById('final-result').classList.remove('hidden');
 }
-
-function showModal() { /* ... код модалки остается прежним ... */ }
