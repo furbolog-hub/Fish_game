@@ -51,7 +51,6 @@ function catchFish(isLargeBonus) {
     let isRak = state.activeDebuffs.some(d => d.includes("Рак"));
     let name, weight;
 
-    // МЕХАНИКА УТКИ: либо хлам, либо рыба весом не более 0,5 кг
     if (isDuck) {
         if (Math.random() < 0.5) {
             name = trash[Math.floor(Math.random() * trash.length)];
@@ -66,7 +65,6 @@ function catchFish(isLargeBonus) {
     }
     
     if (isRak && weight > 2.5) weight = 2.5;
-    
     logCatch(name, weight, (weight === 0), 'catch');
     document.getElementById('message').innerText = `Поймал: ${name} ${weight > 0 ? '(' + weight.toFixed(1) + ' кг)' : ''}`;
 }
