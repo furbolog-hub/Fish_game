@@ -65,29 +65,21 @@ function startFishing() {
 
 function getBonusChance() { return (state.weather === 'calm') ? 0.3 : 0.1; }
 
-// Исправленная логика Утки и РАКа
 function catchFish(isLargeBonus) {
     let isDuck = state.activeDebuffs.some(d => d.includes("Утка"));
     let isRak = state.activeDebuffs.some(d => d.includes("Рак"));
     
     let name, weight;
-
-    // Если утка: 50% шанс на хлам, 50% шанс на мелкую рыбу (до 0.5кг)
     if (isDuck && Math.random() < 0.5) {
         name = trash[Math.floor(Math.random() * trash.length)];
         weight = 0;
     } else {
         name = fishes[Math.floor(Math.random() * fishes.length)];
-        if (isDuck) {
-            weight = parseFloat((Math.random() * 0.5).toFixed(1));
-        } else {
-            let minW = (isLargeBonus) ? 8.0 : 0.1;
-            weight = parseFloat((minW + Math.random() * (9.9 - minW)).toFixed(1));
-        }
+        weight = isDuck ? parseFloat((Math.random() * 0.5).toFixed(1)) : 
+                 parseFloat(((isLargeBonus ? 8.0 : 0.1) + Math.random() * 9.8).toFixed(1));
     }
     
     if (isRak && weight > 2.5) weight = 2.5;
-    
     logCatch(name, weight, (weight === 0), 'catch');
     document.getElementById('message').innerText = `Поймал: ${name} ${weight > 0 ? '(' + weight.toFixed(1) + ' кг)' : ''}`;
 }
@@ -120,33 +112,39 @@ function triggerDebuff() {
     }
 }
 
-function logCatch(name, weight, isTrash, type) {
-    if (weight > 0 || type !== 'catch') {
-        state.catches.push({name, weight, isTrash});
-    }
-    const li = document.createElement('li');
-    li.className = type === 'bonus' ? 'log-bonus' : (type === 'debuff' ? 'log-debuff' : 'log-catch');
-    li.innerText = `${name} ${weight > 0 ? weight.toFixed(1)+' кг' : ''}`;
-    document.getElementById('history-list').appendChild(li);
-}
-
 function showModal() {
     document.getElementById('action-btn').disabled = true;
     const list = document.getElementById('modal-fish-list');
     list.innerHTML = '';
+    
     const cancelBtn = document.createElement('button');
     cancelBtn.className = 'fish-btn';
     cancelBtn.innerText = "Ничего не удалять";
     cancelBtn.onclick = () => { document.getElementById('modal').classList.add('hidden'); document.getElementById('action-btn').disabled = false; };
     list.appendChild(cancelBtn);
+
     state.catches.forEach((c, index) => {
         const btn = document.createElement('button');
         btn.className = 'fish-btn';
-        btn.innerText = `Удалить: ${c.name} (${c.weight > 0 ? c.weight.toFixed(1)+' кг' : 'хлам'})`;
-        btn.onclick = () => { state.catches.splice(index, 1); document.getElementById('modal').classList.add('hidden'); document.getElementById('action-btn').disabled = false; updateUI(); };
+        btn.innerText = `Удалить: ${c.name} ${c.weight > 0 ? '('+c.weight.toFixed(1)+' кг)' : ''}`;
+        btn.onclick = () => {
+            state.catches.splice(index, 1);
+            document.getElementById('modal').classList.add('hidden');
+            document.getElementById('action-btn').disabled = false;
+            updateUI();
+            logCatch(`Удалено: ${c.name}`, 0, true, 'debuff');
+        };
         list.appendChild(btn);
     });
     document.getElementById('modal').classList.remove('hidden');
+}
+
+function logCatch(name, weight, isTrash, type) {
+    if (weight > 0 || type !== 'catch') state.catches.push({name, weight, isTrash});
+    const li = document.createElement('li');
+    li.className = type === 'bonus' ? 'log-bonus' : (type === 'debuff' ? 'log-debuff' : 'log-catch');
+    li.innerText = `${name} ${weight > 0 ? weight.toFixed(1)+' кг' : ''}`;
+    document.getElementById('history-list').appendChild(li);
 }
 
 function endGame() {
