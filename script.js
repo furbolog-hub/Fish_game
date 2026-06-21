@@ -45,7 +45,14 @@ function startFishing() {
             let item = trash[Math.floor(Math.random() * trash.length)];
             logCatch(item, 0, true, 'catch');
             document.getElementById('message').innerText = `Поймал: ${item}`;
-            if (state.bonuses.filter) { state.bonuses.filter = false; } else { state.attempts--; }
+            
+            // Исправленная логика Фильтра
+            if (state.bonuses.filter) { 
+                alert("Фильтр сработал: Попытка сохранена!");
+                state.bonuses.filter = false; 
+            } else { 
+                state.attempts--; 
+            }
         } else {
             catchFish(state.weather === 'rain');
             state.attempts--;
