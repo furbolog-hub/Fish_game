@@ -150,7 +150,11 @@ li {
     border-radius: 15px;
     position: relative;
     width: 80%;
-    color: black;
+    color: black !important;
+}
+
+.help-content h3, .help-content p {
+    color: black !important;
 }
 
 .close-btn {
