@@ -11,7 +11,7 @@ const icons = {
     "Ржавый крючок": "🪝", "Половина блесны": "🪙", "Размокший кусок бумаги": "📄"
 };
 
-// Функция для определения медали по весу
+// Логика медалей
 function getMedalEmoji(weight) {
     if (weight <= 4.5) return "🥉";
     if (weight <= 7.5) return "🥈";
@@ -121,7 +121,6 @@ function catchFish(isMasked) {
     if (isRak && weight > 2.5) weight = 2.5;
     logCatch(name, weight, (weight === 0), 'catch');
     
-    // Добавлен вывод медали
     let medal = (weight > 0) ? getMedalEmoji(weight) : "";
     document.getElementById('message').innerText = `Поймал: ${name} ${weight > 0 ? '(' + weight.toFixed(1) + ' кг) ' + medal : ''}`;
 }
@@ -213,6 +212,13 @@ function endGame() {
     if (validCatches.length > 0 && validCatches.every(c => c.weight < 2.5)) achs.push("🐱 Аквариумный мастер");
     if (state.catches.length > 0 && state.catches.every(c => c.isTrash || c.isStolen)) achs.push("🗑️ Повелитель башмаков");
 
-    document.getElementById('final-result').innerHTML = `<strong>Итог: ${total.toFixed(2)} кг</strong><div style="margin-top:10px;">${achs.join('<br>')}</div>`;
+    const now = new Date();
+    const dateStr = now.toLocaleDateString() + ' ' + now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+    document.getElementById('final-result').innerHTML = `
+        <div class="timestamp">${dateStr}</div>
+        <strong>Итог: ${total.toFixed(2)} кг</strong>
+        <div style="margin-top:10px;">${achs.join('<br>')}</div>
+    `;
     document.getElementById('final-result').classList.remove('hidden');
 }
