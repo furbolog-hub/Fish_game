@@ -220,6 +220,7 @@ function endGame() {
     
     if (state.bonuses.aquaCount > 0 && validCatches.length > 0) total = (totalBase - maxWeight) + (maxWeight * 3 * state.bonuses.aquaCount);
     if (state.bonuses.fins) total *= 2;
+    total = Math.round(total * 100) / 100;
 
     let achs = [];
     if (state.luckyFisher) achs.push("🏆 Удачливый рыбак");
@@ -228,6 +229,16 @@ function endGame() {
     if (validCatches.length > 0 && validCatches.every(c => c.weight < 2.5)) achs.push("🐱 Аквариумный мастер");
     if (state.catches.length > 0 && state.catches.every(c => c.isTrash || c.isStolen)) achs.push("🗑️ Повелитель башмаков");
 
-    document.getElementById('final-result').innerHTML = `<strong>Итог: ${total.toFixed(2)} кг</strong><div style="margin-top:10px;">${achs.join('<br>')}</div>`;
+    const now = new Date();
+    const dateStr = now.toLocaleDateString('ru-RU');
+    const timeStr = now.toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' });
+
+    document.getElementById('final-result').innerHTML = `
+        <strong>Итог: ${total.toFixed(2)} кг</strong>
+        <div style="margin-top:10px;">${achs.join('<br>')}</div>
+        <div style="margin-top: 10px; padding: 5px; background: rgba(128, 128, 128, 0.2); border-radius: 5px; color: #fff; font-weight: 500; text-shadow: 0 0 4px #000;">
+            ${dateStr} в ${timeStr}
+        </div>
+    `;
     document.getElementById('final-result').classList.remove('hidden');
 }
