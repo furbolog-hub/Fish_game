@@ -86,10 +86,11 @@ body {
 }
 
 .log-legendary { 
-    color: #800080; 
+    color: #ff00ff; 
     font-weight: bold; 
-    text-shadow: 0 0 5px #ff00ff; 
+    text-shadow: 1px 1px 2px #000, -1px -1px 2px #000, 1px -1px 2px #000, -1px 1px 2px #000; 
 }
+
 
 .strikethrough { 
     text-decoration: line-through; 
