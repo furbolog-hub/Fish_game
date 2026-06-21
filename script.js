@@ -24,7 +24,9 @@ function getWeightIcon(weight) {
 
 document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('action-btn').addEventListener('click', startFishing);
-    document.getElementById('weather-icon').addEventListener('click', toggleWeatherHelp);
+    // Прямая привязка клика для надежности
+    document.getElementById('weather-icon').onclick = toggleWeatherHelp;
+    
     updateWeather();
     setInterval(updateWeather, 7200000);
     updateUI();
