@@ -41,9 +41,13 @@ function catchFish(isLargeBonus) {
     let isRak = state.activeDebuffs.some(d => d.includes("Рак"));
     let name, weight;
     if (isDuck && Math.random() < 0.5) { name = trash[Math.floor(Math.random() * trash.length)]; weight = 0; }
-    else { name = fishes[Math.floor(Math.random() * fishes.length)]; weight = isDuck ? parseFloat((Math.random() * 0.5).toFixed(1)) : parseFloat(((isLargeBonus ? 8.0 : 0.1) + Math.random() * 9.8).toFixed(1)); }
+    else { 
+        name = fishes[Math.floor(Math.random() * fishes.length)]; 
+        weight = isDuck ? parseFloat((0.1 + Math.random() * 0.4).toFixed(1)) : parseFloat(((isLargeBonus ? 8.0 : 0.1) + Math.random() * 9.8).toFixed(1)); 
+    }
     if (isRak && weight > 2.5) weight = 2.5;
     logCatch(name, weight, (weight === 0), 'catch');
+    document.getElementById('message').innerText = `Поймал: ${name} ${weight > 0 ? '(' + weight.toFixed(1) + ' кг)' : ''}`;
 }
 
 function getBonusChance() { return (state.weather === 'calm') ? 0.3 : 0.1; }
@@ -117,6 +121,7 @@ function endGame() {
     let total = state.catches.filter(c => !c.isStolen).reduce((s, c) => s + c.weight, 0);
     if (state.bonuses.fins) total *= 2;
     if (state.bonuses.aqua && state.catches.length > 0) total += Math.max(...state.catches.filter(c => !c.isStolen).map(c => c.weight), 0) * 2;
+    total = Math.round(total * 100) / 100;
     document.getElementById('final-result').innerHTML = `<strong>Итог: ${total.toFixed(2)} кг</strong>`;
     document.getElementById('final-result').classList.remove('hidden');
 }
