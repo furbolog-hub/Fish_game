@@ -374,6 +374,9 @@ function endGame() {
     
     let total = totalBase;
     
+    // Проверка на использование бонусов
+    let usedWeightBonuses = (state.bonuses.aquaCount > 0 || state.bonuses.fins || state.hasMessageInBottle || state.bonuses.mask);
+    
     if (state.bonuses.aquaCount > 0 && validCatches.length > 0) {
         total = (totalBase - maxWeight) + (maxWeight * 3 * state.bonuses.aquaCount);
     }
@@ -383,7 +386,12 @@ function endGame() {
     let achs = [];
     if (state.luckyFisher) achs.push("🏆 Удачливый рыбак");
     if (state.bonusCount >= 3) achs.push("✨ Любимчик Фортуны");
-    if (validCatches.length > 0 && validCatches.every(c => c.weight >= 8.5)) achs.push("🦈 Акула бизнеса");
+    
+    // Обновленное условие для "Акулы бизнеса"
+    if (!usedWeightBonuses && validCatches.some(c => c.weight >= 13.5)) {
+        achs.push("🦈 Акула бизнеса");
+    }
+    
     if (validCatches.length > 0 && validCatches.every(c => c.weight < 2.5)) achs.push("🐱 Аквариумный мастер");
     if (state.catches.length > 0 && state.catches.every(c => c.isTrash || c.isStolen)) achs.push("🗑️ Повелитель башмаков");
 
