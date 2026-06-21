@@ -10,7 +10,7 @@ body {
     background-repeat: no-repeat;
 }
 
-/* Затемняющий слой для всего фона */
+/* Усиленное затемнение фона */
 body::before {
     content: "";
     position: fixed;
@@ -18,7 +18,7 @@ body::before {
     left: 0;
     width: 100%;
     height: 100%;
-    background: rgba(0, 0, 0, 0.4);
+    background: rgba(0, 0, 0, 0.6);
     z-index: -1;
 }
 
@@ -26,18 +26,17 @@ body::before {
     max-width: 400px;
     margin: auto;
     text-align: center;
-    /* Делаем блок прозрачным, но с эффектом матового стекла */
-    background: rgba(255, 255, 255, 0.3);
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
+    background: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(8px);
     padding: 20px;
     border-radius: 20px;
     border: 1px solid rgba(255, 255, 255, 0.2);
-    color: white; /* Делаем текст белым, чтобы он лучше читался на темном фоне */
+    color: white;
 }
 
-/* Подправляем заголовки и текст для белого цвета */
-h1, h3, p { color: white; text-shadow: 0 1px 2px rgba(0,0,0,0.5); }
+h1, h3, p {
+    color: white;
+}
 
 .hidden {
     display: none !important;
@@ -49,12 +48,12 @@ button {
     cursor: pointer;
     border-radius: 10px;
     border: none;
-    background: rgba(0, 136, 204, 0.8);
+    background: #0088cc;
     color: white;
 }
 
 button:disabled {
-    background: rgba(200, 200, 200, 0.5);
+    background: #555;
 }
 
 ul {
@@ -66,22 +65,22 @@ ul {
 li {
     margin: 8px 0;
     padding: 5px;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
     color: white;
 }
 
 .strikethrough {
     text-decoration: line-through;
-    color: rgba(255, 255, 255, 0.5);
+    color: #aaa;
 }
 
 .log-bonus {
-    color: #a3e635; /* Более яркий зеленый для темного фона */
+    color: #50fa7b;
     font-weight: bold;
 }
 
 .log-debuff {
-    color: #f87171; /* Более яркий красный для темного фона */
+    color: #ff5555;
     font-weight: bold;
 }
 
@@ -92,7 +91,7 @@ li {
     left: 0;
     width: 100%;
     height: 100%;
-    background: rgba(0,0,0,0.6);
+    background: rgba(0,0,0,0.8);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -100,7 +99,7 @@ li {
 }
 
 .modal-content {
-    background: rgba(255, 255, 255, 0.9);
+    background: white;
     padding: 20px;
     border-radius: 15px;
     width: 80%;
@@ -111,21 +110,20 @@ li {
     display: block;
     width: 100%;
     margin: 8px 0;
-    background: #eee;
+    background: #ddd;
     color: black;
+    border: 1px solid #999;
 }
 
 /* Метка времени */
 .timestamp {
-    background: rgba(0, 0, 0, 0.4);
+    background: rgba(255, 255, 255, 0.2);
     color: white;
-    padding: 4px 8px;
+    padding: 4px 10px;
     border-radius: 6px;
-    font-size: 0.8em;
-    margin-bottom: 10px;
+    font-size: 0.9em;
+    margin-bottom: 15px;
     display: inline-block;
-    backdrop-filter: blur(4px);
-    text-align: center;
 }
 
 /* Помощь по погоде */
@@ -135,7 +133,7 @@ li {
     left: 0;
     width: 100%;
     height: 100%;
-    background: rgba(0,0,0,0.7);
+    background: rgba(0,0,0,0.8);
     display: none;
     align-items: center;
     justify-content: center;
@@ -149,7 +147,7 @@ li {
 .help-content {
     background: white;
     padding: 20px;
-    border-radius: 10px;
+    border-radius: 15px;
     position: relative;
     width: 80%;
     color: black;
@@ -157,9 +155,36 @@ li {
 
 .close-btn {
     position: absolute;
-    top: 5px;
-    right: 10px;
+    top: 10px;
+    right: 15px;
     cursor: pointer;
     font-weight: bold;
-    font-size: 20px;
+    font-size: 24px;
+    color: black;
+}
+
+/* Дополнительные отступы для сохранения структуры */
+
+
+
+
+
+
+
+/* Блоки для отладки */
+.debug-panel {
+    display: none;
+}
+
+/* Финальные настройки отступов */
+#score {
+    margin-top: 10px;
+}
+
+#action-btn {
+    margin: 15px 0;
+}
+
+#catch-history {
+    margin-top: 20px;
 }
