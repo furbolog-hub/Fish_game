@@ -34,6 +34,7 @@ function showModal() {
             document.getElementById('modal').classList.add('hidden');
             document.getElementById('action-btn').disabled = false;
             updateUI();
+            document.getElementById('message').innerText = "Рыба удалена! Можно бросать.";
         };
         list.appendChild(btn);
     });
@@ -43,7 +44,6 @@ function showModal() {
 function startFishing() {
     if (state.attempts <= 0) return;
 
-    // Выбор удаления рыбы (маска на 3-м забросе)
     const fishToCatch = state.catches.filter(c => !c.isTrash);
     if (state.attempts === 1 && Math.random() < 0.1 && fishToCatch.length > 0) {
         document.getElementById('action-btn').disabled = true;
@@ -54,8 +54,6 @@ function startFishing() {
     if (!(state.bonuses.filter && Math.random() < 0.3)) state.attempts--;
 
     let rand = Math.random();
-    
-    // Если активна маска - гарантированная рыба
     if (state.bonuses.mask) {
         catchFish(true);
         state.bonuses.mask = false;
@@ -69,31 +67,23 @@ function startFishing() {
         catchFish(false);
     }
 
-    // Дебафы (Рак, Чайка, Утка)
-    if (Math.random() < 0.2) triggerDebuff();
-
     updateUI();
     if (state.attempts === 0) endGame();
 }
 
 function catchFish(isLarge) {
     let fish = fishes[Math.floor(Math.random() * fishes.length)];
-    let weight = isLarge ? (6.5 + Math.random() * 3.4) : (0.1 + Math.random() * 9.8);
+    // Округляем до 1 знака сразу, чтобы избежать погрешностей в сумме
+    let weight = parseFloat((isLarge ? (6.5 + Math.random() * 3.4) : (0.1 + Math.random() * 9.8)).toFixed(1));
     logCatch(fish, weight, false);
     document.getElementById('message').innerText = `Поймал: ${fish} (${weight.toFixed(1)} кг)`;
-}
-
-function triggerDebuff() {
-    let debuffs = ["Рак: погнул крючок (вес до 2.5кг)", "Чайка: стащила рыбу", "Утка: распугала рыбу"];
-    let d = debuffs[Math.floor(Math.random() * debuffs.length)];
-    document.getElementById('status-effects').innerText = d;
 }
 
 function handleBonus() {
     let b = Math.random();
     if (b < 0.25) { state.attempts++; alert("Катушка! +1 попытка"); }
     else if (b < 0.5) { state.bonuses.fins = true; alert("Ласты! x2 улов"); }
-    else if (b < 0.75) { state.bonuses.mask = true; alert("Маска! Следующая гарантированно рыба"); }
+    else if (b < 0.75) { state.bonuses.mask = true; alert("Маска! Следующая крупная"); }
     else { state.bonuses.aqua = true; alert("Акваланг! Бонус к макс. рыбе"); }
 }
 
@@ -113,13 +103,17 @@ function endGame() {
         let max = Math.max(...state.catches.map(c => c.weight));
         total += max * 2;
     }
+    // Финальное округление результата
+    total = Math.round(total * 100) / 100;
+    
     document.getElementById('final-result').innerHTML = `<strong>Итог: ${total.toFixed(2)} кг</strong><br>Время: ${now.toLocaleDateString()} ${now.toLocaleTimeString()}`;
     document.getElementById('final-result').classList.remove('hidden');
     localStorage.setItem('lastPlayDate', new Date().toDateString());
 }
 
 function updateUI() {
-    document.getElementById('score').innerText = `Улов: ${state.catches.reduce((s, c)=>s+c.weight,0).toFixed(1)} кг | Попыток: ${state.attempts}`;
+    let currentSum = state.catches.reduce((s, c) => s + c.weight, 0);
+    document.getElementById('score').innerText = `Улов: ${currentSum.toFixed(1)} кг | Попыток: ${state.attempts}`;
 }
 
 document.getElementById('action-btn').addEventListener('click', startFishing);
