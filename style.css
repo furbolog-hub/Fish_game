@@ -1,4 +1,23 @@
-body { font-family: sans-serif; background: #1a1a1a; color: #fff; padding: 15px; }
+body { 
+    font-family: sans-serif; 
+    margin: 0; 
+    padding: 0;
+    min-height: 100vh;
+    background-image: url('background.jpg'); 
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
+    color: #fff;
+}
+
+#game-container {
+    padding: 15px;
+    background: rgba(0, 0, 0, 0.75);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
 #weather-icon { font-size: 40px; position: absolute; top: 10px; right: 20px; }
 #action-btn { width: 100%; padding: 20px; margin: 15px 0; background: #2481cc; color: #fff; border: none; border-radius: 12px; font-size: 20px; font-weight: bold; cursor: pointer; }
 #action-btn:disabled { background: #555; }
