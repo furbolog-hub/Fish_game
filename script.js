@@ -4,8 +4,7 @@ let state = {
     attempts: 3,
     catches: [],
     bonuses: { mask: false, aqua: false, filter: false, fins: false },
-    weather: 'sunny',
-    lastPlayDate: localStorage.getItem('lastPlayDate')
+    weather: 'sunny'
 };
 
 const fishes = ["Палтус", "Палия", "Белый амур", "Щука", "Семга", "Солнечник", "Подкаменщик", "Сом", "Окунь"];
@@ -27,7 +26,6 @@ function showModal() {
         btn.onclick = () => {
             state.catches.splice(index, 1);
             document.getElementById('modal').classList.add('hidden');
-            alert("Рыба удалена! Можно сделать заброс.");
             updateUI();
         };
         list.appendChild(btn);
@@ -40,7 +38,6 @@ function startFishing() {
 
     if (state.attempts === 1 && Math.random() < 0.3) {
         showModal();
-        return;
     }
 
     if (!(state.bonuses.filter && Math.random() < 0.3)) {
@@ -50,18 +47,20 @@ function startFishing() {
     let rand = Math.random();
     if (rand < 0.1) {
         let b = Math.random();
-        if (b < 0.25) { state.attempts++; alert("Катушка! +1 ход"); }
+        if (b < 0.25) { state.attempts++; alert("Катушка! +1 попытка"); }
         else if (b < 0.5) { state.bonuses.fins = true; alert("Ласты! x2 улов"); }
         else if (b < 0.75) { state.bonuses.mask = true; alert("Маска! Следующая крупная"); }
         else { state.bonuses.aqua = true; alert("Акваланг! Бонус к макс. рыбе"); }
     } else if (rand < 0.4) {
         let item = trash[Math.floor(Math.random() * trash.length)];
         logCatch(item, 0, true);
+        document.getElementById('message').innerText = `Поймал: ${item}`;
     } else {
         let fish = fishes[Math.floor(Math.random() * fishes.length)];
         let weight = state.bonuses.mask ? (6.5 + Math.random() * 3.4) : (0.1 + Math.random() * 9.8);
         state.bonuses.mask = false;
         logCatch(fish, weight, false);
+        document.getElementById('message').innerText = `Поймал: ${fish} (${weight.toFixed(1)} кг)`;
     }
 
     updateUI();
