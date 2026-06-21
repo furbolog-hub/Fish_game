@@ -19,31 +19,55 @@ function updateWeather() {
 
 function startFishing() {
     if (state.attempts <= 0) return;
-    if (!(state.bonuses.filter && Math.random() < 0.3)) state.attempts--;
-    updateUI();
+    
     document.getElementById('action-btn').disabled = true;
 
     setTimeout(() => {
         let rand = Math.random();
         let trashChance = (state.weather === 'storm') ? 0.7 : 0.4;
+        let isTrash = false;
+        
+        // Логика рыбалки
         if (state.bonuses.mask) {
             catchFish(true);
             state.bonuses.mask = false;
+            state.attempts--;
         } else if (rand < getBonusChance()) {
             handleBonus();
+            // Бонус не тратит попытку
         } else if (rand < trashChance) {
             let item = trash[Math.floor(Math.random() * trash.length)];
             logCatch(item, 0, true, 'catch');
             document.getElementById('message').innerText = `Поймал: ${item}`;
+            
+            // ЛОГИКА ФИЛЬТРА: если хлам, попытка не сгорает
+            if (state.bonuses.filter) {
+                alert("Фильтр сработал: Хлам пойман, попытка не потрачена!");
+                state.bonuses.filter = false; // Фильтр одноразовый
+            } else {
+                state.attempts--;
+            }
         } else {
             catchFish(state.weather === 'rain');
+            state.attempts--;
         }
+
         triggerDebuff();
         updateUI();
         renderHistory();
         document.getElementById('action-btn').disabled = false;
         if (state.attempts === 0) endGame();
     }, 600);
+}
+
+function handleBonus() {
+    let b = Math.random();
+    // Шансы: Катушка(20%), Ласты(20%), Маска(20%), Акваланг(20%), Фильтр(20%)
+    if (b < 0.20) { state.attempts++; alert("Катушка! +1 попытка"); logCatch("Бонус: Катушка (+1)", 0, true, 'bonus'); }
+    else if (b < 0.40) { state.bonuses.fins = true; alert("Ласты! x2 улов"); logCatch("Бонус: Ласты", 0, true, 'bonus'); }
+    else if (b < 0.60) { state.bonuses.mask = true; alert("Маска!"); showModal(); logCatch("Бонус: Маска", 0, true, 'bonus'); }
+    else if (b < 0.80) { state.bonuses.aqua = true; alert("Акваланг!"); logCatch("Бонус: Акваланг", 0, true, 'bonus'); }
+    else { state.bonuses.filter = true; alert("Фильтр! Защита от хлама активна"); logCatch("Бонус: Фильтр", 0, true, 'bonus'); }
 }
 
 function catchFish(isLargeBonus) {
@@ -65,19 +89,12 @@ function catchFish(isLargeBonus) {
     }
     
     if (isRak && weight > 2.5) weight = 2.5;
+    
     logCatch(name, weight, (weight === 0), 'catch');
     document.getElementById('message').innerText = `Поймал: ${name} ${weight > 0 ? '(' + weight.toFixed(1) + ' кг)' : ''}`;
 }
 
-function getBonusChance() { return (state.weather === 'calm') ? 0.3 : 0.1; }
-
-function handleBonus() {
-    let b = Math.random();
-    if (b < 0.25) { state.attempts++; alert("Катушка!"); logCatch("Бонус: Катушка (+1)", 0, true, 'bonus'); }
-    else if (b < 0.5) { state.bonuses.fins = true; alert("Ласты!"); logCatch("Бонус: Ласты", 0, true, 'bonus'); }
-    else if (b < 0.75) { state.bonuses.mask = true; alert("Маска!"); showModal(); logCatch("Бонус: Маска", 0, true, 'bonus'); }
-    else { state.bonuses.aqua = true; alert("Акваланг!"); logCatch("Бонус: Акваланг", 0, true, 'bonus'); }
-}
+function getBonusChance() { return (state.weather === 'calm') ? 0.3 : 0.15; }
 
 function triggerDebuff() {
     if (state.weather === 'storm' || Math.random() > 0.25) return;
