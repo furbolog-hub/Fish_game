@@ -19,30 +19,25 @@ function updateWeather() {
 
 function startFishing() {
     if (state.attempts <= 0) return;
-    
-    let isFilterActive = (state.bonuses.filter && Math.random() < 0.3);
+    if (!(state.bonuses.filter && Math.random() < 0.3)) state.attempts--;
+    updateUI();
     document.getElementById('action-btn').disabled = true;
 
     setTimeout(() => {
         let rand = Math.random();
         let trashChance = (state.weather === 'storm') ? 0.7 : 0.4;
-        
         if (state.bonuses.mask) {
             catchFish(true);
             state.bonuses.mask = false;
-            if (!isFilterActive) state.attempts--;
         } else if (rand < getBonusChance()) {
             handleBonus();
-            // Катушка дает +1 попытку, списание не производим
         } else if (rand < trashChance) {
             let item = trash[Math.floor(Math.random() * trash.length)];
             logCatch(item, 0, true, 'catch');
-            if (!isFilterActive) state.attempts--;
+            document.getElementById('message').innerText = `Поймал: ${item}`;
         } else {
             catchFish(state.weather === 'rain');
-            if (!isFilterActive) state.attempts--;
         }
-
         triggerDebuff();
         updateUI();
         renderHistory();
@@ -51,45 +46,40 @@ function startFishing() {
     }, 600);
 }
 
-function handleBonus() {
-    let b = Math.random();
-    if (b < 0.25) { 
-        state.attempts++; 
-        alert("Катушка! +1 попытка"); 
-        logCatch("Бонус: Катушка (+1)", 0, true, 'bonus'); 
-    } else if (b < 0.5) { 
-        state.bonuses.fins = true; 
-        alert("Ласты! x2 улов"); 
-        logCatch("Бонус: Ласты", 0, true, 'bonus'); 
-    } else if (b < 0.75) { 
-        state.bonuses.mask = true; 
-        alert("Маска!"); 
-        showModal(); 
-        logCatch("Бонус: Маска", 0, true, 'bonus'); 
-    } else { 
-        state.bonuses.aqua = true; 
-        alert("Акваланг!"); 
-        logCatch("Бонус: Акваланг", 0, true, 'bonus'); 
-    }
-}
-
 function catchFish(isLargeBonus) {
     let isDuck = state.activeDebuffs.some(d => d.includes("Утка"));
     let isRak = state.activeDebuffs.some(d => d.includes("Рак"));
     let name, weight;
-    if (isDuck && Math.random() < 0.5) { 
-        name = trash[Math.floor(Math.random() * trash.length)]; 
-        weight = 0; 
-    } else { 
-        name = fishes[Math.floor(Math.random() * fishes.length)]; 
-        weight = isDuck ? parseFloat((0.1 + Math.random() * 0.4).toFixed(1)) : parseFloat(((isLargeBonus ? 8.0 : 0.1) + Math.random() * 9.8).toFixed(1)); 
+
+    // МЕХАНИКА УТКИ: либо хлам, либо рыба весом не более 0,5 кг
+    if (isDuck) {
+        if (Math.random() < 0.5) {
+            name = trash[Math.floor(Math.random() * trash.length)];
+            weight = 0;
+        } else {
+            name = fishes[Math.floor(Math.random() * fishes.length)];
+            weight = parseFloat((0.1 + Math.random() * 0.4).toFixed(1));
+        }
+    } else {
+        name = fishes[Math.floor(Math.random() * fishes.length)];
+        weight = parseFloat(((isLargeBonus ? 8.0 : 0.1) + Math.random() * 9.8).toFixed(1));
     }
+    
     if (isRak && weight > 2.5) weight = 2.5;
+    
     logCatch(name, weight, (weight === 0), 'catch');
     document.getElementById('message').innerText = `Поймал: ${name} ${weight > 0 ? '(' + weight.toFixed(1) + ' кг)' : ''}`;
 }
 
 function getBonusChance() { return (state.weather === 'calm') ? 0.3 : 0.1; }
+
+function handleBonus() {
+    let b = Math.random();
+    if (b < 0.25) { state.attempts++; alert("Катушка!"); logCatch("Бонус: Катушка (+1)", 0, true, 'bonus'); }
+    else if (b < 0.5) { state.bonuses.fins = true; alert("Ласты!"); logCatch("Бонус: Ласты", 0, true, 'bonus'); }
+    else if (b < 0.75) { state.bonuses.mask = true; alert("Маска!"); showModal(); logCatch("Бонус: Маска", 0, true, 'bonus'); }
+    else { state.bonuses.aqua = true; alert("Акваланг!"); logCatch("Бонус: Акваланг", 0, true, 'bonus'); }
+}
 
 function triggerDebuff() {
     if (state.weather === 'storm' || Math.random() > 0.25) return;
@@ -99,7 +89,8 @@ function triggerDebuff() {
     else if (type < 0.66 && state.weather === 'sunny') {
         let fish = state.catches.find(c => !c.isTrash && !c.isStolen);
         if (fish) { fish.isStolen = true; debuffText = "Дебаф: Чайка стащила рыбу!"; }
-    } else if (state.weather === 'rain') debuffText = "Дебаф: Утка (только хлам)";
+    } else if (state.weather === 'rain') debuffText = "Дебаф: Утка (малый вес/хлам)";
+    
     if (debuffText && !state.activeDebuffs.includes(debuffText)) {
         state.activeDebuffs.push(debuffText);
         logCatch(debuffText, 0, true, 'debuff');
