@@ -108,8 +108,8 @@ function triggerDebuff() {
     }
 }
 
-function logCatch(name, weight, isTrash, type) {
-    state.catches.push({name, weight, isTrash, type, isStolen: false});
+function logCatch(name, weight, isTrash, type, isRemoved = false) {
+    state.catches.push({name, weight, isTrash, type, isStolen: false, isRemoved: isRemoved});
     renderHistory();
 }
 
@@ -119,14 +119,24 @@ function renderHistory() {
     state.catches.forEach(c => {
         const li = document.createElement('li');
         const icon = icons[c.name] || "🎣";
-        if (c.isStolen) { li.className = 'strikethrough'; li.innerText = `${icon} ${c.name} ${c.weight.toFixed(1)} кг (Украдено)`; }
-        else { li.className = c.type === 'bonus' ? 'log-bonus' : (c.type === 'debuff' ? 'log-debuff' : ''); li.innerText = `${icon} ${c.name} ${c.weight > 0 ? c.weight.toFixed(1)+' кг' : ''}`; }
+        
+        if (c.isRemoved) {
+            li.style.color = "#ffc107";
+            li.style.textDecoration = "line-through";
+            li.innerText = `${icon} ${c.name === "..." ? "..." : c.name} (Удалено)`;
+        } else if (c.isStolen) {
+            li.className = 'strikethrough';
+            li.innerText = `${icon} ${c.name} ${c.weight.toFixed(1)} кг (Украдено)`;
+        } else {
+            li.className = c.type === 'bonus' ? 'log-bonus' : (c.type === 'debuff' ? 'log-debuff' : '');
+            li.innerText = `${icon} ${c.name} ${c.weight > 0 ? c.weight.toFixed(1)+' кг' : ''}`;
+        }
         list.appendChild(li);
     });
 }
 
 function updateUI() {
-    let currentSum = state.catches.filter(c => !c.isStolen).reduce((s, c) => s + c.weight, 0);
+    let currentSum = state.catches.filter(c => !c.isStolen && !c.isRemoved).reduce((s, c) => s + c.weight, 0);
     document.getElementById('score').innerText = `Улов: ${currentSum.toFixed(1)} кг | Попыток: ${state.attempts}`;
 }
 
@@ -137,13 +147,23 @@ function showModal() {
     const cancelBtn = document.createElement('button');
     cancelBtn.className = 'fish-btn';
     cancelBtn.innerText = "Ничего не удалять";
-    cancelBtn.onclick = () => { document.getElementById('modal').classList.add('hidden'); document.getElementById('action-btn').disabled = false; };
+    cancelBtn.onclick = () => { 
+        logCatch("...", 0, false, 'catch', true); 
+        document.getElementById('modal').classList.add('hidden'); 
+        document.getElementById('action-btn').disabled = false; 
+    };
     list.appendChild(cancelBtn);
-    state.catches.filter(c => !c.isStolen).forEach((c) => {
+    state.catches.filter(c => !c.isStolen && !c.isRemoved).forEach((c) => {
         const btn = document.createElement('button');
         btn.className = 'fish-btn';
         btn.innerText = `Удалить: ${c.name} ${c.weight > 0 ? '('+c.weight.toFixed(1)+' кг)' : ''}`;
-        btn.onclick = () => { state.catches.splice(state.catches.indexOf(c), 1); document.getElementById('modal').classList.add('hidden'); document.getElementById('action-btn').disabled = false; updateUI(); renderHistory(); };
+        btn.onclick = () => { 
+            c.isRemoved = true; 
+            document.getElementById('modal').classList.add('hidden'); 
+            document.getElementById('action-btn').disabled = false; 
+            updateUI(); 
+            renderHistory(); 
+        };
         list.appendChild(btn);
     });
     document.getElementById('modal').classList.remove('hidden');
@@ -151,7 +171,7 @@ function showModal() {
 
 function endGame() {
     document.getElementById('action-btn').disabled = true;
-    let validCatches = state.catches.filter(c => !c.isStolen && c.weight > 0);
+    let validCatches = state.catches.filter(c => !c.isStolen && !c.isRemoved && c.weight > 0);
     let totalBase = validCatches.reduce((s, c) => s + c.weight, 0);
     let maxWeight = validCatches.length > 0 ? Math.max(...validCatches.map(c => c.weight)) : 0;
     
