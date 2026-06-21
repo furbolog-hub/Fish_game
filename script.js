@@ -14,7 +14,6 @@ const icons = {
     "Дебаф: Рак (вес до 2.5кг)": "🦀", "Дебаф: Чайка стащила рыбу!": "🦅", "Дебаф: Утка (малый вес/хлам)": "🦆"
 };
 
-// Функция определения ранга иконки по весу
 function getWeightIcon(weight) {
     if (weight === 0) return "";
     if (weight >= 10.0) return "🏆";
@@ -45,7 +44,7 @@ function startFishing() {
         let trashChance = (state.weather === 'storm') ? 0.7 : 0.4;
         
         if (state.bonuses.mask) {
-            catchFish(false); // Маска больше не дает гарантированный бонус веса, если не нужно
+            catchFish(false);
             state.bonuses.mask = false;
             state.attempts--;
         } else if (rand < getBonusChance()) {
@@ -68,34 +67,6 @@ function startFishing() {
     }, 600);
 }
 
-function catchFish(isLargeBonus) {
-    let isDuck = state.activeDebuffs.some(d => d.includes("Утка"));
-    let isRak = state.activeDebuffs.some(d => d.includes("Рак"));
-    let name, weight;
-
-    if (isDuck) {
-        if (Math.random() < 0.5) { name = trash[Math.floor(Math.random() * trash.length)]; weight = 0; }
-        else { name = fishes[Math.floor(Math.random() * fishes.length)]; weight = parseFloat((0.1 + Math.random() * 0.4).toFixed(1)); }
-    } else {
-        // Редкий случай (5%): 10.0 - 15.0 кг
-        if (Math.random() < 0.05) {
-            name = fishes[Math.floor(Math.random() * fishes.length)];
-            weight = parseFloat((10.0 + Math.random() * 5.0).toFixed(1));
-            state.luckyFisher = true;
-        } else {
-            // Обычный случай: 0.1 - 9.9 кг
-            name = fishes[Math.floor(Math.random() * fishes.length)];
-            weight = parseFloat((0.1 + Math.random() * 9.8).toFixed(1));
-        }
-    }
-    
-    if (isRak && weight > 2.5) weight = 2.5;
-    logCatch(name, weight, (weight === 0), 'catch');
-    document.getElementById('message').innerText = `Поймал: ${name} ${weight > 0 ? '(' + weight.toFixed(1) + ' кг)' : ''}`;
-}
-
-function getBonusChance() { return (state.weather === 'calm') ? 0.3 : 0.15; }
-
 function handleBonus() {
     let b = Math.random();
     if (b < 0.2) { state.attempts++; alert("Катушка!"); logCatch("Бонус: Катушка (+1)", 0, true, 'bonus'); }
@@ -107,6 +78,32 @@ function handleBonus() {
     else if (b < 0.8) { state.bonuses.aquaCount++; alert("Акваланг! (+x3 к макс)"); logCatch("Бонус: Акваланг (x3)", 0, true, 'bonus'); }
     else { state.bonuses.filter = true; alert("Фильтр! Защита от хлама"); logCatch("Бонус: Фильтр", 0, true, 'bonus'); }
 }
+
+function catchFish(isLargeBonus) {
+    let isDuck = state.activeDebuffs.some(d => d.includes("Утка"));
+    let isRak = state.activeDebuffs.some(d => d.includes("Рак"));
+    let name, weight;
+
+    if (isDuck) {
+        if (Math.random() < 0.5) { name = trash[Math.floor(Math.random() * trash.length)]; weight = 0; }
+        else { name = fishes[Math.floor(Math.random() * fishes.length)]; weight = parseFloat((0.1 + Math.random() * 0.4).toFixed(1)); }
+    } else {
+        if (Math.random() < 0.05) {
+            name = fishes[Math.floor(Math.random() * fishes.length)];
+            weight = parseFloat((10.0 + Math.random() * 5.0).toFixed(1));
+            state.luckyFisher = true;
+        } else {
+            name = fishes[Math.floor(Math.random() * fishes.length)];
+            weight = parseFloat((0.1 + Math.random() * 9.8).toFixed(1));
+        }
+    }
+    
+    if (isRak && weight > 2.5) weight = 2.5;
+    logCatch(name, weight, (weight === 0), 'catch');
+    document.getElementById('message').innerText = `Поймал: ${name} ${weight > 0 ? '(' + weight.toFixed(1) + ' кг)' : ''}`;
+}
+
+function getBonusChance() { return (state.weather === 'calm') ? 0.3 : 0.15; }
 
 function triggerDebuff() {
     if (state.weather === 'storm' || Math.random() > 0.25) return;
@@ -205,12 +202,14 @@ function endGame() {
     const dateStr = now.toLocaleDateString('ru-RU');
     const timeStr = now.toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' });
 
-    let luckyText = state.luckyFisher ? '<div style="color: gold; margin-top:10px;">🏆 Удачливый рыбак</div>' : '';
+    let luckyText = state.luckyFisher ? '<div style="color: #ffd700; font-weight: bold; margin-top:5px; text-shadow: 1px 1px 2px #000;">🏆 Удачливый рыбак</div>' : '';
 
     document.getElementById('final-result').innerHTML = `
         <strong>Итог: ${total.toFixed(2)} кг</strong>
         ${luckyText}
-        <br><small style="color: #666;">${dateStr} в ${timeStr}</small>
+        <div style="margin-top: 10px; padding: 5px; background: rgba(128, 128, 128, 0.2); border-radius: 5px; color: #fff; font-weight: 500; text-shadow: 0 0 4px #000;">
+            ${dateStr} в ${timeStr}
+        </div>
     `;
     document.getElementById('final-result').classList.remove('hidden');
 }
