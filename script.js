@@ -11,6 +11,7 @@ const icons = {
     "Ржавый крючок": "🪝", "Половина блесны": "🪙", "Размокший кусок бумаги": "📄"
 };
 
+// Функция для определения медали по весу
 function getMedalEmoji(weight) {
     if (weight <= 4.5) return "🥉";
     if (weight <= 7.5) return "🥈";
@@ -28,7 +29,18 @@ document.addEventListener('DOMContentLoaded', () => {
 
 function toggleWeatherHelp() {
     const el = document.getElementById('weather-help');
-    el.classList.toggle('active');
+    if (!el.classList.contains('active')) {
+        const helpText = {
+            'sunny': '☀️ Солнечно: Шанс атаки чайки!',
+            'rain': '🌧️ Дождь: Появление утки (снижает вес).',
+            'calm': '🌊 Штиль: Высокий шанс бонусов.',
+            'storm': '🌪️ Шторм: Много хлама, дебаффы не работают.'
+        };
+        document.getElementById('help-text').innerText = helpText[state.weather];
+        el.classList.add('active');
+    } else {
+        el.classList.remove('active');
+    }
 }
 
 function updateWeather() {
@@ -109,6 +121,7 @@ function catchFish(isMasked) {
     if (isRak && weight > 2.5) weight = 2.5;
     logCatch(name, weight, (weight === 0), 'catch');
     
+    // Добавлен вывод медали
     let medal = (weight > 0) ? getMedalEmoji(weight) : "";
     document.getElementById('message').innerText = `Поймал: ${name} ${weight > 0 ? '(' + weight.toFixed(1) + ' кг) ' + medal : ''}`;
 }
@@ -200,6 +213,7 @@ function endGame() {
     if (validCatches.length > 0 && validCatches.every(c => c.weight < 2.5)) achs.push("🐱 Аквариумный мастер");
     if (state.catches.length > 0 && state.catches.every(c => c.isTrash || c.isStolen)) achs.push("🗑️ Повелитель башмаков");
 
+    // Получаем текущую дату и время
     const now = new Date();
     const dateStr = now.toLocaleDateString() + ' ' + now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 
