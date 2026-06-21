@@ -12,10 +12,15 @@ const fishes = ["Палтус", "Палия", "Белый амур", "Щука",
 const trash = ["Старый башмак", "Спутанная леска", "Сломанный поплавок", "Ржавый крючок", "Половина блесны", "Размокший кусок бумаги"];
 
 document.addEventListener('DOMContentLoaded', () => {
-    document.getElementById('action-btn').addEventListener('click', startFishing);
+    const btn = document.getElementById('action-btn');
+    if (btn) {
+        btn.addEventListener('click', startFishing);
+        btn.disabled = false;
+    }
     updateWeather();
     setInterval(updateWeather, 7200000);
     updateUI();
+    renderHistory();
 });
 
 function updateWeather() {
@@ -33,6 +38,7 @@ function updateUI() {
 
 function renderHistory() {
     const list = document.getElementById('history-list');
+    if (!list) return; // Защита от ошибки
     list.innerHTML = '';
     state.catches.forEach(c => {
         const li = document.createElement('li');
@@ -50,12 +56,15 @@ function renderHistory() {
 function startFishing() {
     if (state.attempts <= 0) return;
     if (!(state.bonuses.filter && Math.random() < 0.3)) state.attempts--;
+    
     updateUI();
-    document.getElementById('action-btn').disabled = true;
+    const btn = document.getElementById('action-btn');
+    if (btn) btn.disabled = true;
 
     setTimeout(() => {
         let rand = Math.random();
         let trashChance = (state.weather === 'storm') ? 0.7 : 0.4;
+        
         if (state.bonuses.mask) {
             catchFish(true);
             state.bonuses.mask = false;
@@ -68,10 +77,11 @@ function startFishing() {
         } else {
             catchFish(state.weather === 'rain');
         }
+
         triggerDebuff();
         updateUI();
         renderHistory();
-        document.getElementById('action-btn').disabled = false;
+        if (btn) btn.disabled = false;
         if (state.attempts === 0) endGame();
     }, 600);
 }
@@ -114,7 +124,8 @@ function triggerDebuff() {
     if (debuffText && !state.activeDebuffs.includes(debuffText)) {
         state.activeDebuffs.push(debuffText);
         logCatch(debuffText, 0, true, 'debuff');
-        document.getElementById('status-effects').innerHTML = state.activeDebuffs.map(d => `<div>${d}</div>`).join('');
+        const effects = document.getElementById('status-effects');
+        if (effects) effects.innerHTML = state.activeDebuffs.map(d => `<div>${d}</div>`).join('');
     }
 }
 
@@ -124,13 +135,14 @@ function logCatch(name, weight, isTrash, type) {
 }
 
 function showModal() {
-    document.getElementById('action-btn').disabled = true;
+    const btn = document.getElementById('action-btn');
+    if (btn) btn.disabled = true;
     const list = document.getElementById('modal-fish-list');
     list.innerHTML = '';
     const cancelBtn = document.createElement('button');
     cancelBtn.className = 'fish-btn';
     cancelBtn.innerText = "Ничего не удалять";
-    cancelBtn.onclick = () => { document.getElementById('modal').classList.add('hidden'); document.getElementById('action-btn').disabled = false; };
+    cancelBtn.onclick = () => { document.getElementById('modal').classList.add('hidden'); if(btn) btn.disabled = false; };
     list.appendChild(cancelBtn);
     state.catches.filter(c => !c.isStolen).forEach((c, index) => {
         const btn = document.createElement('button');
@@ -139,7 +151,7 @@ function showModal() {
         btn.onclick = () => {
             state.catches.splice(state.catches.indexOf(c), 1);
             document.getElementById('modal').classList.add('hidden');
-            document.getElementById('action-btn').disabled = false;
+            if(btn) btn.disabled = false;
             updateUI(); renderHistory();
         };
         list.appendChild(btn);
@@ -148,11 +160,15 @@ function showModal() {
 }
 
 function endGame() {
-    document.getElementById('action-btn').disabled = true;
+    const btn = document.getElementById('action-btn');
+    if (btn) btn.disabled = true;
     let total = state.catches.filter(c => !c.isStolen).reduce((s, c) => s + c.weight, 0);
     if (state.bonuses.fins) total *= 2;
     if (state.bonuses.aqua && state.catches.length > 0) total += Math.max(...state.catches.filter(c => !c.isStolen).map(c => c.weight), 0) * 2;
     total = Math.round(total * 100) / 100;
-    document.getElementById('final-result').innerHTML = `<strong>Итог: ${total.toFixed(2)} кг</strong>`;
-    document.getElementById('final-result').classList.remove('hidden');
+    const res = document.getElementById('final-result');
+    if (res) {
+        res.innerHTML = `<strong>Итог: ${total.toFixed(2)} кг</strong>`;
+        res.classList.remove('hidden');
+    }
 }
