@@ -323,7 +323,6 @@ function updateUI() {
     
     document.getElementById('score').innerText = `Улов: ${currentSum.toFixed(1)} кг | Попыток: ${state.attempts}`;
 }
-
 function showModal() {
     document.getElementById('action-btn').disabled = true;
     const list = document.getElementById('modal-fish-list');
@@ -334,20 +333,33 @@ function showModal() {
     cancelBtn.innerText = "Ничего не удалять";
     cancelBtn.onclick = () => {
         document.getElementById('modal').classList.add('hidden');
-        if (state.attempts === 0) endGame(); else document.getElementById('action-btn').disabled = false;
+        if (state.attempts === 0) {
+            endGame();
+        } else {
+            document.getElementById('action-btn').disabled = false;
+        }
     };
     list.appendChild(cancelBtn);
     
-    state.catches.filter(c => !c.isStolen && !c.isRemoved && c.weight > 0).forEach((c) => {
+    // Здесь мы убрали фильтр weight > 0, чтобы хлам тоже был доступен для удаления
+    state.catches.filter(c => !c.isStolen && !c.isRemoved).forEach((c) => {
         const btn = document.createElement('button');
         btn.className = 'fish-btn';
-        btn.innerText = `Удалить: ${c.name} (${c.weight.toFixed(1)} кг)`;
+        
+        // Отображаем вес только если это рыба (вес > 0)
+        let label = c.weight > 0 ? `${c.name} (${c.weight.toFixed(1)} кг)` : c.name;
+        btn.innerText = `Удалить: ${label}`;
+        
         btn.onclick = () => {
             c.isRemoved = true;
             document.getElementById('modal').classList.add('hidden');
             updateUI();
             renderHistory();
-            if (state.attempts === 0) endGame(); else document.getElementById('action-btn').disabled = false;
+            if (state.attempts === 0) {
+                endGame();
+            } else {
+                document.getElementById('action-btn').disabled = false;
+            }
         };
         list.appendChild(btn);
     });
