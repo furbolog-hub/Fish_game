@@ -4,6 +4,16 @@ let state = { attempts: 3, catches: [], bonuses: { mask: false, aquaCount: 0, fi
 const fishes = ["Палтус", "Палия", "Белый амур", "Щука", "Семга", "Солнечник", "Подкаменщик", "Сом", "Окунь"];
 const trash = ["Старый башмак", "Спутанная леска", "Сломанный поплавок", "Ржавый крючок", "Половина блесны", "Размокший кусок бумаги"];
 
+const icons = {
+    "Палтус": "🐟", "Палия": "🐠", "Белый амур": "🐟", "Щука": "🦈", 
+    "Семга": "🍣", "Солнечник": "☀️", "Подкаменщик": "🐡", "Сом": "〰️", "Окунь": "🐟",
+    "Старый башмак": "👞", "Спутанная леска": "🧶", "Сломанный поплавок": "🪡", 
+    "Ржавый крючок": "🪝", "Половина блесны": "🪙", "Размокший кусок бумаги": "📄",
+    "Бонус: Катушка (+1)": "🧵", "Бонус: Ласты (x2)": "🤿", "Бонус: Маска": "🥽", 
+    "Бонус: Акваланг (x3)": "🫁", "Бонус: Фильтр": "♻️",
+    "Дебаф: Рак (вес до 2.5кг)": "🦀", "Дебаф: Чайка стащила рыбу!": "🦅", "Дебаф: Утка (малый вес/хлам)": "🦆"
+};
+
 document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('action-btn').addEventListener('click', startFishing);
     updateWeather();
@@ -53,14 +63,8 @@ function handleBonus() {
     let b = Math.random();
     if (b < 0.2) { state.attempts++; alert("Катушка!"); logCatch("Бонус: Катушка (+1)", 0, true, 'bonus'); }
     else if (b < 0.4) { 
-        if (state.bonuses.fins) {
-            alert("Ласты уже есть!"); 
-            logCatch("Бонус: Ласты (уже есть)", 0, true, 'bonus');
-        } else {
-            state.bonuses.fins = true; 
-            alert("Ласты! x2 улов"); 
-            logCatch("Бонус: Ласты (x2)", 0, true, 'bonus'); 
-        }
+        if (state.bonuses.fins) { alert("Ласты уже есть!"); logCatch("Бонус: Ласты (уже есть)", 0, true, 'bonus'); } 
+        else { state.bonuses.fins = true; alert("Ласты! x2 улов"); logCatch("Бонус: Ласты (x2)", 0, true, 'bonus'); }
     }
     else if (b < 0.6) { state.bonuses.mask = true; alert("Маска!"); showModal(); logCatch("Бонус: Маска", 0, true, 'bonus'); }
     else if (b < 0.8) { state.bonuses.aquaCount++; alert("Акваланг! (+x3 к макс)"); logCatch("Бонус: Акваланг (x3)", 0, true, 'bonus'); }
@@ -100,7 +104,7 @@ function triggerDebuff() {
     if (debuffText && !state.activeDebuffs.includes(debuffText)) {
         state.activeDebuffs.push(debuffText);
         logCatch(debuffText, 0, true, 'debuff');
-        document.getElementById('status-effects').innerHTML = state.activeDebuffs.map(d => `<div>${d}</div>`).join('');
+        document.getElementById('status-effects').innerHTML = state.activeDebuffs.map(d => `<div>${icons[d] || ''} ${d}</div>`).join('');
     }
 }
 
@@ -114,8 +118,9 @@ function renderHistory() {
     list.innerHTML = '';
     state.catches.forEach(c => {
         const li = document.createElement('li');
-        if (c.isStolen) { li.className = 'strikethrough'; li.innerText = `${c.name} ${c.weight.toFixed(1)} кг (Украдено)`; }
-        else { li.className = c.type === 'bonus' ? 'log-bonus' : (c.type === 'debuff' ? 'log-debuff' : ''); li.innerText = `${c.name} ${c.weight > 0 ? c.weight.toFixed(1)+' кг' : ''}`; }
+        const icon = icons[c.name] || "🎣";
+        if (c.isStolen) { li.className = 'strikethrough'; li.innerText = `${icon} ${c.name} ${c.weight.toFixed(1)} кг (Украдено)`; }
+        else { li.className = c.type === 'bonus' ? 'log-bonus' : (c.type === 'debuff' ? 'log-debuff' : ''); li.innerText = `${icon} ${c.name} ${c.weight > 0 ? c.weight.toFixed(1)+' кг' : ''}`; }
         list.appendChild(li);
     });
 }
