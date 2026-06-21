@@ -24,9 +24,11 @@ function showModal() {
         btn.className = 'fish-btn';
         btn.innerText = `${c.name} (${c.weight.toFixed(1)} кг)`;
         btn.onclick = () => {
-            state.catches.splice(index, 1);
+            state.catches.splice(state.catches.indexOf(c), 1);
             document.getElementById('modal').classList.add('hidden');
+            document.getElementById('action-btn').disabled = false;
             updateUI();
+            document.getElementById('message').innerText = "Рыба удалена! Можно бросать.";
         };
         list.appendChild(btn);
     });
@@ -37,7 +39,9 @@ function startFishing() {
     if (state.attempts <= 0) return;
 
     if (state.attempts === 1 && Math.random() < 0.3) {
+        document.getElementById('action-btn').disabled = true;
         showModal();
+        return;
     }
 
     if (!(state.bonuses.filter && Math.random() < 0.3)) {
@@ -69,7 +73,9 @@ function startFishing() {
 
 function logCatch(name, weight, isTrash) {
     state.catches.push({name, weight, isTrash});
-    document.getElementById('history-list').innerHTML += `<li>${name} ${weight > 0 ? weight.toFixed(1)+' кг' : ''}</li>`;
+    const li = document.createElement('li');
+    li.innerText = `${name} ${weight > 0 ? weight.toFixed(1)+' кг' : ''}`;
+    document.getElementById('history-list').appendChild(li);
 }
 
 function endGame() {
