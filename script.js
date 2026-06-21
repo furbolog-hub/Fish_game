@@ -11,7 +11,6 @@ const icons = {
     "Ржавый крючок": "🪝", "Половина блесны": "🪙", "Размокший кусок бумаги": "📄"
 };
 
-// Логика медалей
 function getMedalEmoji(weight) {
     if (weight <= 4.5) return "🥉";
     if (weight <= 7.5) return "🥈";
