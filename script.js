@@ -1,99 +1,84 @@
-// Инициализация с защитой: если открыто не в Telegram, ошибки не будет
-let tg;
-try {
-    tg = window.Telegram.WebApp;
-    tg.ready();
-    tg.expand();
-} catch (e) {
-    console.log("Игра запущена в обычном браузере");
-    tg = {
-        ready: () => {},
-        expand: () => {},
-        HapticFeedback: { impactOccurred: () => {} }
-    };
-}
+let tg; try { tg = window.Telegram.WebApp; tg.ready(); tg.expand(); } catch (e) { tg = { HapticFeedback: { impactOccurred: () => {} } }; }
 
-// Настройки игры
-let attempts = 3;
-let totalWeight = 0;
-let hasMask = false;
-let multiplier = 1;
+let state = {
+    attempts: 3,
+    catches: [],
+    bonuses: { mask: false, aqua: false, filter: false, fins: false },
+    weather: 'sunny',
+    lastPlayDate: localStorage.getItem('lastPlayDate')
+};
 
 const fishes = ["Палтус", "Палия", "Белый амур", "Щука", "Семга", "Солнечник", "Подкаменщик", "Сом", "Окунь"];
 const trash = ["Старый башмак", "Спутанная леска", "Сломанный поплавок", "Ржавый крючок", "Половина блесны", "Размокший кусок бумаги"];
 
-const btn = document.getElementById('action-btn');
-const message = document.getElementById('message');
-const scoreDisplay = document.getElementById('score');
-const historyList = document.getElementById('history-list');
+function updateWeather() {
+    const weathers = ['sunny', 'rain', 'calm', 'storm'];
+    state.weather = weathers[Math.floor(Math.random() * weathers.length)];
+    document.getElementById('weather-icon').innerText = {'sunny':'☀️', 'rain':'🌧️', 'calm':'🌊', 'storm':'🌪️'}[state.weather];
+}
+
+function startFishing() {
+    if (state.attempts <= 0) return;
+    
+    // Логика фильтра
+    if (state.bonuses.filter && Math.random() < 0.3) {
+        alert("Фильтр сработал: попытка сохранена!");
+    } else {
+        state.attempts--;
+    }
+
+    // Рандом события
+    let rand = Math.random();
+    if (rand < 0.1) { // Бонусы
+        handleBonus();
+    } else if (rand < 0.3) { // Хлам
+        let item = trash[Math.floor(Math.random() * trash.length)];
+        logCatch(item, 0, true);
+    } else { // Рыба
+        let fish = fishes[Math.floor(Math.random() * fishes.length)];
+        let weight = state.bonuses.mask ? (6.5 + Math.random() * 3.4) : (0.1 + Math.random() * 9.8);
+        state.bonuses.mask = false;
+        logCatch(fish, weight, false);
+    }
+
+    // Дебафы (с шансом)
+    if (Math.random() < 0.2) triggerDebuff();
+
+    updateUI();
+    if (state.attempts === 0) endGame();
+}
+
+function handleBonus() {
+    let b = Math.random();
+    if (b < 0.25) { state.attempts++; alert("Катушка! +1 ход"); }
+    else if (b < 0.5) { state.bonuses.fins = true; alert("Ласты! x2 улов"); }
+    else if (b < 0.75) { state.bonuses.mask = true; alert("Маска! Следующая крупная"); }
+    else { state.bonuses.aqua = true; alert("Акваланг! x3 для самой большой рыбы"); }
+}
+
+function logCatch(name, weight, isTrash) {
+    state.catches.push({name, weight, isTrash});
+    document.getElementById('history-list').innerHTML += `<li>${name} ${weight > 0 ? weight.toFixed(1)+' кг' : ''}</li>`;
+}
+
+function endGame() {
+    document.getElementById('action-btn').disabled = true;
+    let total = state.catches.reduce((s, c) => s + c.weight, 0);
+    if (state.bonuses.fins) total *= 2;
+    // Акваланг: находим макс и множим на 3
+    if (state.bonuses.aqua && state.catches.length > 0) {
+        let max = Math.max(...state.catches.map(c => c.weight));
+        total += max * 2;
+    }
+    document.getElementById('final-result').innerHTML = `Итог: ${total.toFixed(2)} кг. Время: ${new Date().toLocaleString()}`;
+    document.getElementById('final-result').classList.remove('hidden');
+    localStorage.setItem('lastPlayDate', new Date().toDateString());
+}
 
 function updateUI() {
-    scoreDisplay.innerText = `Улов: ${(totalWeight * multiplier).toFixed(1)} кг | Попыток: ${attempts}`;
+    document.getElementById('score').innerText = `Улов: ${state.catches.reduce((s, c)=>s+c.weight,0).toFixed(1)} кг | Попыток: ${state.attempts}`;
 }
 
-function addToHistory(text) {
-    const li = document.createElement('li');
-    li.innerText = text;
-    historyList.appendChild(li);
-}
-
-function canPlayToday() {
-    return localStorage.getItem('lastPlayDate') !== new Date().toDateString();
-}
-
-btn.addEventListener('click', () => {
-    if (attempts <= 0) return;
-
-    attempts--;
-    btn.disabled = true;
-    message.innerText = "Рыба клюет...";
-
-    setTimeout(() => {
-        const rand = Math.random();
-
-        if (rand < 0.10) { // Бонусы (10%)
-            const b = Math.random();
-            if (b < 0.33) {
-                attempts++;
-                message.innerText = "Удача! Катушка (+1 попытка).";
-                addToHistory("Катушка (+1 попытка)");
-            } else if (b < 0.66) {
-                multiplier = 2;
-                message.innerText = "Ласты! Улов x2.";
-                addToHistory("Ласты (Улов x2)");
-            } else {
-                hasMask = true;
-                message.innerText = "Маска! Следующая рыба будет крупной.";
-                addToHistory("Подводная маска");
-            }
-        } else if (rand < 0.40) { // Мусор (30%)
-            const item = trash[Math.floor(Math.random() * trash.length)];
-            message.innerText = `Ты поймал ${item}.`;
-            addToHistory(item);
-        } else { // Рыба (60%)
-            const fish = fishes[Math.floor(Math.random() * fishes.length)];
-            const w = hasMask ? (Math.random() * 3.4 + 6.5) : (Math.random() * 9.8 + 0.1);
-            totalWeight += w;
-            hasMask = false;
-            message.innerText = `Поймал ${fish} (${w.toFixed(1)} кг)!`;
-            addToHistory(`${fish} — ${w.toFixed(1)} кг`);
-        }
-
-        updateUI();
-        btn.disabled = false;
-
-        if (attempts <= 0) {
-            message.innerText = "Игра окончена! Итог: " + (totalWeight * multiplier).toFixed(1) + " кг.";
-            btn.disabled = true;
-            localStorage.setItem('lastPlayDate', new Date().toDateString());
-        }
-    }, 1500);
-});
-
-// Проверка при загрузке страницы
-if (!canPlayToday()) {
-    message.innerText = "Ты уже рыбачил сегодня. Возвращайся завтра!";
-    btn.disabled = true;
-} else {
-    updateUI();
-}
+document.getElementById('action-btn').addEventListener('click', startFishing);
+updateWeather();
+setInterval(updateWeather, 7200000); // 2 часа
