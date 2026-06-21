@@ -151,8 +151,3 @@ function endGame() {
     document.getElementById('action-btn').disabled = true;
     let total = state.catches.reduce((s, c) => s + c.weight, 0);
     if (state.bonuses.fins) total *= 2;
-    if (state.bonuses.aqua && state.catches.length > 0) total += Math.max(...state.catches.map(c => c.weight)) * 2;
-    total = Math.round(total * 100) / 100;
-    document.getElementById('final-result').innerHTML = `<strong>Итог: ${total.toFixed(2)} кг</strong>`;
-    document.getElementById('final-result').classList.remove('hidden');
-}
