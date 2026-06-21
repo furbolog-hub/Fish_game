@@ -29,7 +29,18 @@ document.addEventListener('DOMContentLoaded', () => {
 
 function toggleWeatherHelp() {
     const el = document.getElementById('weather-help');
-    el.classList.toggle('active');
+    if (!el.classList.contains('active')) {
+        const helpText = {
+            'sunny': '☀️ Солнечно: Шанс атаки чайки!',
+            'rain': '🌧️ Дождь: Появление утки (снижает вес).',
+            'calm': '🌊 Штиль: Высокий шанс бонусов.',
+            'storm': '🌪️ Шторм: Много хлама, дебаффы не работают.'
+        };
+        document.getElementById('help-text').innerText = helpText[state.weather];
+        el.classList.add('active');
+    } else {
+        el.classList.remove('active');
+    }
 }
 
 function updateWeather() {
