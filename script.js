@@ -84,8 +84,6 @@ function startFishing() {
 
     setTimeout(() => {
         let rand = Math.random();
-        
-        // Шанс на Легендарный предмет (1%)
         if (rand < 0.01) {
             handleLegendary();
         } else if (state.bonuses.mask) {
@@ -156,10 +154,8 @@ function catchFish(isMasked) {
         }
     }
     
-    // Применяем бонусы Левиафана
     weight += state.leviathanBonus;
     
-    // Применяем Рака
     let bonusWeight = 0;
     if (isRak) {
         if (weight > 2.5) weight = 2.5;
@@ -209,6 +205,7 @@ function renderHistory() {
         const li = document.createElement('li');
         const icon = icons[c.name] || "🎣";
         const weightRank = getWeightIcon(c.weight);
+        const isLegendary = legendaryItems.includes(c.name);
         
         if (c.isRemoved) {
             li.style.color = "#ffc107";
@@ -222,7 +219,7 @@ function renderHistory() {
                 li.innerText = `${icon} ${c.name} (Украдено)`;
             }
         } else {
-            li.className = c.type === 'legendary' ? 'log-legendary' : (c.type === 'bonus' ? 'log-bonus' : (c.type === 'debuff' ? 'log-debuff' : ''));
+            li.className = isLegendary ? 'log-legendary' : (c.type === 'bonus' ? 'log-bonus' : (c.type === 'debuff' ? 'log-debuff' : ''));
             let bonusStr = c.bonusWeight > 0 ? ` <span style="color:#800080">(+${c.bonusWeight.toFixed(1)}кг)</span>` : '';
             li.innerHTML = `${icon} ${weightRank} ${c.name} ${c.weight > 0 ? c.weight.toFixed(1)+' кг' : ''} ${bonusStr}`;
         }
