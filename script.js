@@ -19,7 +19,14 @@ function updateWeather() {
 function showModal() {
     const list = document.getElementById('modal-fish-list');
     list.innerHTML = '';
-    state.catches.filter(c => !c.isTrash).forEach((c, index) => {
+    const fishToCatch = state.catches.filter(c => !c.isTrash);
+    if (fishToCatch.length === 0) {
+        document.getElementById('modal').classList.add('hidden');
+        document.getElementById('action-btn').disabled = false;
+        document.getElementById('message').innerText = "Рыб нет, продолжаем!";
+        return;
+    }
+    fishToCatch.forEach((c) => {
         const btn = document.createElement('button');
         btn.className = 'fish-btn';
         btn.innerText = `${c.name} (${c.weight.toFixed(1)} кг)`;
@@ -28,7 +35,7 @@ function showModal() {
             document.getElementById('modal').classList.add('hidden');
             document.getElementById('action-btn').disabled = false;
             updateUI();
-            document.getElementById('message').innerText = "Рыба удалена! Можно бросать.";
+            document.getElementById('message').innerText = "Рыба удалена!";
         };
         list.appendChild(btn);
     });
@@ -38,15 +45,14 @@ function showModal() {
 function startFishing() {
     if (state.attempts <= 0) return;
 
-    if (state.attempts === 1 && Math.random() < 0.3) {
+    const fishToCatch = state.catches.filter(c => !c.isTrash);
+    if (state.attempts === 1 && Math.random() < 0.05 && fishToCatch.length > 0) {
         document.getElementById('action-btn').disabled = true;
         showModal();
         return;
     }
 
-    if (!(state.bonuses.filter && Math.random() < 0.3)) {
-        state.attempts--;
-    }
+    if (!(state.bonuses.filter && Math.random() < 0.3)) state.attempts--;
 
     let rand = Math.random();
     if (rand < 0.1) {
@@ -66,7 +72,6 @@ function startFishing() {
         logCatch(fish, weight, false);
         document.getElementById('message').innerText = `Поймал: ${fish} (${weight.toFixed(1)} кг)`;
     }
-
     updateUI();
     if (state.attempts === 0) endGame();
 }
