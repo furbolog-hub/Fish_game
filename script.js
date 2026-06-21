@@ -1,6 +1,6 @@
 let tg; try { tg = window.Telegram.WebApp; tg.ready(); tg.expand(); } catch (e) { tg = { HapticFeedback: { impactOccurred: () => {} } }; }
 
-let state = { attempts: 3, catches: [], bonuses: { mask: false, aqua: false, filter: false, fins: false }, activeDebuffs: [], weather: 'sunny' };
+let state = { attempts: 3, catches: [], bonuses: { mask: false, aquaCount: 0, filter: false, fins: false }, activeDebuffs: [], weather: 'sunny' };
 const fishes = ["Палтус", "Палия", "Белый амур", "Щука", "Семга", "Солнечник", "Подкаменщик", "Сом", "Окунь"];
 const trash = ["Старый башмак", "Спутанная леска", "Сломанный поплавок", "Ржавый крючок", "Половина блесны", "Размокший кусок бумаги"];
 
@@ -19,34 +19,23 @@ function updateWeather() {
 
 function startFishing() {
     if (state.attempts <= 0) return;
-    
     document.getElementById('action-btn').disabled = true;
 
     setTimeout(() => {
         let rand = Math.random();
         let trashChance = (state.weather === 'storm') ? 0.7 : 0.4;
-        let isTrash = false;
         
-        // Логика рыбалки
         if (state.bonuses.mask) {
             catchFish(true);
             state.bonuses.mask = false;
             state.attempts--;
         } else if (rand < getBonusChance()) {
             handleBonus();
-            // Бонус не тратит попытку
         } else if (rand < trashChance) {
             let item = trash[Math.floor(Math.random() * trash.length)];
             logCatch(item, 0, true, 'catch');
             document.getElementById('message').innerText = `Поймал: ${item}`;
-            
-            // ЛОГИКА ФИЛЬТРА: если хлам, попытка не сгорает
-            if (state.bonuses.filter) {
-                alert("Фильтр сработал: Хлам пойман, попытка не потрачена!");
-                state.bonuses.filter = false; // Фильтр одноразовый
-            } else {
-                state.attempts--;
-            }
+            if (state.bonuses.filter) { state.bonuses.filter = false; } else { state.attempts--; }
         } else {
             catchFish(state.weather === 'rain');
             state.attempts--;
@@ -62,12 +51,11 @@ function startFishing() {
 
 function handleBonus() {
     let b = Math.random();
-    // Шансы: Катушка(20%), Ласты(20%), Маска(20%), Акваланг(20%), Фильтр(20%)
-    if (b < 0.20) { state.attempts++; alert("Катушка! +1 попытка"); logCatch("Бонус: Катушка (+1)", 0, true, 'bonus'); }
-    else if (b < 0.40) { state.bonuses.fins = true; alert("Ласты! x2 улов"); logCatch("Бонус: Ласты", 0, true, 'bonus'); }
-    else if (b < 0.60) { state.bonuses.mask = true; alert("Маска!"); showModal(); logCatch("Бонус: Маска", 0, true, 'bonus'); }
-    else if (b < 0.80) { state.bonuses.aqua = true; alert("Акваланг!"); logCatch("Бонус: Акваланг", 0, true, 'bonus'); }
-    else { state.bonuses.filter = true; alert("Фильтр! Защита от хлама активна"); logCatch("Бонус: Фильтр", 0, true, 'bonus'); }
+    if (b < 0.2) { state.attempts++; alert("Катушка!"); logCatch("Бонус: Катушка (+1)", 0, true, 'bonus'); }
+    else if (b < 0.4) { state.bonuses.fins = true; alert("Ласты!"); logCatch("Бонус: Ласты", 0, true, 'bonus'); }
+    else if (b < 0.6) { state.bonuses.mask = true; alert("Маска!"); showModal(); logCatch("Бонус: Маска", 0, true, 'bonus'); }
+    else if (b < 0.8) { state.bonuses.aquaCount++; alert("Акваланг!"); logCatch("Бонус: Акваланг (x3)", 0, true, 'bonus'); }
+    else { state.bonuses.filter = true; alert("Фильтр!"); logCatch("Бонус: Фильтр", 0, true, 'bonus'); }
 }
 
 function catchFish(isLargeBonus) {
@@ -76,20 +64,14 @@ function catchFish(isLargeBonus) {
     let name, weight;
 
     if (isDuck) {
-        if (Math.random() < 0.5) {
-            name = trash[Math.floor(Math.random() * trash.length)];
-            weight = 0;
-        } else {
-            name = fishes[Math.floor(Math.random() * fishes.length)];
-            weight = parseFloat((0.1 + Math.random() * 0.4).toFixed(1));
-        }
+        if (Math.random() < 0.5) { name = trash[Math.floor(Math.random() * trash.length)]; weight = 0; }
+        else { name = fishes[Math.floor(Math.random() * fishes.length)]; weight = parseFloat((0.1 + Math.random() * 0.4).toFixed(1)); }
     } else {
         name = fishes[Math.floor(Math.random() * fishes.length)];
         weight = parseFloat(((isLargeBonus ? 8.0 : 0.1) + Math.random() * 9.8).toFixed(1));
     }
     
     if (isRak && weight > 2.5) weight = 2.5;
-    
     logCatch(name, weight, (weight === 0), 'catch');
     document.getElementById('message').innerText = `Поймал: ${name} ${weight > 0 ? '(' + weight.toFixed(1) + ' кг)' : ''}`;
 }
@@ -155,9 +137,16 @@ function showModal() {
 
 function endGame() {
     document.getElementById('action-btn').disabled = true;
-    let total = state.catches.filter(c => !c.isStolen).reduce((s, c) => s + c.weight, 0);
+    let validCatches = state.catches.filter(c => !c.isStolen && c.weight > 0);
+    let totalBase = validCatches.reduce((s, c) => s + c.weight, 0);
+    let maxWeight = validCatches.length > 0 ? Math.max(...validCatches.map(c => c.weight)) : 0;
+    
+    let total = totalBase;
+    if (state.bonuses.aquaCount > 0) {
+        total = (totalBase - maxWeight) + (maxWeight * 3 * state.bonuses.aquaCount);
+    }
     if (state.bonuses.fins) total *= 2;
-    if (state.bonuses.aqua && state.catches.length > 0) total += Math.max(...state.catches.filter(c => !c.isStolen).map(c => c.weight), 0) * 2;
+    
     total = Math.round(total * 100) / 100;
     document.getElementById('final-result').innerHTML = `<strong>Итог: ${total.toFixed(2)} кг</strong>`;
     document.getElementById('final-result').classList.remove('hidden');
