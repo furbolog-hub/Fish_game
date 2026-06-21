@@ -327,9 +327,21 @@ function renderHistory() {
                 li.innerText = `${icon} ${c.name} (Украдено: ${c.weight.toFixed(1)} кг)`;
             }
         } else {
-            li.className = isLegendary ? 'log-legendary' : (c.type === 'bonus' ? 'log-bonus' : (c.type === 'debuff' ? 'log-debuff' : ''));
+            const isTrashItem = trash.includes(c.name);
+            let className = '';
+            if (isLegendary) {
+                className = 'log-legendary';
+            } else if (isTrashItem) {
+                className = 'log-trash';
+            } else if (c.type === 'bonus') {
+                className = 'log-bonus';
+            } else if (c.type === 'debuff') {
+                className = 'log-debuff';
+            }
+            
             let chestIcon = c.isFromChest ? "📦 " : "";
             let bonusStr = c.bonusWeight > 0 ? ` <span style="color:#ff00ff">(+${c.bonusWeight.toFixed(1)}кг)</span>` : '';
+            li.className = className;
             li.innerHTML = `${chestIcon}${icon} ${weightRank} ${c.name} ${c.weight > 0 ? c.weight.toFixed(1)+' кг' : ''} ${bonusStr}`;
         }
         list.appendChild(li);
