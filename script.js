@@ -73,7 +73,6 @@ function startFishing() {
 
 function catchFish(isLarge) {
     let fish = fishes[Math.floor(Math.random() * fishes.length)];
-    // Округляем до 1 знака сразу, чтобы избежать погрешностей в сумме
     let weight = parseFloat((isLarge ? (6.5 + Math.random() * 3.4) : (0.1 + Math.random() * 9.8)).toFixed(1));
     logCatch(fish, weight, false);
     document.getElementById('message').innerText = `Поймал: ${fish} (${weight.toFixed(1)} кг)`;
@@ -81,7 +80,11 @@ function catchFish(isLarge) {
 
 function handleBonus() {
     let b = Math.random();
-    if (b < 0.25) { state.attempts++; alert("Катушка! +1 попытка"); }
+    if (b < 0.25) { 
+        state.attempts++; 
+        alert("Катушка! +1 попытка"); 
+        updateUI(); // Обновляем попытки сразу на экране
+    }
     else if (b < 0.5) { state.bonuses.fins = true; alert("Ласты! x2 улов"); }
     else if (b < 0.75) { state.bonuses.mask = true; alert("Маска! Следующая крупная"); }
     else { state.bonuses.aqua = true; alert("Акваланг! Бонус к макс. рыбе"); }
@@ -103,9 +106,7 @@ function endGame() {
         let max = Math.max(...state.catches.map(c => c.weight));
         total += max * 2;
     }
-    // Финальное округление результата
     total = Math.round(total * 100) / 100;
-    
     document.getElementById('final-result').innerHTML = `<strong>Итог: ${total.toFixed(2)} кг</strong><br>Время: ${now.toLocaleDateString()} ${now.toLocaleTimeString()}`;
     document.getElementById('final-result').classList.remove('hidden');
     localStorage.setItem('lastPlayDate', new Date().toDateString());
