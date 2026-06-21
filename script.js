@@ -305,7 +305,8 @@ function renderHistory() {
                 li.innerText = `${icon} ${c.name} (Вернуто: ${c.weight.toFixed(1)} кг)`;
             } else {
                 li.className = 'strikethrough';
-                li.innerText = `${icon} ${c.name} (Украдено)`;
+                // ТЕПЕРЬ ОТОБРАЖАЕМ ВЕС В СКОБКАХ:
+                li.innerText = `${icon} ${c.name} (Украдено: ${c.weight.toFixed(1)} кг)`;
             }
         } else {
             li.className = isLegendary ? 'log-legendary' : (c.type === 'bonus' ? 'log-bonus' : (c.type === 'debuff' ? 'log-debuff' : ''));
@@ -315,6 +316,7 @@ function renderHistory() {
         list.appendChild(li);
     });
 }
+
 
 function updateUI() {
     let currentSum = state.catches
