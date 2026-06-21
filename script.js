@@ -24,16 +24,26 @@ function getWeightIcon(weight) {
 
 document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('action-btn').addEventListener('click', startFishing);
-    // Прямая привязка клика для надежности
     document.getElementById('weather-icon').onclick = toggleWeatherHelp;
-    
     updateWeather();
     setInterval(updateWeather, 7200000);
     updateUI();
 });
 
 function toggleWeatherHelp() {
-    document.getElementById('weather-help').classList.toggle('hidden');
+    const el = document.getElementById('weather-help');
+    if (el.classList.contains('hidden')) {
+        const helpText = {
+            'sunny': '☀️ Солнечно: Шанс атаки чайки!',
+            'rain': '🌧️ Дождь: Появление утки (снижает вес).',
+            'calm': '🌊 Штиль: Высокий шанс бонусов.',
+            'storm': '🌪️ Шторм: Много хлама, дебаффы не работают.'
+        };
+        document.getElementById('help-text').innerText = helpText[state.weather];
+        el.classList.remove('hidden');
+    } else {
+        el.classList.add('hidden');
+    }
 }
 
 function updateWeather() {
