@@ -65,17 +65,31 @@ function startFishing() {
 
 function getBonusChance() { return (state.weather === 'calm') ? 0.3 : 0.1; }
 
+// Исправленная логика Утки и РАКа
 function catchFish(isLargeBonus) {
-    let fish = fishes[Math.floor(Math.random() * fishes.length)];
     let isDuck = state.activeDebuffs.some(d => d.includes("Утка"));
     let isRak = state.activeDebuffs.some(d => d.includes("Рак"));
     
-    let weight = isDuck ? parseFloat((Math.random() * 0.5).toFixed(1)) : 
-                 parseFloat(((isLargeBonus ? 8.0 : 0.1) + Math.random() * 9.8).toFixed(1));
+    let name, weight;
+
+    // Если утка: 50% шанс на хлам, 50% шанс на мелкую рыбу (до 0.5кг)
+    if (isDuck && Math.random() < 0.5) {
+        name = trash[Math.floor(Math.random() * trash.length)];
+        weight = 0;
+    } else {
+        name = fishes[Math.floor(Math.random() * fishes.length)];
+        if (isDuck) {
+            weight = parseFloat((Math.random() * 0.5).toFixed(1));
+        } else {
+            let minW = (isLargeBonus) ? 8.0 : 0.1;
+            weight = parseFloat((minW + Math.random() * (9.9 - minW)).toFixed(1));
+        }
+    }
+    
     if (isRak && weight > 2.5) weight = 2.5;
     
-    logCatch(fish, weight, false, 'catch');
-    document.getElementById('message').innerText = `Поймал: ${fish} (${weight.toFixed(1)} кг)`;
+    logCatch(name, weight, (weight === 0), 'catch');
+    document.getElementById('message').innerText = `Поймал: ${name} ${weight > 0 ? '(' + weight.toFixed(1) + ' кг)' : ''}`;
 }
 
 function handleBonus() {
