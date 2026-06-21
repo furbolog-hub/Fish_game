@@ -1,6 +1,17 @@
 let tg; try { tg = window.Telegram.WebApp; tg.ready(); tg.expand(); } catch (e) { tg = { HapticFeedback: { impactOccurred: () => {} } }; }
 
-let state = { attempts: 3, catches: [], bonuses: { mask: false, aquaCount: 0, filter: false, fins: false }, activeDebuffs: [], weather: 'sunny', luckyFisher: false, bonusCount: 0 };
+let state = { 
+    attempts: 3, 
+    catches: [], 
+    bonuses: { mask: false, aquaCount: 0, filter: false, fins: false }, 
+    activeDebuffs: [], 
+    weather: 'sunny', 
+    luckyFisher: false, 
+    bonusCount: 0,
+    leviathanBonus: 0,
+    hasMessageInBottle: false,
+    hasCompass: false
+};
 
 const fishes = [
     "Палтус", "Палия", "Белый амур", "Щука", "Семга", "Солнечник", "Подкаменщик", "Сом", "Окунь",
@@ -10,16 +21,14 @@ const fishes = [
 ];
 
 const trash = ["Старый башмак", "Спутанная леска", "Сломанный поплавок", "Ржавый крючок", "Половина блесны", "Размокший кусок бумаги"];
+const legendaryItems = ["Чешуя Левиафана", "Послание в бутылке", "Компас потерянных глубин", "Запечатанный сундук"];
 
 const icons = {
-    "Палтус": "🐟", "Палия": "🐠", "Белый амур": "🐟", "Щука": "🦈", 
-    "Семга": "🍣", "Солнечник": "☀️", "Подкаменщик": "🐡", "Сом": "〰️", "Окунь": "🐟",
-    "Плотва": "🐟", "Кижуч": "🐠", "Семотилус": "🐟", "Меланотения": "🌈", "Горчак": "🐟", 
-    "Жерех": "🐟", "Ринихт": "🐟", "Лосось": "🎣", "Корюшка": "🐟", "Судак": "🐟", 
-    "Арктический голец": "🧊", "Красноперка": "🎏", "Золотая форель": "✨", "Фундулюс": "🐟", 
-    "Озерный сиг": "🐟", "Карпиодес": "🐟",
-    "Старый башмак": "👞", "Спутанная леска": "🧶", "Сломанный поплавок": "🪡", 
-    "Ржавый крючок": "🪝", "Половина блесны": "🪙", "Размокший кусок бумаги": "📄"
+    "Палтус": "🐟", "Палия": "🐠", "Белый амур": "🐟", "Щука": "🦈", "Семга": "🍣", "Солнечник": "☀️", "Подкаменщик": "🐡", "Сом": "〰️", "Окунь": "🐟",
+    "Плотва": "🐟", "Кижуч": "🐠", "Семотилус": "🐟", "Меланотения": "🌈", "Горчак": "🐟", "Жерех": "🐟", "Ринихт": "🐟", "Лосось": "🎣", "Корюшка": "🐟", "Судак": "🐟", 
+    "Арктический голец": "🧊", "Красноперка": "🎏", "Золотая форель": "✨", "Фундулюс": "🐟", "Озерный сиг": "🐟", "Карпиодес": "🐟",
+    "Старый башмак": "👞", "Спутанная леска": "🧶", "Сломанный поплавок": "🪡", "Ржавый крючок": "🪝", "Половина блесны": "🪙", "Размокший кусок бумаги": "📄",
+    "Чешуя Левиафана": "🐉", "Послание в бутылке": "📜", "Компас потерянных глубин": "🧭", "Запечатанный сундук": "🧰"
 };
 
 function getWeightIcon(weight) {
@@ -47,11 +56,20 @@ function toggleWeatherHelp() {
             'calm': '🌊 Штиль: Высокий шанс бонусов.',
             'storm': '🌪️ Шторм: Много хлама, дебаффы не работают.'
         };
-        document.getElementById('help-text').innerText = helpText[state.weather];
+        let htmlContent = `<p>${helpText[state.weather]}</p>`;
+        if (state.hasCompass) {
+            htmlContent += `<button onclick="changeWeather()" style="width:100%; padding:10px; margin-top:10px;">Сменить погоду</button>`;
+        }
+        document.getElementById('help-text').innerHTML = htmlContent;
         el.classList.add('active');
     } else {
         el.classList.remove('active');
     }
+}
+
+function changeWeather() {
+    updateWeather();
+    document.getElementById('weather-help').classList.remove('active');
 }
 
 function updateWeather() {
@@ -66,19 +84,20 @@ function startFishing() {
 
     setTimeout(() => {
         let rand = Math.random();
-        let trashChance = (state.weather === 'storm') ? 0.7 : 0.4;
         
-        if (state.bonuses.mask) {
+        // Шанс на Легендарный предмет (1%)
+        if (rand < 0.01) {
+            handleLegendary();
+        } else if (state.bonuses.mask) {
             catchFish(true);
             state.bonuses.mask = false;
             state.attempts--;
         } else if (rand < getBonusChance()) {
             handleBonus();
-        } else if (rand < trashChance) {
+        } else if (rand < ((state.weather === 'storm') ? 0.7 : 0.4)) {
             let item = trash[Math.floor(Math.random() * trash.length)];
             logCatch(item, 0, true, 'catch');
-            document.getElementById('message').innerText = `Поймал: ${item}`;
-            if (state.bonuses.filter) { state.bonuses.filter = false; } else { state.attempts--; }
+            if (state.bonuses.filter) state.bonuses.filter = false; else state.attempts--;
         } else {
             catchFish(false);
             state.attempts--;
@@ -96,17 +115,25 @@ function startFishing() {
     }, 600);
 }
 
-function handleBonus() {
-    state.bonusCount++;
-    let b = Math.random();
-    if (b < 0.2) { alert("Катушка!"); logCatch("Бонус: Катушка (+1)", 0, true, 'bonus'); state.attempts++; }
-    else if (b < 0.4) { 
-        if (state.bonuses.fins) { alert("Ласты уже есть!"); logCatch("Бонус: Ласты (уже есть)", 0, true, 'bonus'); } 
-        else { state.bonuses.fins = true; alert("Ласты! x2 улов"); logCatch("Бонус: Ласты (x2)", 0, true, 'bonus'); }
+function handleLegendary() {
+    let item = legendaryItems[Math.floor(Math.random() * legendaryItems.length)];
+    logCatch(item, 0, false, 'legendary');
+    
+    if (item === "Чешуя Левиафана") {
+        state.attempts += 5;
+        state.leviathanBonus = 2.0;
+        alert("Легендарная находка: Чешуя Левиафана! (+5 попыток, бонус к весу)");
+    } else if (item === "Послание в бутылке") {
+        state.hasMessageInBottle = true;
+        alert("Легендарная находка: Послание в бутылке! (Секрет возврата веса)");
+    } else if (item === "Компас потерянных глубин") {
+        state.hasCompass = true;
+        alert("Легендарная находка: Компас потерянных глубин! (Управление погодой)");
+    } else if (item === "Запечатанный сундук") {
+        let count = 3 + Math.floor(Math.random() * 3);
+        for(let i = 0; i < count; i++) catchFish(false);
+        alert("Легендарная находка: Запечатанный сундук! (Внутри много рыбы)");
     }
-    else if (b < 0.6) { state.bonuses.mask = true; alert("Маска!"); showModal(); logCatch("Бонус: Маска", 0, true, 'bonus'); }
-    else if (b < 0.8) { state.bonuses.aquaCount++; alert("Акваланг! (+x3 к макс)"); logCatch("Бонус: Акваланг (x3)", 0, true, 'bonus'); }
-    else { state.bonuses.filter = true; alert("Фильтр! Защита от хлама"); logCatch("Бонус: Фильтр", 0, true, 'bonus'); }
 }
 
 function catchFish(isMasked) {
@@ -129,9 +156,28 @@ function catchFish(isMasked) {
         }
     }
     
-    if (isRak && weight > 2.5) weight = 2.5;
-    logCatch(name, weight, (weight === 0), 'catch');
+    // Применяем бонусы Левиафана
+    weight += state.leviathanBonus;
+    
+    // Применяем Рака
+    let bonusWeight = 0;
+    if (isRak) {
+        if (weight > 2.5) weight = 2.5;
+        if (state.hasMessageInBottle) { weight += 2.5; bonusWeight = 2.5; }
+    }
+    
+    logCatch(name, weight, (weight === 0), 'catch', false, bonusWeight);
     document.getElementById('message').innerText = `Поймал: ${name} ${weight > 0 ? '(' + weight.toFixed(1) + ' кг)' : ''}`;
+}
+
+function handleBonus() {
+    state.bonusCount++;
+    let b = Math.random();
+    if (b < 0.2) { alert("Катушка!"); logCatch("Бонус: Катушка (+1)", 0, true, 'bonus'); state.attempts++; }
+    else if (b < 0.4) { state.bonuses.fins = true; alert("Ласты! x2 улов"); logCatch("Бонус: Ласты (x2)", 0, true, 'bonus'); }
+    else if (b < 0.6) { state.bonuses.mask = true; alert("Маска!"); showModal(); logCatch("Бонус: Маска", 0, true, 'bonus'); }
+    else if (b < 0.8) { state.bonuses.aquaCount++; alert("Акваланг!"); logCatch("Бонус: Акваланг", 0, true, 'bonus'); }
+    else { state.bonuses.filter = true; alert("Фильтр!"); logCatch("Бонус: Фильтр", 0, true, 'bonus'); }
 }
 
 function getBonusChance() { return (state.weather === 'calm') ? 0.3 : 0.15; }
@@ -142,19 +188,18 @@ function triggerDebuff() {
     let debuffText = "";
     if (type < 0.33 && state.weather === 'calm') debuffText = "Дебаф: Рак (вес до 2.5кг)";
     else if (type < 0.66 && state.weather === 'sunny') {
-        let fish = state.catches.find(c => !c.isTrash && !c.isStolen);
+        let fish = state.catches.find(c => !c.isTrash && !c.isStolen && c.type === 'catch');
         if (fish) { fish.isStolen = true; debuffText = "Дебаф: Чайка стащила рыбу!"; }
     } else if (state.weather === 'rain') debuffText = "Дебаф: Утка (малый вес/хлам)";
     
     if (debuffText && !state.activeDebuffs.includes(debuffText)) {
         state.activeDebuffs.push(debuffText);
         logCatch(debuffText, 0, true, 'debuff');
-        document.getElementById('status-effects').innerHTML = state.activeDebuffs.map(d => `<div>${icons[d] || ''} ${d}</div>`).join('');
     }
 }
 
-function logCatch(name, weight, isTrash, type, isRemoved = false) {
-    state.catches.push({name, weight, isTrash, type, isStolen: false, isRemoved: isRemoved});
+function logCatch(name, weight, isTrash, type, isRemoved = false, bonusWeight = 0) {
+    state.catches.push({name, weight, isTrash, type, isStolen: false, isRemoved: isRemoved, bonusWeight: bonusWeight});
 }
 
 function renderHistory() {
@@ -170,18 +215,23 @@ function renderHistory() {
             li.style.textDecoration = "line-through";
             li.innerText = `${icon} ${c.name} (Удалено)`;
         } else if (c.isStolen) {
-            li.className = 'strikethrough';
-            li.innerText = `${icon} ${c.name} (Украдено)`;
+            if (state.hasMessageInBottle) {
+                li.innerText = `${icon} ${c.name} (Вернуто: ${c.weight.toFixed(1)} кг)`;
+            } else {
+                li.className = 'strikethrough';
+                li.innerText = `${icon} ${c.name} (Украдено)`;
+            }
         } else {
-            li.className = c.type === 'bonus' ? 'log-bonus' : (c.type === 'debuff' ? 'log-debuff' : '');
-            li.innerText = `${icon} ${weightRank} ${c.name} ${c.weight > 0 ? c.weight.toFixed(1)+' кг' : ''}`;
+            li.className = c.type === 'legendary' ? 'log-legendary' : (c.type === 'bonus' ? 'log-bonus' : (c.type === 'debuff' ? 'log-debuff' : ''));
+            let bonusStr = c.bonusWeight > 0 ? ` <span style="color:#800080">(+${c.bonusWeight.toFixed(1)}кг)</span>` : '';
+            li.innerHTML = `${icon} ${weightRank} ${c.name} ${c.weight > 0 ? c.weight.toFixed(1)+' кг' : ''} ${bonusStr}`;
         }
         list.appendChild(li);
     });
 }
 
 function updateUI() {
-    let currentSum = state.catches.filter(c => !c.isStolen && !c.isRemoved).reduce((s, c) => s + c.weight, 0);
+    let currentSum = state.catches.filter(c => !c.isRemoved && (c.type !== 'catch' || !c.isStolen || state.hasMessageInBottle)).reduce((s, c) => s + c.weight, 0);
     document.getElementById('score').innerText = `Улов: ${currentSum.toFixed(1)} кг | Попыток: ${state.attempts}`;
 }
 
@@ -213,7 +263,7 @@ function showModal() {
 }
 
 function endGame() {
-    let validCatches = state.catches.filter(c => !c.isStolen && !c.isRemoved && c.weight > 0);
+    let validCatches = state.catches.filter(c => !c.isRemoved && (c.type !== 'catch' || !c.isStolen || state.hasMessageInBottle) && c.weight > 0);
     let totalBase = validCatches.reduce((s, c) => s + c.weight, 0);
     let maxWeight = validCatches.length > 0 ? Math.max(...validCatches.map(c => c.weight)) : 0;
     let total = totalBase;
