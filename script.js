@@ -1,22 +1,33 @@
 let tg; try { tg = window.Telegram.WebApp; tg.ready(); tg.expand(); } catch (e) { tg = { HapticFeedback: { impactOccurred: () => {} } }; }
 
 let state = { attempts: 3, catches: [], bonuses: { mask: false, aquaCount: 0, filter: false, fins: false }, activeDebuffs: [], weather: 'sunny', luckyFisher: false, bonusCount: 0 };
-const fishes = ["Палтус", "Палия", "Белый амур", "Щука", "Семга", "Солнечник", "Подкаменщик", "Сом", "Окунь"];
+
+const fishes = [
+    "Палтус", "Палия", "Белый амур", "Щука", "Семга", "Солнечник", "Подкаменщик", "Сом", "Окунь",
+    "Плотва", "Кижуч", "Семотилус", "Меланотения", "Горчак", "Жерех", "Ринихт", "Лосось", 
+    "Корюшка", "Судак", "Арктический голец", "Красноперка", "Золотая форель", "Фундулюс", 
+    "Озерный сиг", "Карпиодес"
+];
+
 const trash = ["Старый башмак", "Спутанная леска", "Сломанный поплавок", "Ржавый крючок", "Половина блесны", "Размокший кусок бумаги"];
 
 const icons = {
     "Палтус": "🐟", "Палия": "🐠", "Белый амур": "🐟", "Щука": "🦈", 
     "Семга": "🍣", "Солнечник": "☀️", "Подкаменщик": "🐡", "Сом": "〰️", "Окунь": "🐟",
+    "Плотва": "🐟", "Кижуч": "🐠", "Семотилус": "🐟", "Меланотения": "🌈", "Горчак": "🐟", 
+    "Жерех": "🐟", "Ринихт": "🐟", "Лосось": "🎣", "Корюшка": "🐟", "Судак": "🐟", 
+    "Арктический голец": "🧊", "Красноперка": "🎏", "Золотая форель": "✨", "Фундулюс": "🐟", 
+    "Озерный сиг": "🐟", "Карпиодес": "🐟",
     "Старый башмак": "👞", "Спутанная леска": "🧶", "Сломанный поплавок": "🪡", 
     "Ржавый крючок": "🪝", "Половина блесны": "🪙", "Размокший кусок бумаги": "📄"
 };
 
-// Функция для определения медали по весу
-function getMedalEmoji(weight) {
-    if (weight <= 4.5) return "🥉";
-    if (weight <= 7.5) return "🥈";
-    if (weight <= 9.9) return "🥇";
-    return "🏆";
+function getWeightIcon(weight) {
+    if (weight === 0) return "";
+    if (weight >= 10.0) return "🏆";
+    if (weight >= 7.6) return "🥇";
+    if (weight >= 4.6) return "🥈";
+    return "🥉";
 }
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -120,10 +131,7 @@ function catchFish(isMasked) {
     
     if (isRak && weight > 2.5) weight = 2.5;
     logCatch(name, weight, (weight === 0), 'catch');
-    
-    // Добавлен вывод медали
-    let medal = (weight > 0) ? getMedalEmoji(weight) : "";
-    document.getElementById('message').innerText = `Поймал: ${name} ${weight > 0 ? '(' + weight.toFixed(1) + ' кг) ' + medal : ''}`;
+    document.getElementById('message').innerText = `Поймал: ${name} ${weight > 0 ? '(' + weight.toFixed(1) + ' кг)' : ''}`;
 }
 
 function getBonusChance() { return (state.weather === 'calm') ? 0.3 : 0.15; }
@@ -155,12 +163,19 @@ function renderHistory() {
     state.catches.forEach(c => {
         const li = document.createElement('li');
         const icon = icons[c.name] || "🎣";
-        if (c.isRemoved) li.style.color = "#ffc107";
-        else if (c.isStolen) li.className = 'strikethrough';
-        else li.className = c.type === 'bonus' ? 'log-bonus' : (c.type === 'debuff' ? 'log-debuff' : '');
+        const weightRank = getWeightIcon(c.weight);
         
-        let medal = (c.weight > 0 && !c.isTrash) ? getMedalEmoji(c.weight) : "";
-        li.innerText = `${icon} ${c.name} ${c.weight > 0 ? c.weight.toFixed(1)+' кг ' + medal : ''}`;
+        if (c.isRemoved) {
+            li.style.color = "#ffc107";
+            li.style.textDecoration = "line-through";
+            li.innerText = `${icon} ${c.name} (Удалено)`;
+        } else if (c.isStolen) {
+            li.className = 'strikethrough';
+            li.innerText = `${icon} ${c.name} (Украдено)`;
+        } else {
+            li.className = c.type === 'bonus' ? 'log-bonus' : (c.type === 'debuff' ? 'log-debuff' : '');
+            li.innerText = `${icon} ${weightRank} ${c.name} ${c.weight > 0 ? c.weight.toFixed(1)+' кг' : ''}`;
+        }
         list.appendChild(li);
     });
 }
@@ -213,14 +228,6 @@ function endGame() {
     if (validCatches.length > 0 && validCatches.every(c => c.weight < 2.5)) achs.push("🐱 Аквариумный мастер");
     if (state.catches.length > 0 && state.catches.every(c => c.isTrash || c.isStolen)) achs.push("🗑️ Повелитель башмаков");
 
-    // Получаем текущую дату и время
-    const now = new Date();
-    const dateStr = now.toLocaleDateString() + ' ' + now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-
-    document.getElementById('final-result').innerHTML = `
-        <div class="timestamp">${dateStr}</div>
-        <strong>Итог: ${total.toFixed(2)} кг</strong>
-        <div style="margin-top:10px;">${achs.join('<br>')}</div>
-    `;
+    document.getElementById('final-result').innerHTML = `<strong>Итог: ${total.toFixed(2)} кг</strong><div style="margin-top:10px;">${achs.join('<br>')}</div>`;
     document.getElementById('final-result').classList.remove('hidden');
 }
