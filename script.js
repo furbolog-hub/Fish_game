@@ -18,30 +18,6 @@ const sounds = {
     }
 }
 
-function openHandbook() {
-const modal = document.gettlementByld (modal);
-const list = document.getElementByld(modal-fish-list');
-list.innerHTML = *<h3>Справочник</h3>;
-// Генерируем контент из объекта gameHandbook
-for (let key in gameHandbook) {
-let section = gameHandbook[key];
-list.innerHTML += <h4>${section.title}</h4>;
-if (Array.isArray(section.items)) {
-section.items.forEach(item => list.innerHTML += *<p
-style="font-size:12px;">${item}</p>*);
-} else {
-for (let sub in section.items) {
-list.innerHTML += *<p stylè="font-size:12px;">
-<b>${sub}:</b> ${section.items[sub]}</p>;
-｝
-const closeBtn = document.createElement('button');
-closeBtn.className = 'fish-btn';
-closeBtn.innerText = "Закрыть";
-closeBtn.onclick = () => modal.classList.add('hidden');
-list.appendChild(closeBtn);
-modal.classList.remove('hidden');
-}
-
     // --- ИГРОВОЙ КОД ---
 
 let tg;
@@ -112,7 +88,6 @@ function getWeightIcon(weight) {
     if (weight >= 4.6) return "🥈";
     return "🥉";
 }
-
 document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('action-btn').addEventListener('click', startFishing);
     document.getElementById('weather-icon').onclick = toggleWeatherHelp;
@@ -161,6 +136,30 @@ function updateWeather() {
         'storm': '🌪️',
         'fog': '🌫️'
     }[state.weather];
+}
+
+function openHandbook() {
+const modal = document.gettlementByld (modal);
+const list = document.getElementByld(modal-fish-list');
+list.innerHTML = *<h3>Справочник</h3>;
+// Генерируем контент из объекта gameHandbook
+for (let key in gameHandbook) {
+let section = gameHandbook[key];
+list.innerHTML += <h4>${section.title}</h4>;
+if (Array.isArray(section.items)) {
+section.items.forEach(item => list.innerHTML += *<p
+style="font-size:12px;">${item}</p>*);
+} else {
+for (let sub in section.items) {
+list.innerHTML += *<p stylè="font-size:12px;">
+<b>${sub}:</b> ${section.items[sub]}</p>;
+｝
+const closeBtn = document.createElement('button');
+closeBtn.className = 'fish-btn';
+closeBtn.innerText = "Закрыть";
+closeBtn.onclick = () => modal.classList.add('hidden');
+list.appendChild(closeBtn);
+modal.classList.remove('hidden');
 }
 
 function startFishing() {
