@@ -460,7 +460,7 @@ function showModal() {
 }
 
 function endGame() {
-    playSound('achievement');
+
     let validCatches = state.catches.filter(c => !c.isRemoved && (c.type !== 'catch' || !c.isStolen || state.hasMessageInBottle) && c.weight > 0);
     let totalBase = validCatches.reduce((s, c) => s + c.weight, 0);
     let maxWeight = validCatches.length > 0 ? Math.max(...validCatches.map(c => c.weight)) : 0;
@@ -479,6 +479,11 @@ function endGame() {
     if (validCatches.length > 0 && validCatches.every(c => c.weight >= 8.5)) achs.push("🦈 Акула бизнеса");
     if (validCatches.length > 0 && validCatches.every(c => c.weight < 2.5)) achs.push("🐱 Аквариумный мастер");
     if (state.catches.length > 0 && state.catches.every(c => c.isTrash || c.isStolen)) achs.push("🗑️ Повелитель башмаков");
+
+    // ДОБАВЛЯЕМ ПРОВЕРКУ ЗДЕСЬ:
+    if (achs.length > 0) {
+        playSound('achievement');
+    }
 
     const now = new Date();
     const dateStr = now.toLocaleDateString('ru-RU');
