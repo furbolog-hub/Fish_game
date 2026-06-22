@@ -7,40 +7,41 @@
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <link rel="stylesheet" href="style.css?v=8">
 </head>
+<body>
 
-    <button id="help-btn" onclick="toggleHelp()" style="position: fixed; top: 10px; right: 10px; z-index: 1000;">❓</button>
+    <!-- Теперь кнопка внутри body, она появится -->
+    <button id="help-btn" onclick="toggleHelp()" style="position: fixed; top: 10px; right: 10px; z-index: 1000; cursor: pointer; font-size: 20px;">❓</button>
 
-<div id="help-modal" style="display:none; position:fixed; top:5%; left:5%; width:90%; height:90%; background:rgba(0,0,0,0.95); color:white; padding:20px; border-radius:15px; overflow-y:auto; z-index: 2000; font-family: sans-serif;">
-    <h2 style="text-align:center; color: #ffcc00;">Энциклопедия рыбака</h2>
-    
-    <h3>⚙️ Механика</h3>
-    <p>Каждый заброс — это шанс на улов. Хлам (башмаки, бумаги) не дает веса, пока не попадет в "Глубоководное нечто".</p>
-    
-    <h3>🌟 Бонусы</h3>
-    <ul>
-        <li><b>Ласты (x2):</b> Удваивают итоговый вес.</li>
-        <li><b>Аква-бонусы:</b> Чем больше частей снаряжения, тем выше множитель.</li>
-        <li><b>Маска:</b> Поиск рыбы от 6,5 до 9,9 кг.</li>
-    </ul>
+    <!-- Окно справочника -->
+    <div id="help-modal" style="display:none; position:fixed; top:5%; left:5%; width:90%; height:90%; background:rgba(0,0,0,0.95); color:white; padding:20px; border-radius:15px; overflow-y:auto; z-index: 2000; font-family: sans-serif;">
+        <h2 style="text-align:center; color: #ffcc00;">Энциклопедия рыбака</h2>
+        
+        <h3>⚙️ Механика</h3>
+        <p>Каждый заброс — это шанс на улов. Хлам (башмаки, бумаги) не дает веса, пока не попадет в "Глубоководное нечто".</p>
+        
+        <h3>🌟 Бонусы</h3>
+        <ul>
+            <li><b>Ласты (x2):</b> Удваивают итоговый вес.</li>
+            <li><b>Аква-бонусы:</b> Чем больше частей снаряжения, тем выше множитель.</li>
+            <li><b>Маска:</b> Поиск рыбы от 6,5 до 9,9 кг.</li>
+        </ul>
 
-    <h3>⚠️ Дебафы</h3>
-    <ul>
-        <li><b>Чайка:</b> Крадет рыбу с крючка.</li>
-        <li><b>Рак:</b> Гнет крючок (повреждает снасть).</li>
-        <li><b>Утка:</b> Снижает эффективность заброса.</li>
-    </ul>
+        <h3>⚠️ Дебафы</h3>
+        <ul>
+            <li><b>Чайка:</b> Крадет рыбу с крючка.</li>
+            <li><b>Рак:</b> Гнет крючок (повреждает снасть).</li>
+            <li><b>Утка:</b> Снижает эффективность заброса.</li>
+        </ul>
 
-    <h3>💎 Артефакты</h3>
-    <p><b>Глубоководное нечто:</b> Превращает весь мусор в одну редкую рыбу (20–30 кг).</p>
-    <p><b>Игральная кость:</b> Дает доп. забросы или множитель веса.</p>
+        <h3>💎 Артефакты</h3>
+        <p><b>Глубоководное нечто:</b> Превращает весь мусор в одну редкую рыбу (20–30 кг).</p>
+        <p><b>Игральная кость:</b> Дает доп. забросы или множитель веса.</p>
 
-    <h3>🏆 Титулы</h3>
-    <p>🏆 <b>Удачливый рыбак</b> | ✨ <b>Любимчик Фортуны</b> | 🦈 <b>Акула бизнеса</b> (от 10 кг) | 🐱 <b>Аквариумный мастер</b> (до 2,5 кг) | 🗑️ <b>Повелитель башмаков</b> (только хлам).</p>
+        <h3>🏆 Титулы</h3>
+        <p>🏆 <b>Удачливый рыбак</b> | ✨ <b>Любимчик Фортуны</b> | 🦈 <b>Акула бизнеса</b> (от 10 кг) | 🐱 <b>Аквариумный мастер</b> (до 2,5 кг) | 🗑️ <b>Повелитель башмаков</b> (только хлам).</p>
 
-    <button onclick="toggleHelp()" style="display:block; margin: 20px auto; padding: 10px 20px;">Закрыть</button>
-</div>
-
-    <body>
+        <button onclick="toggleHelp()" style="display:block; margin: 20px auto; padding: 10px 20px; cursor: pointer;">Закрыть</button>
+    </div>
 
     <div id="game-container">
         <div id="weather-icon">☀️</div>
