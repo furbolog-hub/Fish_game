@@ -396,3 +396,10 @@ function endGame() {
     
     document.getElementById('final-result').classList.remove('hidden');
 }
+function openGuide() {
+    document.getElementById('guide-modal').classList.remove('hidden');
+}
+
+function closeGuide() {
+    document.getElementById('guide-modal').classList.add('hidden');
+}
