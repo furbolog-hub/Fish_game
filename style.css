@@ -1,124 +1,80 @@
-/* Основные стили страницы */
+/* style.css - без сжатий и лишних ограничений */
+
 body {
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-    padding: 10px;
-    background-color: #f0f2f5;
     margin: 0;
-    display: flex;
-    justify-content: center;
+    padding: 0;
+    font-family: sans-serif;
+    background: #f0f0f0;
 }
 
-/* Контейнер игры */
 #game-container {
-    background: #ffffff;
     padding: 20px;
-    border-radius: 16px;
-    width: 100%;
-    max-width: 400px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-    box-sizing: border-box;
 }
 
-/* Скрытие элементов */
 .hidden {
     display: none !important;
 }
 
-/* Иконка погоды */
 #weather-icon {
-    font-size: 2.5rem;
+    font-size: 2em;
     cursor: pointer;
     display: block;
     text-align: center;
-    margin-bottom: 15px;
-    transition: transform 0.2s;
+    margin-bottom: 10px;
 }
 
-#weather-icon:active {
-    transform: scale(0.9);
-}
-
-/* Стили кнопок */
 button {
     width: 100%;
-    padding: 14px;
-    margin: 8px 0;
-    border-radius: 10px;
+    padding: 15px;
+    margin: 5px 0;
+    border-radius: 8px;
     border: none;
-    background-color: #0088cc;
+    background: #007bff;
     color: white;
-    font-size: 16px;
-    font-weight: 600;
+    font-weight: bold;
     cursor: pointer;
-    transition: background-color 0.2s;
+    font-size: 16px;
 }
 
-button:active {
-    background-color: #006699;
-}
-
-button:disabled {
-    background-color: #cccccc;
-    cursor: not-allowed;
-}
-
-/* Модальное окно и справочник */
+/* Модальные окна теперь занимают всю ширину без принудительного сужения */
 #modal, #weather-help {
     position: fixed;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-    background: rgba(0, 0, 0, 0.6);
+    background: rgba(0, 0, 0, 0.7);
     display: flex;
     justify-content: center;
     align-items: center;
-    z-index: 1000;
-    padding: 20px;
-    box-sizing: border-box;
+    z-index: 9999;
 }
 
-#modal-content, #weather-help .help-content {
+#modal-content, .help-content {
     background: white;
     padding: 20px;
-    border-radius: 15px;
-    width: 100%;
-    max-width: 350px;
-    text-align: center;
+    border-radius: 10px;
+    width: 90%; /* Занимает 90% экрана, не сжимаясь до узкой полоски */
 }
 
 /* История улова */
 #catch-history {
     margin-top: 20px;
-    max-height: 200px;
-    overflow-y: auto;
-    border-top: 1px solid #eee;
-    padding-top: 10px;
 }
 
 ul {
-    list-style: none;
-    padding: 0;
-    margin: 0;
+    padding-left: 20px;
 }
 
-li {
-    padding: 5px 0;
-    border-bottom: 1px solid #f9f9f9;
-}
+.strikethrough { text-decoration: line-through; color: gray; }
+.log-unique { color: purple; font-weight: bold; }
+.log-legendary { color: gold; font-weight: bold; }
+.log-bonus { color: green; }
+.log-debuff { color: red; }
 
-/* Классы для текста и достижений */
-.strikethrough { text-decoration: line-through; color: #888; }
-.log-unique { color: #800080; font-weight: bold; }
-.log-legendary { color: #d4af37; font-weight: bold; }
-.log-bonus { color: #28a745; }
-.log-debuff { color: #dc3545; }
-
-/* Финальный результат */
 #final-result {
     margin-top: 20px;
-    padding: 15px;
-    background: #f8f9fa;
-    border-radius: 10px;
-    border: 2px dashed #0088cc;
+    padding: 10px;
+    background: rgba(128, 128, 128, 0.1);
+    border-radius: 5px;
 }
