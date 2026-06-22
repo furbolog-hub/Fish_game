@@ -99,6 +99,45 @@ updateWeather();
  updateUI();  
 });  
   
+function toggleHandbook() {
+    const modal = document.getElementById('handbook-modal');
+    if (modal.classList.contains('hidden')) {
+        renderHandbook();
+        modal.classList.remove('hidden');
+    } else {
+        modal.classList.add('hidden');
+    }
+}
+
+function renderHandbook() {
+    const container = document.getElementById('handbook-data');
+    if (container.innerHTML !== "") return;
+
+    if (typeof gameHandbook === 'undefined') {
+        container.innerHTML = "Ошибка: Данные справочника не найдены.";
+        return;
+    }
+
+    let html = "<h1>Справочник рыбака</h1>";
+    
+    for (let section in gameHandbook) {
+        const data = gameHandbook[section];
+        html += `<h2>${data.title}</h2><ul>`;
+        
+        if (Array.isArray(data.items)) {
+            data.items.forEach(item => {
+                html += `<li>${item}</li>`;
+            });
+        } else {
+            for (let key in data.items) {
+                html += `<li><strong>${key}:</strong> ${data.items[key]}</li>`;
+            }
+        }
+        html += "</ul>";
+    }
+    container.innerHTML = html;
+}
+
 function toggleWeatherHelp() {  
  const el = document.getElementById('weather-help');  
  if (!el.classList.contains('active')) {  
@@ -120,46 +159,7 @@ document.getElementById('help-text').innerHTML = htmlContent;
  } else {  
  el.classList.remove('active');  
  }  
-}
-
-function toggleHandbook() {
-    const modal = document.getElementById('handbook-modal');
-    if (modal.classList.contains('hidden')) {
-        renderHandbook();
-        modal.classList.remove('hidden');
-    } else {
-        modal.classList.add('hidden');
-    }
-}
-
-function renderHandbook() {
-    const container = document.getElementById('handbook-data');
-    if (container.innerHTML !== "") return;
-
-    let html = "<h1>Справочник рыбака</h1>";
-    
-    if (typeof gameHandbook === 'undefined') {
-        container.innerHTML = "Ошибка: Данные справочника не загружены.";
-        return;
-    }
-
-    for (let section in gameHandbook) {
-        const data = gameHandbook[section];
-        html += `<h2>${data.title}</h2><ul>`;
-        
-        if (Array.isArray(data.items)) {
-            data.items.forEach(item => {
-                html += `<li>${item}</li>`;
-            });
-        } else {
-            for (let key in data.items) {
-                html += `<li><strong>${key}:</strong> ${data.items[key]}</li>`;
-            }
-        }
-        html += "</ul>";
-    }
-    container.innerHTML = html;
-}
+}  
   
 function changeWeather() {  
  updateWeather();  
