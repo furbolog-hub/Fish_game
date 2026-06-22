@@ -2,29 +2,34 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <title>Рыбалка</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Fish_gamebot</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div id="game-container">
-        <div id="header">
-            <span id="weather-icon">☀️</span>
-            <div id="score">Улов: 0.0 кг | Попыток: 3</div>
-        </div>
 
+    <div id="game-container">
+        <span id="weather-icon">☀️</span>
+        
+        <div id="score">Улов: 0.0 кг | Попыток: 3</div>
+        
         <button id="guide-btn" onclick="openGuide()">📖 Справочник</button>
 
-        <div id="message">Начни рыбалку!</div>
         <button id="action-btn">Забросить удочку</button>
+        
+        <div id="message">Начни рыбалку!</div>
 
-        <ul id="history-list"></ul>
+        <div id="catch-history">
+            <h3>История улова:</h3>
+            <ul id="history-list"></ul>
+        </div>
 
         <div id="final-result" class="hidden"></div>
     </div>
 
     <div id="modal" class="hidden">
         <div id="modal-content">
-            <h3>Удалить предмет?</h3>
+            <h3>Выберите предмет для удаления:</h3>
             <div id="modal-fish-list"></div>
         </div>
     </div>
@@ -39,7 +44,7 @@
     </div>
 
     <div id="weather-help" class="hidden">
-        <div id="help-text"></div>
+        <div id="help-text" class="help-content"></div>
     </div>
 
     <script src="script.js"></script>
