@@ -49,16 +49,16 @@ background: #555;
 
 /* Кнопка справочника */
 .secondary-btn {
-    width: 100%;
-    padding: 15px;
-    margin-bottom: 15px;
-    background: #4a4a4a;
-    color: #fff;
-    border: none;
-    border-radius: 12px;
-    font-size: 16px;
-    font-weight: bold;
-    cursor: pointer;
+ width: 100%;
+ padding: 15px;
+ margin-bottom: 15px;
+ background: #4a4a4a;
+ color: #fff;
+ border: none;
+ border-radius: 12px;
+ font-size: 16px;
+ font-weight: bold;
+ cursor: pointer;
 }
 
 /* Счётчик улова */
@@ -129,25 +129,34 @@ border-radius: 15px;
 
 /* Специфические стили для контента справочника */
 .handbook-content {
-    max-height: 80vh;
-    overflow-y: auto;
-    background: #f9f9f9;
+ max-height: 80vh;
+ overflow-y: auto;
+ background: #f9f9f9;
+ color: #000;
+}
+
+#handbook-data h1 {
+ color: #2481cc;
+ font-size: 22px;
+ text-align: center;
 }
 
 #handbook-data h2 {
-    color: #2481cc;
-    border-bottom: 2px solid #2481cc;
-    margin-top: 20px;
+ color: #2481cc;
+ border-bottom: 2px solid #2481cc;
+ margin-top: 20px;
+ font-size: 18px;
 }
 
 #handbook-data ul {
-    padding-left: 20px;
-    text-align: left;
+ padding-left: 20px;
+ text-align: left;
 }
 
 #handbook-data li {
-    margin-bottom: 8px;
-    line-height: 1.4;
+ margin-bottom: 8px;
+ line-height: 1.4;
+ color: #333;
 }
 
 .fish-btn { 
@@ -231,5 +240,3 @@ h1, h3 {
  #action-btn { padding: 15px; }
  #score { font-size: 20px; }
 }
-
-/* Добавочные пустые строки, чтобы сохранить объем файла */
