@@ -2,8 +2,8 @@
 const baseUrl = 'https://raw.githubusercontent.com/furbolog-hub/Fish_game/main/sounds/'; 
 
 const sounds = { 
-    throw:
-``` new Audio(baseUrl + 'throw.ogg'), 
+    throw: new Audio(baseUrl + '
+```throw.ogg'), 
     bonus: new Audio(baseUrl + 'bonus.ogg'), 
     debuff: new Audio(baseUrl + 'debuff.ogg'), 
     successfull: new Audio(baseUrl + 'successful.ogg'), 
@@ -66,9 +66,13 @@ function getWeightIcon(weight) {
 } 
 
 document.addEventListener('DOMContentLoaded', () => { 
-    document.getElementById('action-btn').addEventListener('click', startFishing); 
-    document.getElementById('handbook-btn').addEventListener('click', toggleHandbook);
-    document.getElementById('weather-icon').onclick = toggleWeatherHelp; 
+    const actionBtn = document.getElementById('action-btn');
+    const handbookBtn = document.getElementById('handbook-btn');
+    const weatherIcon = document.getElementById('weather-icon');
+
+    if (actionBtn) actionBtn.addEventListener('click', startFishing); 
+    if (handbookBtn) handbookBtn.addEventListener('click', toggleHandbook);
+    if (weatherIcon) weatherIcon.onclick = toggleWeatherHelp; 
 
     updateWeather(); 
     setInterval(updateWeather, 7200000); 
@@ -77,17 +81,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
 function toggleHandbook() {
     const modal = document.getElementById('handbook-modal');
-    if (modal.classList.contains('hidden')) {
-        renderHandbook();
-        modal.classList.remove('hidden');
-    } else {
-        modal.classList.add('hidden');
-    }
+    if (modal) modal.classList.toggle('hidden', !modal.classList.contains('hidden'));
+    renderHandbook();
 }
 
 function renderHandbook() {
     const container = document.getElementById('handbook-data');
-    if (container.innerHTML !== "") return;
+    if (!container || container.innerHTML !== "") return;
     if (typeof gameHandbook === 'undefined') {
         container.innerHTML = "Ошибка: Данные справочника не найдены.";
         return;
@@ -108,6 +108,7 @@ function renderHandbook() {
 
 function toggleWeatherHelp() { 
     const el = document.getElementById('weather-help'); 
+    if (!el) return;
     if (!el.classList.contains('active')) { 
         const helpText = { 
             'sunny': '☀️ Солнечно: Шанс атаки чайки!', 
@@ -122,7 +123,7 @@ function toggleWeatherHelp() {
 
         let htmlContent = `<p>${helpText[state.weather]}</p>`; 
         if (state.hasCompass) { 
-            htmlContent += `<button onclick="changeWeather()" style="width:100%; padding:10px; margin-top:10px;">Сменить погоду</button>`; 
+            htmlContent += `<button onclick="changeWeather()" style="width:100%; padding:10px; margin-top:10px; border-radius:10px;">Сменить погоду</button>`; 
         } 
 
         document.getElementById('help-text').innerHTML = htmlContent; 
@@ -134,29 +135,34 @@ function toggleWeatherHelp() {
 
 function changeWeather() { 
     updateWeather(); 
-    document.getElementById('weather-help').classList.remove('active'); 
+    const el = document.getElementById('weather-help');
+    if (el) el.classList.remove('active'); 
 } 
 
 function updateWeather() { 
     const weathers = ['sunny', 'rain', 'calm', 'storm', 'fog', 'eclipse', 'golden', 'thunder']; 
     state.weather = weathers[Math.floor(Math.random() * weathers.length)]; 
 
-    document.getElementById('weather-icon').innerText = { 
-        'sunny': '☀️', 'rain': '🌧️', 'calm': '🌊', 'storm': '🌪️', 'fog': '🌫️', 'eclipse': '🌑', 'golden': '✨', 'thunder': '⚡' 
-    }[state.weather]; 
+    const iconEl = document.getElementById('weather-icon');
+    if (iconEl) {
+        iconEl.innerText = { 
+            'sunny': '☀️', 'rain': '🌧️', 'calm': '🌊', 'storm': '🌪️', 'fog': '🌫️', 'eclipse': '🌑', 'golden': '✨', 'thunder': '⚡' 
+        }[state.weather]; 
+    }
 } 
 
 function startFishing() { 
     playSound('throw'); 
     if (state.attempts <= 0) return; 
 
-    document.getElementById('action-btn').disabled = true; 
+    const actionBtn = document.getElementById('action-btn');
+    if (actionBtn) actionBtn.disabled = true; 
 
     if (state.weather === 'thunder' && Math.random() < 0.2 && state.bonuses.aquaCount === 0) {
         alert("⚡ Молния ударила в воду! Попытка потеряна.");
         state.attempts--;
         updateUI();
-        document.getElementById('action-btn').disabled = false;
+        if (actionBtn) actionBtn.disabled = false;
         return;
     }
 
@@ -196,10 +202,11 @@ function startFishing() {
         updateUI(); 
         renderHistory(); 
 
-        if (state.attempts === 0 && document.getElementById('modal').classList.contains('hidden')) { 
+        const modal = document.getElementById('modal');
+        if (state.attempts === 0 && (!modal || modal.classList.contains('hidden'))) { 
             endGame(); 
-        } else { 
-            document.getElementById('action-btn').disabled = false; 
+        } else if (actionBtn) { 
+            actionBtn.disabled = false; 
         } 
     }, 600); 
 } 
@@ -218,7 +225,7 @@ function handleUnique() {
                 count++;
             } 
         }); 
-        state.transmutedCount = count;
+        state.transmutedCount += count;
         alert(`🐙 Глубоководное нечто превратило ${count} ед. хлама в гигантов!`); 
     } else { 
         showDiceModal(); 
@@ -228,6 +235,8 @@ function handleUnique() {
 function showDiceModal() { 
     const modal = document.getElementById('modal'); 
     const list = document.getElementById('modal-fish-list'); 
+    if (!modal || !list) return;
+
     list.innerHTML = '<h3>Игральная кость</h3>'; 
     const rollBtn = document.createElement('button'); 
     rollBtn.className = 'fish-btn'; 
@@ -250,8 +259,10 @@ function showDiceModal() {
 } 
 
 function closeDice() { 
-    document.getElementById('modal').classList.add('hidden'); 
-    document.getElementById('action-btn').disabled = false; 
+    const modal = document.getElementById('modal');
+    if (modal) modal.classList.add('hidden'); 
+    const actionBtn = document.getElementById('action-btn');
+    if (actionBtn) actionBtn.disabled = false; 
     updateUI(); 
 } 
 
@@ -287,7 +298,8 @@ function catchFish(isMasked, isFromChest = false) {
     weight += state.leviathanBonus; 
     if (weight >= 10.0) playSound('successfull'); 
     logCatch(name, weight, (weight === 0), 'catch', false, 0, isFromChest); 
-    document.getElementById('message').innerText = `Поймал: ${name} (${weight.toFixed(1)} кг)`; 
+    const msg = document.getElementById('message');
+    if (msg) msg.innerText = `Поймал: ${name} (${weight.toFixed(1)} кг)`; 
 } 
 
 function handleBonus() { 
@@ -322,6 +334,7 @@ function logCatch(name, weight, isTrash, type, isRemoved = false, bonusWeight = 
 
 function renderHistory() { 
     const list = document.getElementById('history-list'); 
+    if (!list) return;
     list.innerHTML = ''; 
     state.catches.forEach(c => { 
         const li = document.createElement('li'); 
@@ -344,24 +357,40 @@ function updateUI() {
     let currentSum = state.catches 
     .filter(c => !c.isRemoved && (c.type !== 'catch' || !c.isStolen || state.hasMessageInBottle)) 
     .reduce((s, c) => s + c.weight, 0); 
-    document.getElementById('score').innerText = `Улов: ${(currentSum * state.diceMultiplier).toFixed(1)} кг | Попыток: ${state.attempts}`; 
+    const scoreEl = document.getElementById('score');
+    if (scoreEl) scoreEl.innerText = `Улов: ${(currentSum * state.diceMultiplier).toFixed(1)} кг | Попыток: ${state.attempts}`; 
 } 
 
 function showModal() { 
-    document.getElementById('action-btn').disabled = true; 
+    const actionBtn = document.getElementById('action-btn');
+    if (actionBtn) actionBtn.disabled = true; 
     const list = document.getElementById('modal-fish-list'); 
+    const modal = document.getElementById('modal');
+    if (!list || !modal) return;
+
     list.innerHTML = ''; 
     const cancelBtn = document.createElement('button'); 
     cancelBtn.className = 'fish-btn'; cancelBtn.innerText = "Ничего не удалять"; 
-    cancelBtn.onclick = () => { document.getElementById('modal').classList.add('hidden'); if (state.attempts === 0) endGame(); else document.getElementById('action-btn').disabled = false; }; 
+    cancelBtn.onclick = () => { 
+        modal.classList.add('hidden'); 
+        if (state.attempts === 0) endGame(); 
+        else if (actionBtn) actionBtn.disabled = false; 
+    }; 
     list.appendChild(cancelBtn); 
-    state.catches.filter(c => !c.isStolen && !c.isRemoved).forEach((c) => { 
+    state.catches.filter(c => !c.isStolen && !c.isRemoved && c.type === 'catch').forEach((c) => { 
         const btn = document.createElement('button'); btn.className = 'fish-btn'; 
-        btn.innerText = `Удалить: ${c.weight > 0 ? c.name + ' (' + c.weight.toFixed(1) + ' кг)' : c.name}`; 
-        btn.onclick = () => { c.isRemoved = true; document.getElementById('modal').classList.add('hidden'); updateUI(); renderHistory(); if (state.attempts === 0) endGame(); else document.getElementById('action-btn').disabled = false; }; 
+        btn.innerText = `Удалить: ${c.name} (${c.weight.toFixed(1)} кг)`; 
+        btn.onclick = () => { 
+            c.isRemoved = true; 
+            modal.classList.add('hidden'); 
+            updateUI(); 
+            renderHistory(); 
+            if (state.attempts === 0) endGame(); 
+            else if (actionBtn) actionBtn.disabled = false; 
+        }; 
         list.appendChild(btn); 
     }); 
-    document.getElementById('modal').classList.remove('hidden'); 
+    modal.classList.remove('hidden'); 
 } 
 
 function endGame() { 
@@ -388,10 +417,13 @@ function endGame() {
     const dStr = now.toLocaleDateString('ru-RU'); 
     const tStr = now.toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' }); 
 
-    document.getElementById('final-result').innerHTML = ` 
-        <strong>Итог: ${total.toFixed(2)} кг</strong> 
-        <div style="margin-top:10px;">${achs.join('<br>')}</div> 
-        <div style="margin-top: 10px; padding: 5px; background: rgba(128, 128, 128, 0.2); border-radius: 5px; color: #fff; font-weight: bold;">
-        ${dStr} | ${tStr}</div>`; 
-    document.getElementById('final-result').classList.remove('hidden'); 
+    const finalEl = document.getElementById('final-result');
+    if (finalEl) {
+        finalEl.innerHTML = ` 
+            <strong>Итог: ${total.toFixed(2)} кг</strong> 
+            <div style="margin-top:10px;">${achs.join('<br>')}</div> 
+            <div style="margin-top: 10px; padding: 5px; background: rgba(128, 128, 128, 0.2); border-radius: 5px; color: #fff; font-weight: bold;">
+            ${dStr} | ${tStr}</div>`; 
+        finalEl.classList.remove('hidden'); 
+    }
 }
