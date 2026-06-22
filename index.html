@@ -8,9 +8,9 @@
     <link rel="stylesheet" href="style.css?v=8">
 </head>
 <body>
- 
+
     <div id="game-container">
-        <div id="weather-icon" onclick="toggleWeatherHelp()">☀️</div>
+        <div id="weather-icon">☀️</div>
         <h1 id="score">Улов: 0.0 кг | Попыток: 3</h1>
         <p id="message">Нажми "Забросить", чтобы начать!</p>
         <button id="action-btn">Забросить удочку</button>
@@ -31,16 +31,15 @@
             <ul id="modal-fish-list"></ul>
         </div>
     </div>
- 
-    <div id="weather-help" class="hidden">
+
+    <div id="weather-help">
         <div class="help-content">
             <span class="close-btn" onclick="toggleWeatherHelp()">✖</span>
             <h3>Погода:</h3>
             <p id="help-text"></p>
         </div>
     </div>
- 
+
     <script src="script.js?v=6"></script>
-    <script src="handbook.js"></script>
 </body>
 </html>
