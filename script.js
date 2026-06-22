@@ -77,6 +77,9 @@ function closeGuide() {
 
 document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('action-btn').addEventListener('click', startFishing);
+    
+    updateWeather();
+    setInterval(updateWeather, 7200000);
     updateUI();
 });
 
