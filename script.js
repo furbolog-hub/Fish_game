@@ -11,6 +11,13 @@ const sounds = {
     unique: new Audio(baseUrl + 'unique.ogg')
 };
 
+    function playSound(soundName) {
+    if (sounds[soundName]) {
+        sounds[soundName].currentTime = 0;
+        sounds[soundName].play().catch(e => console.log("Audio play blocked:", e));
+    }
+}
+
 function openHandbook() {
 const modal = document.gettlementByld (modal);
 const list = document.getElementByld(modal-fish-list');
@@ -35,14 +42,7 @@ list.appendChild(closeBtn);
 modal.classList.remove('hidden');
 }
 
-    function playSound(soundName) {
-    if (sounds[soundName]) {
-        sounds[soundName].currentTime = 0;
-        sounds[soundName].play().catch(e => console.log("Audio play blocked:", e));
-    }
-}
-
-// --- ИГРОВОЙ КОД ---
+    // --- ИГРОВОЙ КОД ---
 
 let tg;
 try {
