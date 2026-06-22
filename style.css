@@ -1,9 +1,61 @@
-body { margin: 0; padding: 0; font-family: sans-serif; background: #f0f0f0; }
-#game-container { padding: 20px; }
-.hidden { display: none !important; }
-#weather-icon { font-size: 2em; cursor: pointer; text-align: center; margin-bottom: 10px; }
-button { width: 100%; padding: 15px; margin: 5px 0; border-radius: 8px; border: none; background: #007bff; color: white; font-weight: bold; cursor: pointer; }
-#modal, #weather-help { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.7); display: flex; justify-content: center; align-items: center; z-index: 9999; }
-.modal-content, .help-content { background: white; padding: 20px; border-radius: 10px; width: 90%; }
-.close-btn { float: right; cursor: pointer; font-size: 1.5em; }
-.strikethrough { text-decoration: line-through; color: gray; }
+/* Основные стили страницы */
+body { 
+    font-family: sans-serif; 
+    margin: 0; 
+    padding: 0; 
+    min-height: 100vh; 
+    background-image: url('background.jpg'); 
+    background-size: cover; 
+    background-position: center; 
+    background-attachment: fixed; 
+    color: #fff; 
+}
+
+#game-container { 
+    padding: 15px; 
+    background: rgba(0, 0, 0, 0.75); 
+    min-height: 100vh; 
+    display: flex; 
+    flex-direction: column; 
+}
+
+/* Элемент погоды */
+#weather-icon { 
+    font-size: 40px; 
+    position: absolute; 
+    top: 10px; 
+    right: 20px; 
+    cursor: pointer; 
+    z-index: 100; 
+}
+
+/* Кнопка действия */
+#action-btn { 
+    width: 100%; 
+    padding: 20px; 
+    margin: 15px 0; 
+    background: #2481cc; 
+    color: #fff; 
+    border: none; 
+    border-radius: 12px; 
+    font-size: 20px; 
+    font-weight: bold; 
+    cursor: pointer; 
+}
+
+#action-btn:disabled { 
+    background: #555; 
+}
+
+/* Счётчик улова */
+#score { 
+    font-size: 24px; 
+    margin-top: 40px; 
+}
+
+/* История улова */
+#catch-history { 
+    border-top: 2px solid #444; 
+    margin-top: 20px; 
+    padding-top: 10px; 
+}
