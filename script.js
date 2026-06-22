@@ -1,6 +1,6 @@
 // --- КОНФИГУРАЦИЯ ЗВУКОВ ---
 const baseUrl = 'https://raw.githubusercontent.com/furbolog-hub/Fish_game/main/sounds/';
-
+ 
 const sounds = {
     throw: new Audio(baseUrl + 'throw.ogg'),
     bonus: new Audio(baseUrl + 'bonus.ogg'),
@@ -10,16 +10,16 @@ const sounds = {
     legendary: new Audio(baseUrl + 'legendary.ogg'),
     unique: new Audio(baseUrl + 'unique.ogg')
 };
-
+ 
 function playSound(soundName) {
     if (sounds[soundName]) {
         sounds[soundName].currentTime = 0;
         sounds[soundName].play().catch(e => console.log("Audio play blocked:", e));
     }
 }
-
+ 
 // --- ИГРОВОЙ КОД ---
-
+ 
 let tg;
 try {
     tg = window.Telegram.WebApp;
@@ -32,7 +32,7 @@ try {
         }
     };
 }
-
+ 
 let state = {
     attempts: 3,
     catches: [],
@@ -51,26 +51,26 @@ let state = {
     hasCompass: false,
     diceMultiplier: 1
 };
-
+ 
 const fishes = [
     "Палтус", "Палия", "Белый амур", "Щука", "Семга", "Солнечник", "Подкаменщик", "Сом", "Окунь",
     "Плотва", "Кижуч", "Семотилус", "Меланотения", "Горчак", "Жерех", "Ринихт", "Лосось",
     "Корюшка", "Судак", "Арктический голец", "Красноперка", "Золотая форель", "Фундулюс",
     "Озерный сиг", "Карпиодес"
 ];
-
+ 
 const trash = [
     "Старый башмак", "Спутанная леска", "Сломанный поплавок", "Ржавый крючок", "Половина блесны", "Размокший кусок бумаги"
 ];
-
+ 
 const legendaryItems = [
     "Чешуя Левиафана", "Послание в бутылке", "Компас потерянных глубин", "Запечатанный сундук"
 ];
-
+ 
 const uniqueItems = [
     "Глубоководное нечто", "Игральная кость"
 ];
-
+ 
 const icons = {
     "Палтус": "🐟", "Палия": "🐠", "Белый амур": "🐟", "Щука": "🦈", "Семга": "🍣", "Солнечник": "☀️", "Подкаменщик": "🐡", "Сом": "〰️", "Окунь": "🐟",
     "Плотва": "🐟", "Кижуч": "🐠", "Семотилус": "🐟", "Меланотения": "🌈", "Горчак": "🐟", "Жерех": "🐟", "Ринихт": "🐟", "Лосось": "🎣", "Корюшка": "🐟", "Судак": "🐟",
@@ -79,7 +79,7 @@ const icons = {
     "Чешуя Левиафана": "🐉", "Послание в бутылке": "📜", "Компас потерянных глубин": "🧭", "Запечатанный сундук": "🧰",
     "Глубоководное нечто": "🐙", "Игральная кость": "🎲"
 };
-
+ 
 function getWeightIcon(weight) {
     if (weight === 0) return "";
     if (weight >= 20.0) return "👽";
@@ -88,40 +88,33 @@ function getWeightIcon(weight) {
     if (weight >= 4.6) return "🥈";
     return "🥉";
 }
-
+ 
 document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('action-btn').addEventListener('click', startFishing);
-    document.getElementById('weather-icon').addEventListener('click', openGuide);
+    document.getElementById('weather-icon').onclick = toggleWeatherHelp;
     
     updateWeather();
     setInterval(updateWeather, 7200000);
     updateUI();
 });
-
-function openGuide() {
+ 
+function toggleWeatherHelp() {
     const el = document.getElementById('weather-help');
-    const helpText = {
-        'sunny': '☀️ Солнечно: Шанс атаки чайки!',
-        'rain': '🌧️ Дождь: Появление утки (снижает вес).',
-        'calm': '🌊 Штиль: Высокий шанс бонусов.',
-        'storm': '🌪️ Шторм: Много хлама, дебаффы не работают.',
-        'fog': '🌫️ Туман: Повышенный шанс легендарных предметов.'
-    };
-    
-    let htmlContent = `<p>${helpText[state.weather]}</p>`;
-    if (state.hasCompass) {
-        htmlContent += `<button onclick="changeWeather()" style="width:100%; padding:10px; margin-top:10px;">Сменить погоду</button>`;
+    if (el.classList.contains('hidden')) {
+        const helpText = {
+            'sunny': '☀️ Солнечно: Шанс атаки чайки!',
+            'rain': '🌧️ Дождь: Появление утки (снижает вес).',
+            'calm': '🌊 Штиль: Высокий шанс бонусов.',
+            'storm': '🌪️ Шторм: Много хлама, дебаффы не работают.',
+            'fog': '🌫️ Туман: Повышенный шанс легендарных предметов.'
+        };
+        document.getElementById('help-text').innerText = helpText[state.weather];
+        el.classList.remove('hidden');
+    } else {
+        el.classList.add('hidden');
     }
-    
-    document.getElementById('help-text').innerHTML = htmlContent;
-    el.classList.remove('hidden');
 }
-
-function changeWeather() {
-    updateWeather();
-    document.getElementById('weather-help').classList.add('hidden');
-}
-
+ 
 function updateWeather() {
     const weathers = ['sunny', 'sunny', 'rain', 'rain', 'calm', 'calm', 'storm', 'fog'];
     state.weather = weathers[Math.floor(Math.random() * weathers.length)];
@@ -134,7 +127,7 @@ function updateWeather() {
         'fog': '🌫️'
     }[state.weather];
 }
-
+ 
 function startFishing() {
     playSound('throw');
     if (state.attempts <= 0) return;
