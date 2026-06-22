@@ -1,3 +1,25 @@
+// --- КОНФИГУРАЦИЯ ЗВУКОВ ---
+const baseUrl = 'https://raw.githubusercontent.com/furbolog-hub/Fish_game/main/sounds/';
+
+const sounds = {
+    throw: new Audio(baseUrl + 'throw.ogg'),
+    bonus: new Audio(baseUrl + 'bonus.ogg'),
+    debuff: new Audio(baseUrl + 'debuff.ogg'),
+    successfull: new Audio(baseUrl + 'successful.ogg'),
+    achievement: new Audio(baseUrl + 'achievement.ogg'),
+    legendary: new Audio(baseUrl + 'legendary.ogg'),
+    unique: new Audio(baseUrl + 'unique.ogg')
+};
+
+function playSound(soundName) {
+    if (sounds[soundName]) {
+        sounds[soundName].currentTime = 0;
+        sounds[soundName].play().catch(e => console.log("Audio play blocked:", e));
+    }
+}
+
+// --- ИГРОВОЙ КОД ---
+
 let tg;
 try {
     tg = window.Telegram.WebApp;
@@ -118,6 +140,7 @@ function updateWeather() {
 }
 
 function startFishing() {
+    playSound('throw');
     if (state.attempts <= 0) return;
     
     document.getElementById('action-btn').disabled = true;
@@ -127,14 +150,17 @@ function startFishing() {
         let legendaryChance = (state.weather === 'fog') ? 0.03 : 0.01;
         
         if (rand < 0.003) {
+            playSound('unique');
             handleUnique();
         } else if (rand < legendaryChance) {
+            playSound('legendary');
             handleLegendary();
         } else if (state.bonuses.mask) {
             catchFish(true);
             state.bonuses.mask = false;
             state.attempts--;
         } else if (rand < getBonusChance()) {
+            playSound('bonus');
             handleBonus();
         } else if (rand < ((state.weather === 'storm') ? 0.7 : 0.4)) {
             let item = trash[Math.floor(Math.random() * trash.length)];
@@ -283,6 +309,10 @@ function catchFish(isMasked, isFromChest = false) {
         }
     }
     
+    if (weight >= 10.0) {
+        playSound('successfull');
+    }
+    
     logCatch(name, weight, (weight === 0), 'catch', false, bonusWeight, isFromChest);
     document.getElementById('message').innerText = `Поймал: ${name} (${weight.toFixed(1)} кг)`;
 }
@@ -338,6 +368,7 @@ function triggerDebuff() {
     }
     
     if (debuffText && !state.activeDebuffs.includes(debuffText)) {
+        playSound('debuff');
         state.activeDebuffs.push(debuffText);
         logCatch(debuffText, 0, true, 'debuff');
     }
@@ -429,6 +460,7 @@ function showModal() {
 }
 
 function endGame() {
+    playSound('achievement');
     let validCatches = state.catches.filter(c => !c.isRemoved && (c.type !== 'catch' || !c.isStolen || state.hasMessageInBottle) && c.weight > 0);
     let totalBase = validCatches.reduce((s, c) => s + c.weight, 0);
     let maxWeight = validCatches.length > 0 ? Math.max(...validCatches.map(c => c.weight)) : 0;
