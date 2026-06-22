@@ -476,7 +476,7 @@ function endGame() {
     let achs = [];
     if (state.luckyFisher) achs.push("🏆 Удачливый рыбак");
     if (state.bonusCount >= 3) achs.push("✨ Любимчик Фортуны");
-    if (validCatches.length > 0 && validCatches.every(c => c.weight >= 8.5)) achs.push("🦈 Акула бизнеса");
+    if (validCatches.length > 0 && validCatches.every(c => c.weight >= 10.0)) achs.push("🦈 Акула бизнеса");
     if (validCatches.length > 0 && validCatches.every(c => c.weight < 2.5)) achs.push("🐱 Аквариумный мастер");
     if (state.catches.length > 0 && state.catches.every(c => c.isTrash || c.isStolen)) achs.push("🗑️ Повелитель башмаков");
 
