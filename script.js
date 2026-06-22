@@ -138,6 +138,11 @@ function renderHandbook() {
 
     let html = "<h1>Справочник рыбака</h1>";
     
+    if (typeof gameHandbook === 'undefined') {
+        container.innerHTML = "Ошибка: Данные справочника не загружены.";
+        return;
+    }
+
     for (let section in gameHandbook) {
         const data = gameHandbook[section];
         html += `<h2>${data.title}</h2><ul>`;
