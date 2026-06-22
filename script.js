@@ -1,25 +1,3 @@
-// --- КОНФИГУРАЦИЯ ЗВУКОВ ---
-const baseUrl = 'https://raw.githubusercontent.com/furbolog-hub/Fish_game/main/sounds/';
-
-const sounds = {
-    throw: new Audio(baseUrl + 'throw.ogg'),
-    bonus: new Audio(baseUrl + 'bonus.ogg'),
-    debuff: new Audio(baseUrl + 'debuff.ogg'),
-    successfull: new Audio(baseUrl + 'successful.ogg'),
-    achievement: new Audio(baseUrl + 'achievement.ogg'),
-    legendary: new Audio(baseUrl + 'legendary.ogg'),
-    unique: new Audio(baseUrl + 'unique.ogg')
-};
-
-function playSound(soundName) {
-    if (sounds[soundName]) {
-        sounds[soundName].currentTime = 0;
-        sounds[soundName].play().catch(e => console.log("Audio play blocked:", e));
-    }
-}
-
-// --- ИГРОВОЙ КОД ---
-
 let tg;
 try {
     tg = window.Telegram.WebApp;
@@ -89,58 +67,20 @@ function getWeightIcon(weight) {
     return "🥉";
 }
 
+function openGuide() {
+    document.getElementById('guide-modal').classList.remove('hidden');
+}
+
+function closeGuide() {
+    document.getElementById('guide-modal').classList.add('hidden');
+}
+
 document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('action-btn').addEventListener('click', startFishing);
-    document.getElementById('weather-icon').onclick = toggleWeatherHelp;
-    
-    updateWeather();
-    setInterval(updateWeather, 7200000);
     updateUI();
 });
 
-function toggleWeatherHelp() {
-    const el = document.getElementById('weather-help');
-    if (!el.classList.contains('active')) {
-        const helpText = {
-            'sunny': '☀️ Солнечно: Шанс атаки чайки!',
-            'rain': '🌧️ Дождь: Появление утки (снижает вес).',
-            'calm': '🌊 Штиль: Высокий шанс бонусов.',
-            'storm': '🌪️ Шторм: Много хлама, дебаффы не работают.',
-            'fog': '🌫️ Туман: Повышенный шанс легендарных предметов.'
-        };
-        
-        let htmlContent = `<p>${helpText[state.weather]}</p>`;
-        if (state.hasCompass) {
-            htmlContent += `<button onclick="changeWeather()" style="width:100%; padding:10px; margin-top:10px;">Сменить погоду</button>`;
-        }
-        
-        document.getElementById('help-text').innerHTML = htmlContent;
-        el.classList.add('active');
-    } else {
-        el.classList.remove('active');
-    }
-}
-
-function changeWeather() {
-    updateWeather();
-    document.getElementById('weather-help').classList.remove('active');
-}
-
-function updateWeather() {
-    const weathers = ['sunny', 'sunny', 'rain', 'rain', 'calm', 'calm', 'storm', 'fog'];
-    state.weather = weathers[Math.floor(Math.random() * weathers.length)];
-    
-    document.getElementById('weather-icon').innerText = {
-        'sunny': '☀️',
-        'rain': '🌧️',
-        'calm': '🌊',
-        'storm': '🌪️',
-        'fog': '🌫️'
-    }[state.weather];
-}
-
 function startFishing() {
-    playSound('throw');
     if (state.attempts <= 0) return;
     
     document.getElementById('action-btn').disabled = true;
@@ -150,17 +90,14 @@ function startFishing() {
         let legendaryChance = (state.weather === 'fog') ? 0.03 : 0.01;
         
         if (rand < 0.003) {
-            playSound('unique');
             handleUnique();
         } else if (rand < legendaryChance) {
-            playSound('legendary');
             handleLegendary();
         } else if (state.bonuses.mask) {
             catchFish(true);
             state.bonuses.mask = false;
             state.attempts--;
-        } else if (rand < getBonusChance()) {
-            playSound('bonus');
+        } else if (rand < 0.15) {
             handleBonus();
         } else if (rand < ((state.weather === 'storm') ? 0.7 : 0.4)) {
             let item = trash[Math.floor(Math.random() * trash.length)];
@@ -176,9 +113,8 @@ function startFishing() {
             state.attempts--;
         }
 
-        triggerDebuff();
-        updateUI();
         renderHistory();
+        updateUI();
         
         if (state.attempts === 0 && document.getElementById('modal').classList.contains('hidden')) {
             endGame();
@@ -218,22 +154,22 @@ function showDiceModal() {
     rollBtn.className = 'fish-btn';
     rollBtn.innerText = "Бросить кость";
     rollBtn.onclick = () => {
-        let points = Math.floor(Math.random() * 6) + 1;
-        list.innerHTML = `<p>Выпало: ${points}</p>`;
+        let p = Math.floor(Math.random() * 6) + 1;
+        list.innerHTML = `<p>Выпало: ${p}</p>`;
         
         const btn1 = document.createElement('button');
         btn1.className = 'fish-btn';
-        btn1.innerText = `+${points} попыток`;
+        btn1.innerText = `+${p} попыток`;
         btn1.onclick = () => {
-            state.attempts += points;
+            state.attempts += p;
             closeDice();
         };
         
         const btn2 = document.createElement('button');
         btn2.className = 'fish-btn';
-        btn2.innerText = `Множитель x${(1 + (points * 0.1)).toFixed(1)}`;
+        btn2.innerText = `Множитель x${(1 + (p * 0.1)).toFixed(1)}`;
         btn2.onclick = () => {
-            state.diceMultiplier = (1 + (points * 0.1));
+            state.diceMultiplier = (1 + (p * 0.1));
             closeDice();
         };
         
@@ -309,10 +245,6 @@ function catchFish(isMasked, isFromChest = false) {
         }
     }
     
-    if (weight >= 10.0) {
-        playSound('successfull');
-    }
-    
     logCatch(name, weight, (weight === 0), 'catch', false, bonusWeight, isFromChest);
     document.getElementById('message').innerText = `Поймал: ${name} (${weight.toFixed(1)} кг)`;
 }
@@ -342,35 +274,6 @@ function handleBonus() {
         state.bonuses.filter = true;
         alert("Фильтр!");
         logCatch("Бонус: Фильтр", 0, true, 'bonus');
-    }
-}
-
-function getBonusChance() {
-    return (state.weather === 'calm') ? 0.3 : 0.15;
-}
-
-function triggerDebuff() {
-    if (state.weather === 'storm' || Math.random() > 0.25) return;
-    
-    let type = Math.random();
-    let debuffText = "";
-    
-    if (type < 0.33 && state.weather === 'calm') {
-        debuffText = "Дебаф: Рак (вес до 2.5кг)";
-    } else if (type < 0.66 && state.weather === 'sunny') {
-        let fish = state.catches.find(c => !c.isTrash && !c.isStolen && c.type === 'catch');
-        if (fish) {
-            fish.isStolen = true;
-            debuffText = "Дебаф: Чайка стащила рыбу!";
-        }
-    } else if (state.weather === 'rain') {
-        debuffText = "Дебаф: Утка (малый вес/хлам)";
-    }
-    
-    if (debuffText && !state.activeDebuffs.includes(debuffText)) {
-        playSound('debuff');
-        state.activeDebuffs.push(debuffText);
-        logCatch(debuffText, 0, true, 'debuff');
     }
 }
 
@@ -460,7 +363,6 @@ function showModal() {
 }
 
 function endGame() {
-
     let validCatches = state.catches.filter(c => !c.isRemoved && (c.type !== 'catch' || !c.isStolen || state.hasMessageInBottle) && c.weight > 0);
     let totalBase = validCatches.reduce((s, c) => s + c.weight, 0);
     let maxWeight = validCatches.length > 0 ? Math.max(...validCatches.map(c => c.weight)) : 0;
@@ -476,24 +378,16 @@ function endGame() {
     let achs = [];
     if (state.luckyFisher) achs.push("🏆 Удачливый рыбак");
     if (state.bonusCount >= 3) achs.push("✨ Любимчик Фортуны");
-    if (validCatches.length > 0 && validCatches.every(c => c.weight >= 10.0)) achs.push("🦈 Акула бизнеса");
+    if (validCatches.length > 0 && validCatches.every(c => c.weight >= 8.5)) achs.push("🦈 Акула бизнеса");
     if (validCatches.length > 0 && validCatches.every(c => c.weight < 2.5)) achs.push("🐱 Аквариумный мастер");
     if (state.catches.length > 0 && state.catches.every(c => c.isTrash || c.isStolen)) achs.push("🗑️ Повелитель башмаков");
 
-    // ДОБАВЛЯЕМ ПРОВЕРКУ ЗДЕСЬ:
-    if (achs.length > 0) {
-        playSound('achievement');
-    }
-
     const now = new Date();
-    const dateStr = now.toLocaleDateString('ru-RU');
-    const timeStr = now.toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' });
-
     document.getElementById('final-result').innerHTML = `
         <strong>Итог: ${total.toFixed(2)} кг</strong>
         <div style="margin-top:10px;">${achs.join('<br>')}</div>
-        <div style="margin-top: 10px; padding: 5px; background: rgba(128, 128, 128, 0.2); border-radius: 5px; color: #fff; font-weight: 500; text-shadow: 0 0 4px #000;">
-            ${dateStr} в ${timeStr}
+        <div style="margin-top: 10px; font-weight: 500;">
+            ${now.toLocaleDateString('ru-RU')} в ${now.toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' })}
         </div>
     `;
     
