@@ -9,27 +9,24 @@
 <body>
 
     <div id="game-container">
-        <span id="weather-icon">☀️</span>
-        
-        <div id="score">Улов: 0.0 кг | Попыток: 3</div>
-        
+        <div id="header">
+            <span id="weather-icon">☀️</span>
+            <div id="score">Улов: 0.0 кг | Попыток: 3</div>
+        </div>
+
         <button id="guide-btn" onclick="openGuide()">📖 Справочник</button>
 
-        <button id="action-btn">Забросить удочку</button>
-        
         <div id="message">Начни рыбалку!</div>
+        <button id="action-btn">Забросить удочку</button>
 
-        <div id="catch-history">
-            <h3>История улова:</h3>
-            <ul id="history-list"></ul>
-        </div>
+        <ul id="history-list"></ul>
 
         <div id="final-result" class="hidden"></div>
     </div>
 
     <div id="modal" class="hidden">
         <div id="modal-content">
-            <h3>Выберите предмет для удаления:</h3>
+            <h3>Удалить предмет?</h3>
             <div id="modal-fish-list"></div>
         </div>
     </div>
@@ -44,7 +41,7 @@
     </div>
 
     <div id="weather-help" class="hidden">
-        <div id="help-text" class="help-content"></div>
+        <div id="help-text"></div>
     </div>
 
     <script src="script.js"></script>
