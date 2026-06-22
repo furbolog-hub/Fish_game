@@ -2,78 +2,46 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pro Рыбалка</title>
-    <script src="https://telegram.org/js/telegram-web-app.js"></script>
-    <link rel="stylesheet" href="style.css?v=8">
+    <title>Рыбалка</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
-
-    <!-- Теперь кнопка внутри body, она появится -->
-    <button id="help-btn" onclick="toggleHelp()" style="position: fixed; top: 10px; right: 10px; z-index: 1000; cursor: pointer; font-size: 20px;">❓</button>
-
-    <!-- Окно справочника -->
-    <div id="help-modal" style="display:none; position:fixed; top:5%; left:5%; width:90%; height:90%; background:rgba(0,0,0,0.95); color:white; padding:20px; border-radius:15px; overflow-y:auto; z-index: 2000; font-family: sans-serif;">
-        <h2 style="text-align:center; color: #ffcc00;">Энциклопедия рыбака</h2>
-        
-        <h3>⚙️ Механика</h3>
-        <p>Каждый заброс — это шанс на улов. Хлам (башмаки, бумаги) не дает веса, пока не попадет в "Глубоководное нечто".</p>
-        
-        <h3>🌟 Бонусы</h3>
-        <ul>
-            <li><b>Ласты (x2):</b> Увеличивает итоговый вес на x2.</li>
-            <li><b>Акваланг:</b> Увеличивает вес самой крупной рыбы на x3.</li>
-            <li><b>Маска:</b> Поиск рыбы от 6,5 до 9,9 кг.</li>
-        </ul>
-
-        <h3>⚠️ Дебафы</h3>
-        <ul>
-            <li><b>Чайка:</b> Крадет рыбу с крючка.</li>
-            <li><b>Рак:</b> Гнет крючок (повреждает снасть).</li>
-            <li><b>Утка:</b> Снижает эффективность заброса.</li>
-        </ul>
-
-        <h3>💎 Артефакты</h3>
-        <p><b>Глубоководное нечто:</b> Превращает весь мусор в одну редкую рыбу (20–30 кг).</p>
-        <p><b>Игральная кость:</b> Дает доп. забросы или множитель веса.</p>
-
-        <h3>🏆 Титулы</h3>
-        <p>🏆 <b>Удачливый рыбак</b> | ✨ <b>Любимчик Фортуны</b> | 🦈 <b>Акула бизнеса</b> (от 10 кг) | 🐱 <b>Аквариумный мастер</b> (до 2,5 кг) | 🗑️ <b>Повелитель башмаков</b> (только хлам).</p>
-
-        <button onclick="toggleHelp()" style="display:block; margin: 20px auto; padding: 10px 20px; cursor: pointer;">Закрыть</button>
-    </div>
-
     <div id="game-container">
-        <div id="weather-icon">☀️</div>
-        <h1 id="score">Улов: 0.0 кг | Попыток: 3</h1>
-        <p id="message">Нажми "Забросить", чтобы начать!</p>
-        <button id="action-btn">Забросить удочку</button>
-        
-        <div id="status-effects"></div>
-        
-        <div id="catch-history">
-            <h3>История улова:</h3>
-            <ul id="history-list"></ul>
+        <div id="header">
+            <span id="weather-icon">☀️</span>
+            <div id="score">Улов: 0.0 кг | Попыток: 3</div>
         </div>
-        
+
+        <button id="guide-btn" onclick="openGuide()">📖 Справочник</button>
+
+        <div id="message">Начни рыбалку!</div>
+        <button id="action-btn">Забросить удочку</button>
+
+        <ul id="history-list"></ul>
+
         <div id="final-result" class="hidden"></div>
     </div>
-    
+
     <div id="modal" class="hidden">
-        <div class="modal-content">
-            <h3>Выберите предмет для удаления:</h3>
-            <ul id="modal-fish-list"></ul>
+        <div id="modal-content">
+            <h3>Удалить предмет?</h3>
+            <div id="modal-fish-list"></div>
         </div>
     </div>
 
-    <div id="weather-help">
-        <div class="help-content">
-            <span class="close-btn" onclick="toggleWeatherHelp()">✖</span>
-            <h3>Погода:</h3>
-            <p id="help-text"></p>
+    <div id="guide-modal" class="hidden">
+        <div class="guide-content">
+            <span class="close-btn" onclick="closeGuide()">&times;</span>
+            <h3>Справочник рыбака</h3>
+            <p>Добро пожаловать! Лови рыбу, собирай бонусы и остерегайся чайки. В тумане шанс на легендарные предметы выше.</p>
+            <p><strong>Уникальные предметы:</strong> Глубоководное нечто превращает хлам в рыбу-гиганта. Игральная кость дает попытки или множитель веса.</p>
         </div>
     </div>
 
-    <script src="script.js?v=6"></script>
+    <div id="weather-help" class="hidden">
+        <div id="help-text"></div>
+    </div>
+
+    <script src="script.js"></script>
 </body>
 </html>
