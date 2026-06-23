@@ -1,3 +1,5 @@
+/* style.css — Полная версия */
+
 /* Основные стили страницы */
 body { 
     font-family: sans-serif; 
@@ -17,17 +19,18 @@ body {
     min-height: 100vh; 
     display: flex; 
     flex-direction: column; 
+    position: relative; /* Чтобы иконка погоды позиционировалась относительно контейнера */
 }
 
-/* Элемент погоды - ИСПРАВЛЕНО: Увеличена зона клика */
+/* Элемент погоды — ИСПРАВЛЕНО: Увеличена зона клика */
 #weather-icon { 
     font-size: 40px; 
     position: absolute; 
     top: 5px; 
     right: 10px; 
     cursor: pointer; 
-    z-index: 100;
-    padding: 15px; /* Создает невидимую область для легкого нажатия */
+    z-index: 100; 
+    padding: 15px; /* Невидимая область вокруг иконки для легкого нажатия */
     min-width: 50px;
     min-height: 50px;
     display: flex;
@@ -53,7 +56,7 @@ body {
     background: #555; 
 }
 
-/* Кнопка справочника - ИСПРАВЛЕНО: Высота для мобильных устройств */
+/* Кнопка справочника — ИСПРАВЛЕНО: Увеличена высота для нажатия пальцем */
 .secondary-btn {
     width: 100%;
     padding: 15px;
@@ -65,7 +68,7 @@ body {
     font-size: 16px;
     font-weight: bold;
     cursor: pointer;
-    min-height: 50px;
+    min-height: 50px; /* Стандарт для мобильных интерфейсов */
 }
 
 /* Счётчик улова */
@@ -101,12 +104,12 @@ body {
 .log-legendary { 
     color: #ff00ff; 
     font-weight: bold; 
-    text-shadow: 1px 1px 2px #000, -1px -1px 2px #000; 
+    text-shadow: 1px 1px 2px #000, -1px -1px 2px #000, 1px -1px 2px #000, -1px 1px 2px #000; 
 }
 .log-trash { color: #aaaaaa; }
 .strikethrough { text-decoration: line-through; color: #ff5555; }
 
-/* Модальные окна */
+/* Модальное окно */
 .modal-content { 
     background: #fff; 
     padding: 20px; 
@@ -116,17 +119,25 @@ body {
     width: 90%; 
     color: #000; 
     border-radius: 15px; 
-    box-sizing: border-box;
+    box-sizing: border-box; /* Чтобы padding не раздувал ширину */
+    z-index: 2000;
 }
 
+/* Специфические стили для контента справочника */
 .handbook-content {
     max-height: 80vh;
     overflow-y: auto;
     background: #f9f9f9;
+    color: #000;
 }
 
 #handbook-data h1 { color: #2481cc; font-size: 22px; text-align: center; }
-#handbook-data h2 { color: #2481cc; border-bottom: 2px solid #2481cc; margin-top: 20px; font-size: 18px; }
+#handbook-data h2 { 
+    color: #2481cc; 
+    border-bottom: 2px solid #2481cc; 
+    margin-top: 20px; 
+    font-size: 18px; 
+}
 #handbook-data ul { padding-left: 20px; text-align: left; }
 #handbook-data li { margin-bottom: 8px; line-height: 1.4; color: #333; }
 
@@ -138,7 +149,16 @@ body {
     cursor: pointer; 
 }
 
+/* Вспомогательные классы */
 .hidden { display: none !important; }
+
+#final-result {
+    margin-top: 20px;
+    padding: 15px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+    text-align: center;
+}
 
 /* Окно погоды */
 #weather-help { 
@@ -163,6 +183,7 @@ body {
     border-radius: 15px; 
     width: 80%; 
     position: relative; 
+    backdrop-filter: blur(5px); 
 }
 
 .close-btn { 
@@ -172,4 +193,14 @@ body {
     font-size: 20px; 
     cursor: pointer; 
     font-weight: bold; 
+    padding: 10px; /* Чтобы по крестику было легче попасть */
+}
+
+#status-effects { margin: 10px 0; font-size: 16px; color: #ffd700; }
+#message { font-size: 18px; font-weight: 500; margin: 10px 0; color: #fff; }
+h1, h3 { margin: 5px 0; }
+
+@media (max-width: 400px) {
+    #action-btn { padding: 15px; }
+    #score { font-size: 20px; }
 }
