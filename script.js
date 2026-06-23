@@ -2,7 +2,8 @@
 const baseUrl = 'https://raw.githubusercontent.com/furbolog-hub/Fish_game/main/sounds/'; 
 
 const sounds = { 
-    throw: new Audio(baseUrl + 'throw.ogg'), 
+    throw: new Audio(baseUrl + 'throw.ogg
+```'), 
     bonus: new Audio(baseUrl + 'bonus.ogg'), 
     debuff: new Audio(baseUrl + 'debuff.ogg'), 
     successfull: new Audio(baseUrl + 'successful.ogg'), 
@@ -40,7 +41,6 @@ let state = {
     hasMessageInBottle: false, 
     hasCompass: false, 
     diceMultiplier: 1, 
-    // Переменные для расширенных достижений 
     filtersUsed: 0, 
     wasAttacked: false, 
     transmutedCount: 0 
@@ -62,11 +62,12 @@ function getWeightIcon(weight) {
     return "🥉"; 
 } 
 
-// ИНИЦИАЛИЗАЦИЯ СОБЫТИЙ 
+// Единая инициализация событий
 document.addEventListener('DOMContentLoaded', () => { 
     const actionBtn = document.getElementById('action-btn'); 
     const handbookBtn = document.getElementById('handbook-btn'); 
     const weatherIcon = document.getElementById('weather-icon'); 
+    
     if (actionBtn) actionBtn.addEventListener('click', startFishing); 
     if (handbookBtn) handbookBtn.addEventListener('click', toggleHandbook); 
     if (weatherIcon) { 
@@ -333,8 +334,7 @@ function showModal() {
     list.appendChild(cancelBtn); 
     state.catches.filter(c => !c.isStolen && !c.isRemoved).forEach((c) => { 
         const btn = document.createElement('button'); btn.className = 'fish-btn'; 
-        let label = c.weight > 0 ? `${c.name} (${c.weight.toFixed(1)} кг)` : c.name; 
-        btn.innerText = `Удалить: ${label}`; 
+        btn.innerText = `Удалить: ${c.name} (${c.weight.toFixed(1)} кг)`; 
         btn.onclick = () => { 
             c.isRemoved = true; modal.classList.add('hidden'); updateUI(); renderHistory(); if (state.attempts === 0) endGame(); else document.getElementById('action-btn').disabled = false; 
         }; 
