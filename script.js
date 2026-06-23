@@ -1,104 +1,82 @@
-// --- КОНФИГУРАЦИЯ ЗВУКОВ ---  
-const baseUrl = 'https://raw.githubusercontent.com/furbolog-hub/Fish_game/main/sounds/';  
-  
-const sounds = {  
- throw: new Audio(baseUrl + 'throw.ogg'),  
- bonus: new Audio(baseUrl + 'bonus.ogg'),  
- debuff: new Audio(baseUrl + 'debuff.ogg'),  
- successfull: new Audio(baseUrl + 'successful.ogg'),  
- achievement: new Audio(baseUrl + 'achievement.ogg'),  
- legendary: new Audio(baseUrl + 'legendary.ogg'),  
- unique: new Audio(baseUrl + 'unique.ogg')  
-};  
-  
-function playSound(soundName) {  
- if (sounds[soundName]) {  
- sounds[soundName].currentTime = 0;  
- sounds[soundName].play().catch(e => console.log("Audio play blocked:", e));  
- }  
-}  
-  
-// --- ИГРОВОЙ КОД ---  
-  
-let tg;  
-try {  
- tg = window.Telegram.WebApp;  
- tg.ready();  
- tg.expand();  
-} catch (e) {  
- tg = {  
- HapticFeedback: {  
- impactOccurred: () => {}  
- }  
- };  
-}  
-  
-let state = {  
- attempts: 3,  
- catches: [],  
- bonuses: {  
- mask: false,  
- aquaCount: 0,  
- filter: false,  
- fins: false  
- },  
- activeDebuffs: [],  
- weather: 'sunny',  
- luckyFisher: false,  
- bonusCount: 0,  
- leviathanBonus: 0,  
- hasMessageInBottle: false,  
- hasCompass: false,  
- diceMultiplier: 1  
-};  
-  
-const fishes = [  
- "Палтус", "Палия", "Белый амур", "Щука", "Семга", "Солнечник", "Подкаменщик", "Сом", "Окунь",  
- "Плотва", "Кижуч", "Семотилус", "Меланотения", "Горчак", "Жерех", "Ринихт", "Лосось",  
- "Корюшка", "Судак", "Арктический голец", "Красноперка", "Золотая форель", "Фундулюс",  
- "Озерный сиг", "Карпиодес"  
-];  
-  
-const trash = [  
- "Старый башмак", "Спутанная леска", "Сломанный поплавок", "Ржавый крючок", "Половина блесны", "Размокший кусок бумаги"  
-];  
-  
-const legendaryItems = [  
- "Чешуя Левиафана", "Послание в бутылке", "Компас потерянных глубин", "Запечатанный сундук"  
-];  
-  
-const uniqueItems = [  
- "Глубоководное нечто", "Игральная кость"  
-];  
-  
-const icons = {  
- "Палтус": "🐟", "Палия": "🐠", "Белый амур": "🐟", "Щука": "🦈", "Семга": "🍣", "Солнечник": "☀️", "Подкаменщик": "🐡", "Сом": "〰️", "Окунь": "🐟",  
- "Плотва": "🐟", "Кижуч": "🐠", "Семотилус": "🐟", "Меланотения": "🌈", "Горчак": "🐟", "Жерех": "🐟", "Ринихт": "🐟", "Лосось": "🎣", "Корюшка": "🐟", "Судак": "🐟",  
- "Арктический голец": "❄️", "Красноперка": "🎈", "Золотая форель": "✨", "Фундулюс": "🐟", "Озерный сиг": "🐟", "Карпиодес": "🐟",  
- "Старый башмак": "👞", "Спутанная леска": "🧵", "Сломанный поплавок": "🪡", "Ржавый крючок": "🪝", "Половина блесны": "🪙", "Размокший кусок бумаги": "📄",  
- "Чешуя Левиафана": "🐉", "Послание в бутылке": "📜", "Компас потерянных глубин": "🧭", "Запечатанный сундук": "📦",  
- "Глубоководное нечто": "🐙", "Игральная кость": "🎲"  
-};  
-  
-function getWeightIcon(weight) {  
- if (weight === 0) return "";  
- if (weight >= 20.0) return "👽";  
- if (weight >= 10.0) return "🏆";  
- if (weight >= 7.6) return "🥇";  
- if (weight >= 4.6) return "🥈";  
- return "🥉";  
-}  
-  
-document.addEventListener('DOMContentLoaded', () => {  
- document.getElementById('action-btn').addEventListener('click', startFishing);  
- document.getElementById('handbook-btn').addEventListener('click', toggleHandbook);
- document.getElementById('weather-icon').onclick = toggleWeatherHelp;  
-   
-updateWeather();  
- setInterval(updateWeather, 7200000);  
- updateUI();  
-});  
-  
+// --- КОНФИГУРАЦИЯ ЗВУКОВ --- 
+const baseUrl = 'https://raw.githubusercontent.com/furbolog-hub/Fish_game/main/sounds/'; 
+const sounds = { 
+    throw: new Audio(baseUrl + 'throw.ogg
+```'), 
+    bonus: new Audio(baseUrl + 'bonus.ogg'), 
+    debuff: new Audio(baseUrl + 'debuff.ogg'), 
+    successfull: new Audio(baseUrl + 'successful.ogg'), 
+    achievement: new Audio(baseUrl + 'achievement.ogg'), 
+    legendary: new Audio(baseUrl + 'legendary.ogg'), 
+    unique: new Audio(baseUrl + 'unique.ogg') 
+}; 
+
+function playSound(soundName) { 
+    if (sounds[soundName]) { 
+        sounds[soundName].currentTime = 0; 
+        sounds[soundName].play().catch(e => console.log("Audio play blocked:", e)); 
+    } 
+} 
+
+// --- ИГРОВОЙ КОД --- 
+let tg; 
+try { 
+    tg = window.Telegram.WebApp; 
+    tg.ready(); 
+    tg.expand(); 
+} catch (e) { 
+    tg = { HapticFeedback: { impactOccurred: () => {} } }; 
+} 
+
+let state = { 
+    attempts: 3, 
+    catches: [], 
+    bonuses: { mask: false, aquaCount: 0, filter: false, fins: false }, 
+    activeDebuffs: [], 
+    weather: 'sunny', 
+    luckyFisher: false, 
+    bonusCount: 0, 
+    leviathanBonus: 0, 
+    hasMessageInBottle: false, 
+    hasCompass: false, 
+    diceMultiplier: 1 
+}; 
+
+const fishes = ["Палтус", "Палия", "Белый амур", "Щука", "Семга", "Солнечник", "Подкаменщик", "Сом", "Окунь", "Плотва", "Кижуч", "Семотилус", "Меланотения", "Горчак", "Жерех", "Ринихт", "Лосось", "Корюшка", "Судак", "Арктический голец", "Красноперка", "Золотая форель", "Фундулюс", "Озерный сиг", "Карпиодес"]; 
+const trash = ["Старый башмак", "Спутанная леска", "Сломанный поплавок", "Ржавый крючок", "Половина блесны", "Размокший кусок бумаги"]; 
+const legendaryItems = ["Чешуя Левиафана", "Послание в бутылке", "Компас потерянных глубин", "Запечатанный сундук"]; 
+const uniqueItems = ["Глубоководное нечто", "Игральная кость"]; 
+
+const icons = { 
+    "Палтус": "🐟", "Палия": "🐠", "Белый амур": "🐟", "Щука": "🦈", "Семга": "🍣", "Солнечник": "☀️", "Подкаменщик": "🐡", "Сом": "〰️", "Окунь": "🐟", "Плотва": "🐟", "Кижуч": "🐠", "Семотилус": "🐟", "Меланотения": "🌈", "Горчак": "🐟", "Жерех": "🐟", "Ринихт": "🐟", "Лосось": "🎣", "Корюшка": "🐟", "Судак": "🐟", "Арктический голец": "❄️", "Красноперка": "🎈", "Золотая форель": "✨", "Фундулюс": "🐟", "Озерный сиг": "🐟", "Карпиодес": "🐟", "Старый башмак": "👞", "Спутанная леска": "🧵", "Сломанный поплавок": "🪡", "Ржавый крючок": "🪝", "Половина блесны": "🪙", "Размокший кусок бумаги": "📄", "Чешуя Левиафана": "🐉", "Послание в бутылке": "📜", "Компас потерянных глубин": "🧭", "Запечатанный сундук": "📦", "Глубоководное нечто": "🐙", "Игральная кость": "🎲" 
+}; 
+
+function getWeightIcon(weight) { 
+    if (weight === 0) return ""; 
+    if (weight >= 20.0) return "👽"; 
+    if (weight >= 10.0) return "🏆"; 
+    if (weight >= 7.6) return "🥇"; 
+    if (weight >= 4.6) return "🥈"; 
+    return "🥉"; 
+} 
+
+// Инициализация событий
+document.addEventListener('DOMContentLoaded', () => { 
+    document.getElementById('action-btn').addEventListener('click', startFishing); 
+    document.getElementById('handbook-btn').addEventListener('click', toggleHandbook);
+    
+    // ИСПРАВЛЕНО: Более надежный способ назначения клика для иконки погоды
+    const weatherIcon = document.getElementById('weather-icon');
+    weatherIcon.onclick = (e) => {
+        e.stopPropagation();
+        toggleWeatherHelp();
+    };
+
+    updateWeather(); 
+    setInterval(updateWeather, 7200000); 
+    updateUI(); 
+}); 
+
 function toggleHandbook() {
     const modal = document.getElementById('handbook-modal');
     if (modal.classList.contains('hidden')) {
@@ -114,20 +92,17 @@ function renderHandbook() {
     if (container.innerHTML !== "") return;
 
     if (typeof gameHandbook === 'undefined') {
-        container.innerHTML = "Ошибка: Данные справочника не найдены.";
+        container.innerHTML = "Ошибка: Файл handbook.js не загружен.";
         return;
     }
 
     let html = "<h1>Справочник рыбака</h1>";
-    
     for (let section in gameHandbook) {
         const data = gameHandbook[section];
         html += `<h2>${data.title}</h2><ul>`;
         
         if (Array.isArray(data.items)) {
-            data.items.forEach(item => {
-                html += `<li>${item}</li>`;
-            });
+            data.items.forEach(item => { html += `<li>${item}</li>`; });
         } else {
             for (let key in data.items) {
                 html += `<li><strong>${key}:</strong> ${data.items[key]}</li>`;
@@ -138,94 +113,85 @@ function renderHandbook() {
     container.innerHTML = html;
 }
 
-function toggleWeatherHelp() {  
- const el = document.getElementById('weather-help');  
- if (!el.classList.contains('active')) {  
- const helpText = {  
- 'sunny': '☀️ Солнечно: Шанс атаки чайки!',  
- 'rain': '🌧️ Дождь: Появление утки (снижает вес).',  
- 'calm': '🌊 Штиль: Высокий шанс бонусов.',  
- 'storm': '🌪️ Шторм: Много хлама, дебаффы не работают.',  
- 'fog': '🌫️ Туман: Повышенный шанс легендарных предметов.'  
- };  
-   
-let htmlContent = `<p>${helpText[state.weather]}</p>`;  
- if (state.hasCompass) {  
- htmlContent += `<button onclick="changeWeather()" style="width:100%; padding:10px; margin-top:10px;">Сменить погоду</button>`;  
- }  
-   
-document.getElementById('help-text').innerHTML = htmlContent;  
- el.classList.add('active');  
- } else {  
- el.classList.remove('active');  
- }  
-}  
-  
-function changeWeather() {  
- updateWeather();  
- document.getElementById('weather-help').classList.remove('active');  
-}  
-  
-function updateWeather() {  
- const weathers = ['sunny', 'sunny', 'rain', 'rain', 'calm', 'calm', 'storm', 'fog'];  
- state.weather = weathers[Math.floor(Math.random() * weathers.length)];  
-   
-document.getElementById('weather-icon').innerText = {  
- 'sunny': '☀️',  
- 'rain': '🌧️',  
- 'calm': '🌊',  
- 'storm': '🌪️',  
- 'fog': '🌫️'  
- }[state.weather];  
-}  
-  
-function startFishing() {  
- playSound('throw');  
- if (state.attempts <= 0) return;  
-   
-document.getElementById('action-btn').disabled = true;  
-  
- setTimeout(() => {  
- let rand = Math.random();  
- let legendaryChance = (state.weather === 'fog') ? 0.03 : 0.01;  
-   
-if (rand < 0.003) {  
- playSound('unique');  
- handleUnique();  
- } else if (rand < legendaryChance) {  
- playSound('legendary');  
- handleLegendary();  
- } else if (state.bonuses.mask) {  
- catchFish(true);  
- state.bonuses.mask = false;  
- state.attempts--;  
- } else if (rand < getBonusChance()) {  
- playSound('bonus');  
- handleBonus();  
- } else if (rand < ((state.weather === 'storm') ? 0.7 : 0.4)) {  
- let item = trash[Math.floor(Math.random() * trash.length)];  
- logCatch(item, 0, true, 'catch');  
-   
-if (state.bonuses.filter) {  
- state.bonuses.filter = false;  
- } else {  
- state.attempts--;  
- }  
- } else {  
- catchFish(false);  
- state.attempts--;  
- }  
-  
- triggerDebuff();  
- updateUI();  
- renderHistory();  
-   
-if (state.attempts === 0 && document.getElementById('modal').classList.contains('hidden')) {  
- endGame();  
- } else {  
- document.getElementById('action-btn').disabled = false;  
- }  
- }, 600);  
+function toggleWeatherHelp() { 
+    const el = document.getElementById('weather-help'); 
+    if (!el.classList.contains('active')) { 
+        const helpText = { 
+            'sunny': '☀️ Солнечно: Шанс атаки чайки! Она ворует рыбу.', 
+            'rain': '🌧️ Дождь: Появление утки. Снижает вес улова.', 
+            'calm': '🌊 Штиль: Высокий шанс бонусов. Опасайтесь Раков!', 
+            'storm': '🌪️ Шторм: Много хлама, но дебаффы не работают.', 
+            'fog': '🌫️ Туман: Повышенный шанс легендарных предметов!' 
+        }; 
+
+        let htmlContent = `<p style="font-size:18px;">${helpText[state.weather] || 'Обычная погода'}</p>`; 
+        if (state.hasCompass) { 
+            htmlContent += `<button class="fish-btn" onclick="changeWeather()" style="background:#2481cc; color:#white;">Сменить погоду Компасом</button>`; 
+        } 
+
+        document.getElementById('help-text').innerHTML = htmlContent; 
+        el.classList.add('active'); 
+    } else { 
+        el.classList.remove('active'); 
+    } 
+} 
+
+function changeWeather() { 
+    updateWeather(); 
+    document.getElementById('weather-help').classList.remove('active'); 
+} 
+
+function updateWeather() { 
+    const weathers = ['sunny', 'sunny', 'rain', 'rain', 'calm', 'calm', 'storm', 'fog']; 
+    state.weather = weathers[Math.floor(Math.random() * weathers.length)]; 
+
+    document.getElementById('weather-icon').innerText = { 
+        'sunny': '☀️', 'rain': '🌧️', 'calm': '🌊', 'storm': '🌪️', 'fog': '🌫️' 
+    }[state.weather]; 
+} 
+
+function startFishing() { 
+    playSound('throw'); 
+    if (state.attempts <= 0) return; 
+
+    document.getElementById('action-btn').disabled = true; 
+
+    setTimeout(() => { 
+        let rand = Math.random(); 
+        let legendaryChance = (state.weather === 'fog') ? 0.03 : 0.01; 
+
+        if (rand < 0.003) { 
+            playSound('unique'); 
+            handleUnique(); 
+        } else if (rand < legendaryChance) { 
+            playSound('legendary'); 
+            handleLegendary(); 
+        } else if (state.bonuses.mask) { 
+            catchFish(true); 
+            state.bonuses.mask = false; 
+            state.attempts--; 
+        } else if (rand < getBonusChance()) { 
+            playSound('bonus'); 
+            handleBonus(); 
+        } else if (rand < ((state.weather === 'storm') ? 0.7 : 0.4)) { 
+            let item = trash[Math.floor(Math.random() * trash.length)]; 
+            logCatch(item, 0, true, 'catch'); 
+            if (state.bonuses.filter) { state.bonuses.filter = false; } else { state.attempts--; } 
+        } else { 
+            catchFish(false); 
+            state.attempts--; 
+        } 
+
+        triggerDebuff(); 
+        updateUI(); 
+        renderHistory(); 
+
+        if (state.attempts === 0 && document.getElementById('modal').classList.contains('hidden')) { 
+            endGame(); 
+        } else { 
+            document.getElementById('action-btn').disabled = false; 
+        } 
+    }, 600); 
 }  
   
 function handleUnique() {  
