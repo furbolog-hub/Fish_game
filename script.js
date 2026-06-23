@@ -1,84 +1,83 @@
-// --- КОНФИГУРАЦИЯ ЗВУКОВ --- 
-const baseUrl = 'https://raw.githubusercontent.com/furbolog-hub/Fish_game/main/sounds/'; 
-const sounds = { 
+// --- КОНФИГУРАЦИЯ ЗВУКОВ ---
+const baseUrl = 'https://raw.githubusercontent.com/furbolog-hub/Fish_game/main/sounds/';
+const sounds = {
     throw: new Audio(baseUrl + 'throw.ogg
-```'), 
-    bonus: new Audio(baseUrl + 'bonus.ogg'), 
-    debuff: new Audio(baseUrl + 'debuff.ogg'), 
-    successfull: new Audio(baseUrl + 'successful.ogg'), 
-    achievement: new Audio(baseUrl + 'achievement.ogg'), 
-    legendary: new Audio(baseUrl + 'legendary.ogg'), 
-    unique: new Audio(baseUrl + 'unique.ogg') 
-}; 
+```'),
+    bonus: new Audio(baseUrl + 'bonus.ogg'),
+    debuff: new Audio(baseUrl + 'debuff.ogg'),
+    successfull: new Audio(baseUrl + 'successful.ogg'),
+    achievement: new Audio(baseUrl + 'achievement.ogg'),
+    legendary: new Audio(baseUrl + 'legendary.ogg'),
+    unique: new Audio(baseUrl + 'unique.ogg')
+};
 
-function playSound(soundName) { 
-    if (sounds[soundName]) { 
-        sounds[soundName].currentTime = 0; 
-        sounds[soundName].play().catch(e => console.log("Audio play blocked:", e)); 
-    } 
-} 
+function playSound(soundName) {
+    if (sounds[soundName]) {
+        sounds[soundName].currentTime = 0;
+        sounds[soundName].play().catch(e => console.log("Audio play blocked:", e));
+    }
+}
 
-// --- ИГРОВОЙ КОД --- 
-let tg; 
-try { 
-    tg = window.Telegram.WebApp; 
-    tg.ready(); 
-    tg.expand(); 
-} catch (e) { 
-    tg = { HapticFeedback: { impactOccurred: () => {} } }; 
-} 
+// --- ИГРОВОЙ КОД ---
+let tg;
+try {
+    tg = window.Telegram.WebApp;
+    tg.ready();
+    tg.expand();
+} catch (e) {
+    tg = { HapticFeedback: { impactOccurred: () => {} } };
+}
 
-let state = { 
-    attempts: 3, 
-    catches: [], 
-    bonuses: { mask: false, aquaCount: 0, filter: false, fins: false }, 
-    activeDebuffs: [], 
-    weather: 'sunny', 
-    luckyFisher: false, 
-    bonusCount: 0, 
-    leviathanBonus: 0, 
-    hasMessageInBottle: false, 
-    hasCompass: false, 
-    diceMultiplier: 1 
-}; 
+let state = {
+    attempts: 3,
+    catches: [],
+    bonuses: { mask: false, aquaCount: 0, filter: false, fins: false },
+    activeDebuffs: [],
+    weather: 'sunny',
+    luckyFisher: false,
+    bonusCount: 0,
+    leviathanBonus: 0,
+    hasMessageInBottle: false,
+    hasCompass: false,
+    diceMultiplier: 1
+};
 
-const fishes = ["Палтус", "Палия", "Белый амур", "Щука", "Семга", "Солнечник", "Подкаменщик", "Сом", "Окунь", "Плотва", "Кижуч", "Семотилус", "Меланотения", "Горчак", "Жерех", "Ринихт", "Лосось", "Корюшка", "Судак", "Арктический голец", "Красноперка", "Золотая форель", "Фундулюс", "Озерный сиг", "Карпиодес"]; 
-const trash = ["Старый башмак", "Спутанная леска", "Сломанный поплавок", "Ржавый крючок", "Половина блесны", "Размокший кусок бумаги"]; 
-const legendaryItems = ["Чешуя Левиафана", "Послание в бутылке", "Компас потерянных глубин", "Запечатанный сундук"]; 
-const uniqueItems = ["Глубоководное нечто", "Игральная кость"]; 
+const fishes = ["Палтус", "Палия", "Белый амур", "Щука", "Семга", "Солнечник", "Подкаменщик", "Сом", "Окунь", "Плотва", "Кижуч", "Семотилус", "Меланотения", "Горчак", "Жерех", "Ринихт", "Лосось", "Корюшка", "Судак", "Арктический голец", "Красноперка", "Золотая форель", "Фундулюс", "Озерный сиг", "Карпиодес"];
+const trash = ["Старый башмак", "Спутанная леска", "Сломанный поплавок", "Ржавый крючок", "Половина блесны", "Размокший кусок бумаги"];
+const legendaryItems = ["Чешуя Левиафана", "Послание в бутылке", "Компас потерянных глубин", "Запечатанный сундук"];
+const uniqueItems = ["Глубоководное нечто", "Игральная кость"];
 
-const icons = { 
-    "Палтус": "🐟", "Палия": "🐠", "Белый амур": "🐟", "Щука": "🦈", "Семга": "🍣", "Солнечник": "☀️", "Подкаменщик": "🐡", "Сом": "〰️", "Окунь": "🐟", "Плотва": "🐟", "Кижуч": "🐠", "Семотилус": "🐟", "Меланотения": "🌈", "Горчак": "🐟", "Жерех": "🐟", "Ринихт": "🐟", "Лосось": "🎣", "Корюшка": "🐟", "Судак": "🐟", "Арктический голец": "❄️", "Красноперка": "🎈", "Золотая форель": "✨", "Фундулюс": "🐟", "Озерный сиг": "🐟", "Карпиодес": "🐟", "Старый башмак": "👞", "Спутанная леска": "🧵", "Сломанный поплавок": "🪡", "Ржавый крючок": "🪝", "Половина блесны": "🪙", "Размокший кусок бумаги": "📄", "Чешуя Левиафана": "🐉", "Послание в бутылке": "📜", "Компас потерянных глубин": "🧭", "Запечатанный сундук": "📦", "Глубоководное нечто": "🐙", "Игральная кость": "🎲" 
-}; 
+const icons = {
+    "Палтус": "🐟", "Палия": "🐠", "Белый амур": "🐟", "Щука": "🦈", "Семга": "🍣", "Солнечник": "☀️", "Подкаменщик": "🐡", "Сом": "〰️", "Окунь": "🐟", "Плотва": "🐟", "Кижуч": "🐠", "Семотилус": "🐟", "Меланотения": "🌈", "Горчак": "🐟", "Жерех": "🐟", "Ринихт": "🐟", "Лосось": "🎣", "Корюшка": "🐟", "Судак": "🐟", "Арктический голец": "❄️", "Красноперка": "🎈", "Золотая форель": "✨", "Фундулюс": "🐟", "Озерный сиг": "🐟", "Карпиодес": "🐟", "Старый башмак": "👞", "Спутанная леска": "🧵", "Сломанный поплавок": "🪡", "Ржавый крючок": "🪝", "Половина блесны": "🪙", "Размокший кусок бумаги": "📄", "Чешуя Левиафана": "🐉", "Послание в бутылке": "📜", "Компас потерянных глубин": "🧭", "Запечатанный сундук": "📦", "Глубоководное нечто": "🐙", "Игральная кость": "🎲"
+};
 
-function getWeightIcon(weight) { 
-    if (weight === 0) return ""; 
-    if (weight >= 20.0) return "👽"; 
-    if (weight >= 10.0) return "🏆"; 
-    if (weight >= 7.6) return "🥇"; 
-    if (weight >= 4.6) return "🥈"; 
-    return "🥉"; 
-} 
+function getWeightIcon(weight) {
+    if (weight === 0) return "";
+    if (weight >= 20.0) return "👽";
+    if (weight >= 10.0) return "🏆";
+    if (weight >= 7.6) return "🥇";
+    if (weight >= 4.6) return "🥈";
+    return "🥉";
+}
 
-/* script.js */
-// --- ИНИЦИАЛИЗАЦИЯ И СОБЫТИЯ ---
-document.addEventListener('DOMContentLoaded', () => { 
-    // Назначаем события через addEventListener для надежности
+// ИНИЦИАЛИЗАЦИЯ
+document.addEventListener('DOMContentLoaded', () => {
+    // Назначаем клики заново
     const actionBtn = document.getElementById('action-btn');
     const handbookBtn = document.getElementById('handbook-btn');
-    const weatherIcon = document.getElementById('weather-icon');
+    const weatherBtn = document.getElementById('weather-icon');
 
-    if(actionBtn) actionBtn.addEventListener('click', startFishing); 
-    if(handbookBtn) handbookBtn.addEventListener('click', toggleHandbook);
-    if(weatherIcon) weatherIcon.addEventListener('click', (e) => {
-        e.stopPropagation(); // Чтобы клик не уходил глубже
+    if (actionBtn) actionBtn.addEventListener('click', startFishing);
+    if (handbookBtn) handbookBtn.addEventListener('click', toggleHandbook);
+    if (weatherBtn) weatherBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
         toggleWeatherHelp();
     });
 
-    updateWeather(); 
-    setInterval(updateWeather, 7200000); 
-    updateUI(); 
-}); 
+    updateWeather();
+    setInterval(updateWeather, 7200000);
+    updateUI();
+});
 
 function toggleHandbook() {
     const modal = document.getElementById('handbook-modal');
@@ -90,13 +89,12 @@ function toggleHandbook() {
     }
 }
 
-// ИСПРАВЛЕНО: Полная отрисовка данных из handbook.js
 function renderHandbook() {
     const container = document.getElementById('handbook-data');
     if (container.innerHTML !== "") return;
 
     if (typeof gameHandbook === 'undefined') {
-        container.innerHTML = "Ошибка: handbook.js не загружен.";
+        container.innerHTML = "<p style='color:red'>Ошибка: Данные справочника не загружены!</p>";
         return;
     }
 
@@ -104,7 +102,6 @@ function renderHandbook() {
     for (let section in gameHandbook) {
         const data = gameHandbook[section];
         html += `<h2>${data.title}</h2><ul>`;
-        
         if (Array.isArray(data.items)) {
             data.items.forEach(item => { html += `<li>${item}</li>`; });
         } else {
@@ -117,25 +114,37 @@ function renderHandbook() {
     container.innerHTML = html;
 }
 
-function toggleWeatherHelp() { 
-    const el = document.getElementById('weather-help'); 
-    const helpText = { 
-        'sunny': '☀️ Солнечно: Шанс атаки чайки! Она ворует рыбу.', 
-        'rain': '🌧️ Дождь: Появление утки. Снижает вес улова.', 
-        'calm': '🌊 Штиль: Высокий шанс бонусов. Опасайтесь Раков!', 
-        'storm': '🌪️ Шторм: Много хлама, но дебаффы не работают.', 
-        'fog': '🌫️ Туман: Повышенный шанс легендарных предметов!' 
-    }; 
-
-    document.getElementById('help-text').innerText = helpText[state.weather] || 'Обычная погода'; 
-    el.classList.add('active'); 
+function toggleWeatherHelp() {
+    const el = document.getElementById('weather-help');
+    const helpText = {
+        'sunny': '☀️ Солнечно: Шанс атаки чайки! Она ворует рыбу.',
+        'rain': '🌧️ Дождь: Появление утки. Снижает вес улова.',
+        'calm': '🌊 Штиль: Идеально для бонусов. Опасайтесь Рака!',
+        'storm': '🌪️ Шторм: Много хлама, но дебаффы не работают.',
+        'fog': '🌫️ Туман: Шанс легендарок повышен на 3%!'
+    };
+    
+    let content = `<p style="font-size:18px; margin-bottom:15px;">${helpText[state.weather] || 'Обычная погода'}</p>`;
+    if (state.hasCompass) {
+        content += `<button class="fish-btn" onclick="changeWeather()" style="background:#2481cc; color:white;">Сменить погоду Компасом</button>`;
+    }
+    
+    document.getElementById('help-text').innerHTML = content;
+    el.classList.add('active');
 }
 
-// Глобальные функции для закрытия (из HTML)
-window.toggleHandbook = toggleHandbook;
-window.toggleWeatherHelp = () => {
+function changeWeather() {
+    updateWeather();
     document.getElementById('weather-help').classList.remove('active');
-}; 
+}
+
+function updateWeather() {
+    const weathers = ['sunny', 'sunny', 'rain', 'rain', 'calm', 'calm', 'storm', 'fog'];
+    state.weather = weathers[Math.floor(Math.random() * weathers.length)];
+    document.getElementById('weather-icon').innerText = {
+        'sunny': '☀️', 'rain': '🌧️', 'calm': '🌊', 'storm': '🌪️', 'fog': '🌫️'
+    }[state.weather];
+} 
 
 function startFishing() { 
     playSound('throw'); 
