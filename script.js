@@ -2,8 +2,7 @@
 const baseUrl = 'https://raw.githubusercontent.com/furbolog-hub/Fish_game/main/sounds/'; 
 
 const sounds = { 
-    throw: new Audio(baseUrl + 'throw.ogg
-```'), 
+    throw: new Audio(baseUrl + 'throw.ogg'), 
     bonus: new Audio(baseUrl + 'bonus.ogg'), 
     debuff: new Audio(baseUrl + 'debuff.ogg'), 
     successfull: new Audio(baseUrl + 'successful.ogg'), 
@@ -40,7 +39,11 @@ let state = {
     leviathanBonus: 0, 
     hasMessageInBottle: false, 
     hasCompass: false, 
-    diceMultiplier: 1 
+    diceMultiplier: 1,
+    // Переменные для расширенных достижений
+    filtersUsed: 0,
+    wasAttacked: false,
+    transmutedCount: 0
 }; 
 
 const fishes = ["Палтус", "Палия", "Белый амур", "Щука", "Семга", "Солнечник", "Подкаменщик", "Сом", "Окунь", "Плотва", "Кижуч", "Семотилус", "Меланотения", "Горчак", "Жерех", "Ринихт", "Лосось", "Корюшка", "Судак", "Арктический голец", "Красноперка", "Золотая форель", "Фундулюс", "Озерный сиг", "Карпиодес"]; 
@@ -52,6 +55,15 @@ const icons = {
     "Палтус": "🐟", "Палия": "🐠", "Белый амур": "🐟", "Щука": "🦈", "Семга": "🍣", "Солнечник": "☀️", "Подкаменщик": "🐡", "Сом": "〰️", "Окунь": "🐟", "Плотва": "🐟", "Кижуч": "🐠", "Семотилус": "🐟", "Меланотения": "🌈", "Горчак": "🐟", "Жерех": "🐟", "Ринихт": "🐟", "Лосось": "🎣", "Корюшка": "🐟", "Судак": "🐟", "Арктический голец": "❄️", "Красноперка": "🎈", "Золотая форель": "✨", "Фундулюс": "🐟", "Озерный сиг": "🐟", "Карпиодес": "🐟", "Старый башмак": "👞", "Спутанная леска": "🧵", "Сломанный поплавок": "🪡", "Ржавый крючок": "🪝", "Половина блесны": "🪙", "Размокший кусок бумаги": "📄", "Чешуя Левиафана": "🐉", "Послание в бутылке": "📜", "Компас потерянных глубин": "🧭", "Запечатанный сундук": "📦", "Глубоководное нечто": "🐙", "Игральная кость": "🎲" 
 }; 
 
+function getWeightIcon(weight) { 
+    if (weight === 0) return ""; 
+    if (weight >= 20.0) return "👽"; 
+    if (weight >= 10.0) return "🏆"; 
+    if (weight >= 7.6) return "🥇"; 
+    if (weight >= 4.6) return "🥈"; 
+    return "🥉"; 
+} 
+
 // ИНИЦИАЛИЗАЦИЯ СОБЫТИЙ
 document.addEventListener('DOMContentLoaded', () => { 
     const actionBtn = document.getElementById('action-btn');
@@ -62,7 +74,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (handbookBtn) handbookBtn.addEventListener('click', toggleHandbook);
     if (weatherIcon) {
         weatherIcon.addEventListener('click', (e) => {
-            e.stopPropagation(); // Блокируем всплытие для корректной работы в Telegram
+            e.stopPropagation();
             toggleWeatherHelp();
         });
     }
@@ -71,15 +83,6 @@ document.addEventListener('DOMContentLoaded', () => {
     setInterval(updateWeather, 7200000); 
     updateUI(); 
 }); 
-
-function getWeightIcon(weight) { 
-    if (weight === 0) return ""; 
-    if (weight >= 20.0) return "👽"; 
-    if (weight >= 10.0) return "🏆"; 
-    if (weight >= 7.6) return "🥇"; 
-    if (weight >= 4.6) return "🥈"; 
-    return "🥉"; 
-} 
 
 function toggleHandbook() {
     const modal = document.getElementById('handbook-modal');
@@ -96,7 +99,7 @@ function renderHandbook() {
     if (container.innerHTML !== "") return;
 
     if (typeof gameHandbook === 'undefined') {
-        container.innerHTML = "Ошибка: Данные справочника не найдены.";
+        container.innerHTML = "Ошибка: Справочник не загружен.";
         return;
     }
 
@@ -130,7 +133,7 @@ function toggleWeatherHelp() {
             'fog': '🌫️ Туман: Повышенный шанс легендарных предметов.' 
         }; 
 
-        let htmlContent = `<p style="font-size:18px;">${helpText[state.weather]}</p>`; 
+        let htmlContent = `<p style="font-size:18px;">${helpText[state.weather] || 'Обычная погода'}</p>`; 
         if (state.hasCompass) { 
             htmlContent += `<button class="fish-btn" onclick="changeWeather()" style="background:#2481cc; color:white; border-radius:8px; margin-top:10px;">Сменить погоду</button>`; 
         } 
@@ -186,6 +189,7 @@ function startFishing() {
 
             if (state.bonuses.filter) { 
                 state.bonuses.filter = false; 
+                state.filtersUsed++;
             } else { 
                 state.attempts--; 
             } 
@@ -212,15 +216,18 @@ function handleUnique() {
     alert("Редкий артефакт: " + uItem); 
 
     if (uItem === "Глубоководное нечто") { 
+        let count = 0;
         state.catches.forEach(c => { 
             if (c.isTrash) { 
                 c.name = fishes[Math.floor(Math.random() * fishes.length)]; 
                 c.weight = parseFloat((20 + Math.random() * 10).toFixed(1)); 
                 c.isTrash = false; 
                 c.type = 'catch'; 
+                count++;
             } 
         }); 
-        alert("🐙 Хлам превращен в глубинных гигантов!"); 
+        state.transmutedCount += count;
+        alert(`🐙 Хлам превращен в глубинных гигантов: ${count} шт.!`); 
     } else { 
         showDiceModal(); 
     } 
@@ -269,13 +276,13 @@ function handleLegendary() {
     if (item === "Чешуя Левиафана") { 
         state.attempts += 5; 
         state.leviathanBonus = 2.0; 
-        alert("🐉 Чешуя Левиафана! (+5 попыток, +2кг к каждой рыбе)"); 
+        alert("🐉 Чешуя Левиафана! (+5 попыток, бонус к весу)"); 
     } else if (item === "Послание в бутылке") { 
         state.hasMessageInBottle = true; 
-        alert("📜 Послание в бутылке! Теперь краденая рыба вернется."); 
+        alert("📜 Послание в бутылке! (Секрет возврата веса)"); 
     } else if (item === "Компас потерянных глубин") { 
         state.hasCompass = true; 
-        alert("🧭 Компас! Теперь вы можете менять погоду."); 
+        alert("🧭 Компас потерянных глубин! (Управление погодой)"); 
     } else if (item === "Запечатанный сундук") { 
         let count = 3 + Math.floor(Math.random() * 3); 
         for(let i = 0; i < count; i++) { catchFish(false, true); } 
@@ -367,9 +374,11 @@ function triggerDebuff() {
         if (fish) { 
             fish.isStolen = true; 
             debuffText = "Дебаф: Чайка стащила рыбу!"; 
+            state.wasAttacked = true;
         } 
     } else if (state.weather === 'rain') { 
         debuffText = "Дебаф: Утка (малый вес/хлам)"; 
+        state.wasAttacked = true;
     } 
 
     if (debuffText && !state.activeDebuffs.includes(debuffText)) { 
@@ -480,6 +489,12 @@ function endGame() {
     if (validCatches.length > 0 && validCatches.every(c => c.weight >= 10.0)) achs.push("🦈 Акула бизнеса"); 
     if (validCatches.length > 0 && validCatches.every(c => c.weight < 2.5)) achs.push("🐱 Аквариумный мастер"); 
     if (state.catches.length > 0 && state.catches.every(c => c.isTrash || c.isStolen)) achs.push("🗑️ Повелитель башмаков"); 
+    
+    // РАСШИРЕННЫЕ ДОСТИЖЕНИЯ
+    if (state.filtersUsed >= 2) achs.push("🌿 Эколог");
+    if (total >= 500) achs.push("🐘 Тяжеловес");
+    if (state.transmutedCount >= 5) achs.push("🔬 Трансмутатор");
+    if (!state.wasAttacked && state.catches.length > 5) achs.push("🛡️ Неуловимый");
 
     if (achs.length > 0) playSound('achievement'); 
 
