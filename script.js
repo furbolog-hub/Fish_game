@@ -2,9 +2,9 @@
 const baseUrl = 'https://raw.githubusercontent.com/furbolog-hub/Fish_game/main/sounds/'; 
 
 const sounds = { 
-throw: new Audio(baseUrl + 'throw.ogg'), 
-bonus
-```: new Audio(baseUrl + 'bonus.ogg'), 
+throw: new Audio(baseUrl + 'throw
+```.ogg'), 
+bonus: new Audio(baseUrl + 'bonus.ogg'), 
 debuff: new Audio(baseUrl + 'debuff.ogg'), 
 successfull: new Audio(baseUrl + 'successful.ogg'), 
 achievement: new Audio(baseUrl + 'achievement.ogg'), 
@@ -158,7 +158,7 @@ const helpText = {
 
 let htmlContent = `<p>${helpText[state.weather]}</p>`; 
 if (state.hasCompass) { 
-htmlContent += `<button onclick="changeWeather()" style="width:100%; padding:10px; margin-top:10px;">Сменить погоду</button>`; 
+htmlContent += `<button onclick="changeWeather()" style="width:100%; padding:10px; margin-top:10px; border-radius:10px;">Сменить погоду</button>`; 
 } 
 
 document.getElementById('help-text').innerHTML = htmlContent; 
@@ -265,7 +265,7 @@ c.type = 'catch';
 count++;
 } 
 }); 
-state.transmutedCount = count;
+state.transmutedCount += count;
 alert(`🐙 Трансформация: ${count} ед. хлама превращены в гигантов!`); 
 } else { 
 showDiceModal(); 
@@ -477,7 +477,7 @@ li.className = 'strikethrough';
 li.innerText = `${icon} ${c.name} (Украдено: ${c.weight.toFixed(1)} кг)`; 
 } 
 } else { 
-// ПРИОРИТЕТ ЦВЕТОВ: Мусор (Серый) -> Бонус -> Дебаф -> Уникальный -> Легендарный
+// Цвета: Мусор (Серый) -> Бонус -> Дебаф -> Уникальный -> Легендарный
 if (c.isTrash) li.className = 'log-trash';
 else if (c.type === 'bonus') li.className = 'log-bonus';
 else if (c.type === 'debuff') li.className = 'log-debuff';
