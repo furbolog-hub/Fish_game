@@ -330,21 +330,31 @@ state.catches.push({ name, weight, isTrash, type, isStolen: false, isRemoved, bo
 } 
 
 function renderHistory() { 
-const list = document.getElementById('history-list'); list.innerHTML = ''; 
-state.catches.forEach(c => { 
-const li = document.createElement('li'); const icon = icons[c.name] || "🎣"; const weightRank = getWeightIcon(c.weight); 
-if (c.isRemoved) { li.style.color = "#ffc107"; li.style.textDecoration = "line-through"; li.innerText = `${icon} ${c.name} (Удалено)`; } 
-else if (c.isStolen) { 
-if (state.hasMessageInBottle) { li.innerText = `${icon} ${c.name} (Вернуто: ${c.weight.toFixed(1)} кг)`; } 
-else { li.className = 'strikethrough'; li.innerText = `${icon} ${c.name} (Украдено: ${c.weight.toFixed(1)} кг)`; } 
-} else { 
-li.className = uniqueItems.includes(c.name) ? 'log-unique' : (legendaryItems.includes(c.name) ? 'log-legendary' : (c.type === 'bonus' ? 'log-bonus' : (c.type === 'debuff' ? 'log-debuff' : ''))); 
-let chestIcon = c.isFromChest ? "📦 " : ""; let bonusStr = c.bonusWeight > 0 ? ` <span style="color:#ff00ff">(+${c.bonusWeight.toFixed(1)}кг)</span>` : ''; 
-li.innerHTML = `${chestIcon}${icon} ${weightRank} ${c.name} ${c.weight > 0 ? c.weight.toFixed(1)+' кг' : ''} ${bonusStr}`; 
-} 
-list.appendChild(li); 
-}); 
-} 
+    const list = document.getElementById('history-list'); 
+    list.innerHTML = ''; 
+    state.catches.forEach(c => { 
+        const li = document.createElement('li'); 
+        const icon = icons[c.name] || "🎣"; 
+        const weightRank = getWeightIcon(c.weight); 
+        const isLegendary = legendaryItems.includes(c.name); 
+        const isUnique = uniqueItems.includes(c.name); 
+
+        if (c.isRemoved) { 
+            li.style.color = "#ffc107"; li.style.textDecoration = "line-through"; 
+            li.innerText = `${icon} ${c.name} (Удалено)`; 
+        } else if (c.isStolen) { 
+            if (state.hasMessageInBottle) { li.innerText = `${icon} ${c.name} (Вернуто: ${c.weight.toFixed(1)} кг)`; } 
+            else { li.className = 'strikethrough'; li.innerText = `${icon} ${c.name} (Украдено: ${c.weight.toFixed(1)} кг)`; } 
+        } else { 
+            // Добавлена проверка c.isTrash для применения серого цвета
+            li.className = c.isTrash ? 'log-trash' : (isUnique ? 'log-unique' : (isLegendary ? 'log-legendary' : (c.type === 'bonus' ? 'log-bonus' : (c.type === 'debuff' ? 'log-debuff' : '')))); 
+            let chestIcon = c.isFromChest ? "📦 " : ""; 
+            let bonusStr = c.bonusWeight > 0 ? ` <span style="color:#ff00ff">(+${c.bonusWeight.toFixed(1)}кг)</span>` : ''; 
+            li.innerHTML = `${chestIcon}${icon} ${weightRank} ${c.name} ${c.weight > 0 ? c.weight.toFixed(1)+' кг' : ''} ${bonusStr}`; 
+        } 
+        list.appendChild(li); 
+    }); 
+}
 
 function updateUI() { 
 let currentSum = state.catches.filter(c => !c.isRemoved && (c.type !== 'catch' || !c.isStolen || state.hasMessageInBottle)).reduce((s, c) => s + c.weight, 0); 
