@@ -474,12 +474,12 @@ function endGame() {
     const timeStr = now.toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' }); 
 
     document.getElementById('final-result').innerHTML = ` 
-        <div style="text-align: center;"> 
-            <strong style="font-size: 24px;">🏁 Итог: ${total.toFixed(2)} кг</strong> 
-            <div style="margin: 15px 0; color: #ffd700; font-size: 18px; line-height: 1.5;">${achs.join('<br>')}</div> 
-            <div style="display: inline-block; padding: 10px 20px; background: rgba(255, 255, 255, 0.2); border-radius: 12px; color: #fff; font-weight: bold; font-size: 14px; backdrop-filter: blur(5px);"> 
-                ${dateStr} | ${timeStr} 
-            </div> 
+        <div style="text-align: center; margin-top: 20px;">
+            <strong style="font-size: 24px;">🏁 Итог: ${total.toFixed(2)} кг</strong>
+            <div style="margin: 15px 0; color: #ffd700; font-size: 18px; line-height: 1.5;">${achs.join('<br>')}</div>
+            <div style="display: inline-block; padding: 10px 20px; background: rgba(255, 255, 255, 0.2); border-radius: 12px; color: #fff; font-weight: bold; font-size: 14px; backdrop-filter: blur(5px);">
+                ${dateStr} | ${timeStr}
+            </div>
         </div>`; 
     document.getElementById('final-result').classList.remove('hidden'); 
 }
