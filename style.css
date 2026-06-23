@@ -125,9 +125,9 @@ box-sizing: border-box;
 /* Кнопки в модальном окне (Маска, Кость) — ТЕПЕРЬ ШИРОКИЕ */
 .fish-btn { 
     width: 100%; 
-    min-height: 55px;
+    min-height: 50px;
     padding: 12px 20px; 
-    margin: 8px 0; 
+    margin: 10px 0; 
     font-size: 18px; 
     font-weight: bold;
     cursor: pointer; 
