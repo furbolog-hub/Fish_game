@@ -2,8 +2,7 @@
 const baseUrl = 'https://raw.githubusercontent.com/furbolog-hub/Fish_game/main/sounds/'; 
 
 const sounds = { 
-    throw: new
-``` Audio(baseUrl + 'throw.ogg'), 
+    throw: new Audio(baseUrl + 'throw.ogg'), 
     bonus: new Audio(baseUrl + 'bonus.ogg'), 
     debuff: new Audio(baseUrl + 'debuff.ogg'), 
     successfull: new Audio(baseUrl + 'successful.ogg'), 
@@ -68,7 +67,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const actionBtn = document.getElementById('action-btn'); 
     const handbookBtn = document.getElementById('handbook-btn'); 
     const weatherIcon = document.getElementById('weather-icon'); 
-    
     if (actionBtn) actionBtn.addEventListener('click', startFishing); 
     if (handbookBtn) handbookBtn.addEventListener('click', toggleHandbook); 
     if (weatherIcon) { 
@@ -104,13 +102,9 @@ function renderHandbook() {
         const data = gameHandbook[section]; 
         html += `<h2>${data.title}</h2><ul>`; 
         if (Array.isArray(data.items)) { 
-            data.items.forEach(item => { 
-                html += `<li>${item}</li>`; 
-            }); 
+            data.items.forEach(item => { html += `<li>${item}</li>`; }); 
         } else { 
-            for (let key in data.items) { 
-                html += `<li><strong>${key}:</strong> ${data.items[key]}</li>`; 
-            } 
+            for (let key in data.items) { html += `<li><strong>${key}:</strong> ${data.items[key]}</li>`; } 
         } 
         html += "</ul>"; 
     } 
@@ -127,9 +121,9 @@ function toggleWeatherHelp() {
             'storm': '🌪️ Шторм: Много хлама, дебаффы не работают.', 
             'fog': '🌫️ Туман: Повышенный шанс легендарных предметов.' 
         }; 
-        let htmlContent = `<p style="font-size:18px;">${helpText[state.weather] || 'Обычная погода'}</p>`; 
+        let htmlContent = `${helpText[state.weather] || 'Обычная погода'}`; 
         if (state.hasCompass) { 
-            htmlContent += `<button onclick="changeWeather()" class="fish-btn" style="background:#2481cc; color:white; border-radius:8px; margin-top:10px;">Сменить погоду</button>`; 
+            htmlContent += `<br><button onclick="changeWeather()" style="margin-top:10px; padding:5px 10px; border-radius:8px;">Сменить погоду</button>`; 
         } 
         document.getElementById('help-text').innerHTML = htmlContent; 
         el.classList.add('active'); 
@@ -160,34 +154,25 @@ function startFishing() {
         let rand = Math.random(); 
         let legendaryChance = (state.weather === 'fog') ? 0.03 : 0.01; 
         if (rand < 0.003) { 
-            playSound('unique'); 
-            handleUnique(); 
+            playSound('unique'); handleUnique(); 
         } else if (rand < legendaryChance) { 
-            playSound('legendary'); 
-            handleLegendary(); 
+            playSound('legendary'); handleLegendary(); 
         } else if (state.bonuses.mask) { 
-            catchFish(true); 
-            state.bonuses.mask = false; 
-            state.attempts--; 
+            catchFish(true); state.bonuses.mask = false; state.attempts--; 
         } else if (rand < getBonusChance()) { 
-            playSound('bonus'); 
-            handleBonus(); 
+            playSound('bonus'); handleBonus(); 
         } else if (rand < ((state.weather === 'storm') ? 0.7 : 0.4)) { 
             let item = trash[Math.floor(Math.random() * trash.length)]; 
             logCatch(item, 0, true, 'catch'); 
             if (state.bonuses.filter) { 
-                state.bonuses.filter = false; 
-                state.filtersUsed++; 
+                state.bonuses.filter = false; state.filtersUsed++; 
             } else { 
                 state.attempts--; 
             } 
         } else { 
-            catchFish(false); 
-            state.attempts--; 
+            catchFish(false); state.attempts--; 
         } 
-        triggerDebuff(); 
-        updateUI(); 
-        renderHistory(); 
+        triggerDebuff(); updateUI(); renderHistory(); 
         if (state.attempts === 0 && document.getElementById('modal').classList.contains('hidden')) { 
             endGame(); 
         } else { 
@@ -206,16 +191,12 @@ function handleUnique() {
             if (c.isTrash) { 
                 c.name = fishes[Math.floor(Math.random() * fishes.length)]; 
                 c.weight = parseFloat((20 + Math.random() * 10).toFixed(1)); 
-                c.isTrash = false; 
-                c.type = 'catch'; 
-                count++; 
+                c.isTrash = false; c.type = 'catch'; count++; 
             } 
         }); 
         state.transmutedCount += count; 
         alert(`🐙 Хлам превращен в глубинных гигантов: ${count} шт.!`); 
-    } else { 
-        showDiceModal(); 
-    } 
+    } else { showDiceModal(); } 
 } 
 
 function showDiceModal() { 
@@ -224,56 +205,37 @@ function showDiceModal() {
     const list = document.getElementById('modal-fish-list'); 
     list.innerHTML = '<h3>Игральная кость</h3>'; 
     const rollBtn = document.createElement('button'); 
-    rollBtn.className = 'fish-btn'; 
-    rollBtn.innerText = "Бросить кость"; 
+    rollBtn.className = 'fish-btn'; rollBtn.innerText = "Бросить кость"; 
     rollBtn.onclick = () => { 
         let points = Math.floor(Math.random() * 6) + 1; 
-        list.innerHTML = `<p style="font-size:20px;">🎲 Выпало: ${points}</p>`; 
+        list.innerHTML = `🎲 Выпало: ${points}`; 
         const btn1 = document.createElement('button'); 
-        btn1.className = 'fish-btn'; 
-        btn1.innerText = `+${points} попыток`; 
-        btn1.onclick = () => { 
-            state.attempts += points; 
-            closeDice(); 
-        }; 
+        btn1.className = 'fish-btn'; btn1.innerText = `+${points} попыток`; 
+        btn1.onclick = () => { state.attempts += points; closeDice(); }; 
         const btn2 = document.createElement('button'); 
-        btn2.className = 'fish-btn'; 
-        btn2.innerText = `Множитель x${(1 + (points * 0.1)).toFixed(1)}`; 
-        btn2.onclick = () => { 
-            state.diceMultiplier = (1 + (points * 0.1)); 
-            closeDice(); 
-        }; 
-        list.appendChild(btn1); 
-        list.appendChild(btn2); 
+        btn2.className = 'fish-btn'; btn2.innerText = `Множитель x${(1 + (points * 0.1)).toFixed(1)}`; 
+        btn2.onclick = () => { state.diceMultiplier = (1 + (points * 0.1)); closeDice(); }; 
+        list.appendChild(btn1); list.appendChild(btn2); 
     }; 
-    list.appendChild(rollBtn); 
-    modal.classList.remove('hidden'); 
+    list.appendChild(rollBtn); modal.classList.remove('hidden'); 
 } 
 
 function closeDice() { 
     document.getElementById('modal').classList.add('hidden'); 
-    document.getElementById('action-btn').disabled = false; 
-    updateUI(); 
+    document.getElementById('action-btn').disabled = false; updateUI(); 
 } 
 
 function handleLegendary() { 
     let item = legendaryItems[Math.floor(Math.random() * legendaryItems.length)]; 
     logCatch(item, 0, false, 'legendary'); 
     if (item === "Чешуя Левиафана") { 
-        state.attempts += 5; 
-        state.leviathanBonus = 2.0; 
-        alert("🐉 Чешуя Левиафана! (+5 попыток, бонус к весу)"); 
+        state.attempts += 5; state.leviathanBonus = 2.0; alert("🐉 Чешуя Левиафана! (+5 попыток, бонус к весу)"); 
     } else if (item === "Послание в бутылке") { 
-        state.hasMessageInBottle = true; 
-        alert("📜 Послание в бутылке! (Секрет возврата веса)"); 
+        state.hasMessageInBottle = true; alert("📜 Послание в бутылке! (Секрет возврата веса)"); 
     } else if (item === "Компас потерянных глубин") { 
-        state.hasCompass = true; 
-        alert("🧭 Компас потерянных глубин! (Управление погодой)"); 
+        state.hasCompass = true; alert("🧭 Компас потерянных глубин! (Управление погодой)"); 
     } else if (item === "Запечатанный сундук") { 
-        let count = 3 + Math.floor(Math.random() * 3); 
-        for(let i = 0; i < count; i++) { 
-            catchFish(false, true); 
-        } 
+        let count = 3 + Math.floor(Math.random() * 3); for(let i = 0; i < count; i++) { catchFish(false, true); } 
         alert("📦 Запечатанный сундук! (Внутри много рыбы)"); 
     } 
 } 
@@ -284,30 +246,18 @@ function catchFish(isMasked, isFromChest = false) {
     let name = fishes[Math.floor(Math.random() * fishes.length)]; 
     let weight; 
     if (isDuck) { 
-        if (Math.random() < 0.5) { 
-            name = trash[Math.floor(Math.random() * trash.length)]; 
-            weight = 0; 
-        } else { 
-            weight = parseFloat((0.1 + Math.random() * 0.4).toFixed(1)); 
-        } 
+        if (Math.random() < 0.5) { name = trash[Math.floor(Math.random() * trash.length)]; weight = 0; } 
+        else { weight = parseFloat((0.1 + Math.random() * 0.4).toFixed(1)); } 
     } else { 
-        if (isMasked) { 
-            weight = parseFloat((6.5 + Math.random() * 3.4).toFixed(1)); 
-        } else if (Math.random() < 0.05) { 
-            weight = parseFloat((10.0 + Math.random() * 5.0).toFixed(1)); 
-            state.luckyFisher = true; 
-        } else { 
-            weight = parseFloat((0.1 + Math.random() * 6.4).toFixed(1)); 
-        } 
+        if (isMasked) { weight = parseFloat((6.5 + Math.random() * 3.4).toFixed(1)); } 
+        else if (Math.random() < 0.05) { weight = parseFloat((10.0 + Math.random() * 5.0).toFixed(1)); state.luckyFisher = true; } 
+        else { weight = parseFloat((0.1 + Math.random() * 6.4).toFixed(1)); } 
     } 
     weight += state.leviathanBonus; 
     let bonusWeight = 0; 
     if (isRak) { 
         if (weight > 2.5) weight = 2.5; 
-        if (state.hasMessageInBottle) { 
-            weight += 2.5; 
-            bonusWeight = 2.5; 
-        } 
+        if (state.hasMessageInBottle) { weight += 2.5; bonusWeight = 2.5; } 
     } 
     if (weight >= 10.0) playSound('successfull'); 
     logCatch(name, weight, (weight === 0 || trash.includes(name)), 'catch', false, bonusWeight, isFromChest); 
@@ -315,57 +265,32 @@ function catchFish(isMasked, isFromChest = false) {
 } 
 
 function handleBonus() { 
-    state.bonusCount++; 
-    let b = Math.random(); 
+    state.bonusCount++; let b = Math.random(); 
     if (b < 0.2) { 
-        alert("🎣 Катушка! (+1 попытка)"); 
-        logCatch("Бонус: Катушка (+1)", 0, false, 'bonus'); 
-        state.attempts++; 
+        alert("🎣 Катушка! (+1 попытка)"); logCatch("Бонус: Катушка (+1)", 0, false, 'bonus'); state.attempts++; 
     } else if (b < 0.4) { 
-        state.bonuses.fins = true; 
-        alert("🤿 Ласты! x2 улов"); 
-        logCatch("Бонус: Ласты (x2)", 0, false, 'bonus'); 
+        state.bonuses.fins = true; alert("🤿 Ласты! x2 улов"); logCatch("Бонус: Ласты (x2)", 0, false, 'bonus'); 
     } else if (b < 0.6) { 
-        state.bonuses.mask = true; 
-        alert("🤿 Маска! Скан глубин..."); 
-        showModal(); 
-        logCatch("Бонус: Маска", 0, false, 'bonus'); 
+        state.bonuses.mask = true; alert("🤿 Маска! Скан глубин..."); showModal(); logCatch("Бонус: Маска", 0, false, 'bonus'); 
     } else if (b < 0.8) { 
-        state.bonuses.aquaCount++; 
-        alert("🌊 Акваланг! x3 за лучшую рыбу"); 
-        logCatch("Бонус: Акваланг", 0, false, 'bonus'); 
+        state.bonuses.aquaCount++; alert("🌊 Акваланг! x3 за лучшую рыбу"); logCatch("Бонус: Акваланг", 0, false, 'bonus'); 
     } else { 
-        state.bonuses.filter = true; 
-        alert("🌿 Фильтр! Защита от мусора."); 
-        logCatch("Бонус: Фильтр", 0, false, 'bonus'); 
+        state.bonuses.filter = true; alert("🌿 Фильтр! Защита от мусора."); logCatch("Бонус: Фильтр", 0, false, 'bonus'); 
     } 
 } 
 
-function getBonusChance() { 
-    return (state.weather === 'calm') ? 0.3 : 0.15; 
-} 
+function getBonusChance() { return (state.weather === 'calm') ? 0.3 : 0.15; } 
 
 function triggerDebuff() { 
     if (state.weather === 'storm' || Math.random() > 0.25) return; 
-    let type = Math.random(); 
-    let debuffText = ""; 
-    if (type < 0.33 && state.weather === 'calm') { 
-        debuffText = "Дебаф: Рак (вес до 2.5кг)"; 
-    } else if (type < 0.66 && state.weather === 'sunny') { 
+    let type = Math.random(); let debuffText = ""; 
+    if (type < 0.33 && state.weather === 'calm') { debuffText = "Дебаф: Рак (вес до 2.5кг)"; } 
+    else if (type < 0.66 && state.weather === 'sunny') { 
         let fish = state.catches.find(c => !c.isTrash && !c.isStolen && c.type === 'catch'); 
-        if (fish) { 
-            fish.isStolen = true; 
-            debuffText = "Дебаф: Чайка стащила рыбу!"; 
-            state.wasAttacked = true; 
-        } 
-    } else if (state.weather === 'rain') { 
-        debuffText = "Дебаф: Утка (малый вес/хлам)"; 
-        state.wasAttacked = true; 
-    } 
+        if (fish) { fish.isStolen = true; debuffText = "Дебаф: Чайка стащила рыбу!"; state.wasAttacked = true; } 
+    } else if (state.weather === 'rain') { debuffText = "Дебаф: Утка (малый вес/хлам)"; state.wasAttacked = true; } 
     if (debuffText && !state.activeDebuffs.includes(debuffText)) { 
-        playSound('debuff'); 
-        state.activeDebuffs.push(debuffText); 
-        logCatch(debuffText, 0, false, 'debuff'); 
+        playSound('debuff'); state.activeDebuffs.push(debuffText); logCatch(debuffText, 0, false, 'debuff'); 
     } 
 } 
 
@@ -374,31 +299,18 @@ function logCatch(name, weight, isTrash, type, isRemoved = false, bonusWeight = 
 } 
 
 function renderHistory() { 
-    const list = document.getElementById('history-list'); 
-    list.innerHTML = ''; 
+    const list = document.getElementById('history-list'); list.innerHTML = ''; 
     state.catches.forEach(c => { 
-        const li = document.createElement('li'); 
-        const icon = icons[c.name] || "🎣"; 
-        const weightRank = getWeightIcon(c.weight); 
-        const isLegendary = legendaryItems.includes(c.name); 
-        const isUnique = uniqueItems.includes(c.name); 
+        const li = document.createElement('li'); const icon = icons[c.name] || "🎣"; 
+        const weightRank = getWeightIcon(c.weight); const isLegendary = legendaryItems.includes(c.name); const isUnique = uniqueItems.includes(c.name); 
         if (c.isRemoved) { 
-            li.style.color = "#ffc107"; 
-            li.style.textDecoration = "line-through"; 
-            li.innerText = `${icon} ${c.name} (Удалено)`; 
+            li.style.color = "#ffc107"; li.style.textDecoration = "line-through"; li.innerText = `${icon} ${c.name} (Удалено)`; 
         } else if (c.isStolen) { 
-            if (state.hasMessageInBottle) { 
-                li.innerText = `${icon} ${c.name} (Вернуто: ${c.weight.toFixed(1)} кг)`; 
-            } else { 
-                li.className = 'strikethrough'; 
-                li.innerText = `${icon} ${c.name} (Украдено: ${c.weight.toFixed(1)} кг)`; 
-            } 
+            if (state.hasMessageInBottle) { li.innerText = `${icon} ${c.name} (Вернуто: ${c.weight.toFixed(1)} кг)`; } 
+            else { li.className = 'strikethrough'; li.innerText = `${icon} ${c.name} (Украдено: ${c.weight.toFixed(1)} кг)`; } 
         } else { 
-            if (c.isTrash) { 
-                li.className = 'log-trash'; 
-            } else { 
-                li.className = isUnique ? 'log-unique' : (isLegendary ? 'log-legendary' : (c.type === 'bonus' ? 'log-bonus' : (c.type === 'debuff' ? 'log-debuff' : ''))); 
-            } 
+            if (c.isTrash) { li.className = 'log-trash'; } 
+            else { li.className = isUnique ? 'log-unique' : (isLegendary ? 'log-legendary' : (c.type === 'bonus' ? 'log-bonus' : (c.type === 'debuff' ? 'log-debuff' : ''))); } 
             let chestIcon = c.isFromChest ? "📦 " : ""; 
             let bonusStr = c.bonusWeight > 0 ? ` (+${c.bonusWeight.toFixed(1)}кг)` : ''; 
             li.innerHTML = `${chestIcon}${icon} ${weightRank} ${c.name} ${c.weight > 0 ? c.weight.toFixed(1)+' кг' : ''}${bonusStr}`; 
@@ -408,36 +320,23 @@ function renderHistory() {
 } 
 
 function updateUI() { 
-    let currentSum = state.catches 
-        .filter(c => !c.isRemoved && (c.type !== 'catch' || !c.isStolen || state.hasMessageInBottle)) 
-        .reduce((s, c) => s + c.weight, 0); 
+    let currentSum = state.catches .filter(c => !c.isRemoved && (c.type !== 'catch' || !c.isStolen || state.hasMessageInBottle)) .reduce((s, c) => s + c.weight, 0); 
     document.getElementById('score').innerText = `Улов: ${(currentSum * state.diceMultiplier).toFixed(1)} кг | Попыток: ${state.attempts}`; 
 } 
 
 function showModal() { 
     document.getElementById('action-btn').disabled = true; 
     const modal = document.getElementById('modal'); 
-    const list = document.getElementById('modal-fish-list'); 
-    list.innerHTML = ''; 
-    const cancelBtn = document.createElement('button'); 
-    cancelBtn.className = 'fish-btn'; 
-    cancelBtn.innerText = "Ничего не удалять"; 
-    cancelBtn.onclick = () => { 
-        modal.classList.add('hidden'); 
-        if (state.attempts === 0) endGame(); else document.getElementById('action-btn').disabled = false; 
-    }; 
+    const list = document.getElementById('modal-fish-list'); list.innerHTML = ''; 
+    const cancelBtn = document.createElement('button'); cancelBtn.className = 'fish-btn'; cancelBtn.innerText = "Ничего не удалять"; 
+    cancelBtn.onclick = () => { modal.classList.add('hidden'); if (state.attempts === 0) endGame(); else document.getElementById('action-btn').disabled = false; }; 
     list.appendChild(cancelBtn); 
     state.catches.filter(c => !c.isStolen && !c.isRemoved).forEach((c) => { 
-        const btn = document.createElement('button'); 
-        btn.className = 'fish-btn'; 
+        const btn = document.createElement('button'); btn.className = 'fish-btn'; 
         let label = c.weight > 0 ? `${c.name} (${c.weight.toFixed(1)} кг)` : c.name; 
         btn.innerText = `Удалить: ${label}`; 
         btn.onclick = () => { 
-            c.isRemoved = true; 
-            modal.classList.add('hidden'); 
-            updateUI(); 
-            renderHistory(); 
-            if (state.attempts === 0) endGame(); else document.getElementById('action-btn').disabled = false; 
+            c.isRemoved = true; modal.classList.add('hidden'); updateUI(); renderHistory(); if (state.attempts === 0) endGame(); else document.getElementById('action-btn').disabled = false; 
         }; 
         list.appendChild(btn); 
     }); 
