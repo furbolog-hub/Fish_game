@@ -60,17 +60,20 @@ function getWeightIcon(weight) {
     return "🥉"; 
 } 
 
-// Инициализация событий
+/* script.js */
+// --- ИНИЦИАЛИЗАЦИЯ И СОБЫТИЯ ---
 document.addEventListener('DOMContentLoaded', () => { 
-    document.getElementById('action-btn').addEventListener('click', startFishing); 
-    document.getElementById('handbook-btn').addEventListener('click', toggleHandbook);
-    
-    // ИСПРАВЛЕНО: Более надежный способ назначения клика для иконки погоды
+    // Назначаем события через addEventListener для надежности
+    const actionBtn = document.getElementById('action-btn');
+    const handbookBtn = document.getElementById('handbook-btn');
     const weatherIcon = document.getElementById('weather-icon');
-    weatherIcon.onclick = (e) => {
-        e.stopPropagation();
+
+    if(actionBtn) actionBtn.addEventListener('click', startFishing); 
+    if(handbookBtn) handbookBtn.addEventListener('click', toggleHandbook);
+    if(weatherIcon) weatherIcon.addEventListener('click', (e) => {
+        e.stopPropagation(); // Чтобы клик не уходил глубже
         toggleWeatherHelp();
-    };
+    });
 
     updateWeather(); 
     setInterval(updateWeather, 7200000); 
@@ -87,12 +90,13 @@ function toggleHandbook() {
     }
 }
 
+// ИСПРАВЛЕНО: Полная отрисовка данных из handbook.js
 function renderHandbook() {
     const container = document.getElementById('handbook-data');
     if (container.innerHTML !== "") return;
 
     if (typeof gameHandbook === 'undefined') {
-        container.innerHTML = "Ошибка: Файл handbook.js не загружен.";
+        container.innerHTML = "Ошибка: handbook.js не загружен.";
         return;
     }
 
@@ -115,40 +119,23 @@ function renderHandbook() {
 
 function toggleWeatherHelp() { 
     const el = document.getElementById('weather-help'); 
-    if (!el.classList.contains('active')) { 
-        const helpText = { 
-            'sunny': '☀️ Солнечно: Шанс атаки чайки! Она ворует рыбу.', 
-            'rain': '🌧️ Дождь: Появление утки. Снижает вес улова.', 
-            'calm': '🌊 Штиль: Высокий шанс бонусов. Опасайтесь Раков!', 
-            'storm': '🌪️ Шторм: Много хлама, но дебаффы не работают.', 
-            'fog': '🌫️ Туман: Повышенный шанс легендарных предметов!' 
-        }; 
+    const helpText = { 
+        'sunny': '☀️ Солнечно: Шанс атаки чайки! Она ворует рыбу.', 
+        'rain': '🌧️ Дождь: Появление утки. Снижает вес улова.', 
+        'calm': '🌊 Штиль: Высокий шанс бонусов. Опасайтесь Раков!', 
+        'storm': '🌪️ Шторм: Много хлама, но дебаффы не работают.', 
+        'fog': '🌫️ Туман: Повышенный шанс легендарных предметов!' 
+    }; 
 
-        let htmlContent = `<p style="font-size:18px;">${helpText[state.weather] || 'Обычная погода'}</p>`; 
-        if (state.hasCompass) { 
-            htmlContent += `<button class="fish-btn" onclick="changeWeather()" style="background:#2481cc; color:#white;">Сменить погоду Компасом</button>`; 
-        } 
+    document.getElementById('help-text').innerText = helpText[state.weather] || 'Обычная погода'; 
+    el.classList.add('active'); 
+}
 
-        document.getElementById('help-text').innerHTML = htmlContent; 
-        el.classList.add('active'); 
-    } else { 
-        el.classList.remove('active'); 
-    } 
-} 
-
-function changeWeather() { 
-    updateWeather(); 
-    document.getElementById('weather-help').classList.remove('active'); 
-} 
-
-function updateWeather() { 
-    const weathers = ['sunny', 'sunny', 'rain', 'rain', 'calm', 'calm', 'storm', 'fog']; 
-    state.weather = weathers[Math.floor(Math.random() * weathers.length)]; 
-
-    document.getElementById('weather-icon').innerText = { 
-        'sunny': '☀️', 'rain': '🌧️', 'calm': '🌊', 'storm': '🌪️', 'fog': '🌫️' 
-    }[state.weather]; 
-} 
+// Глобальные функции для закрытия (из HTML)
+window.toggleHandbook = toggleHandbook;
+window.toggleWeatherHelp = () => {
+    document.getElementById('weather-help').classList.remove('active');
+}; 
 
 function startFishing() { 
     playSound('throw'); 
