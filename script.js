@@ -332,6 +332,7 @@ state.catches.push({ name, weight, isTrash, type, isStolen: false, isRemoved, bo
 function renderHistory() { 
     const list = document.getElementById('history-list'); 
     list.innerHTML = ''; 
+
     state.catches.forEach(c => { 
         const li = document.createElement('li'); 
         const icon = icons[c.name] || "🎣"; 
@@ -340,14 +341,30 @@ function renderHistory() {
         const isUnique = uniqueItems.includes(c.name); 
 
         if (c.isRemoved) { 
-            li.style.color = "#ffc107"; li.style.textDecoration = "line-through"; 
+            li.style.color = "#ffc107"; 
+            li.style.textDecoration = "line-through"; 
             li.innerText = `${icon} ${c.name} (Удалено)`; 
         } else if (c.isStolen) { 
-            if (state.hasMessageInBottle) { li.innerText = `${icon} ${c.name} (Вернуто: ${c.weight.toFixed(1)} кг)`; } 
-            else { li.className = 'strikethrough'; li.innerText = `${icon} ${c.name} (Украдено: ${c.weight.toFixed(1)} кг)`; } 
+            if (state.hasMessageInBottle) { 
+                li.innerText = `${icon} ${c.name} (Вернуто: ${c.weight.toFixed(1)} кг)`; 
+            } else { 
+                li.className = 'strikethrough'; 
+                li.innerText = `${icon} ${c.name} (Украдено: ${c.weight.toFixed(1)} кг)`; 
+            } 
         } else { 
-            // Добавлена проверка c.isTrash для применения серого цвета
-            li.className = c.isTrash ? 'log-trash' : (isUnique ? 'log-unique' : (isLegendary ? 'log-legendary' : (c.type === 'bonus' ? 'log-bonus' : (c.type === 'debuff' ? 'log-debuff' : '')))); 
+            // ПРИОРИТЕТ ЦВЕТОВ: Бонусы -> Дебафы -> Уникальные -> Легендарные -> МУСОР (Серый)
+            if (c.type === 'bonus') {
+                li.className = 'log-bonus';
+            } else if (c.type === 'debuff') {
+                li.className = 'log-debuff';
+            } else if (isUnique) {
+                li.className = 'log-unique';
+            } else if (isLegendary) {
+                li.className = 'log-legendary';
+            } else if (c.isTrash) {
+                li.className = 'log-trash'; // Тот самый серый цвет из вашего CSS
+            }
+
             let chestIcon = c.isFromChest ? "📦 " : ""; 
             let bonusStr = c.bonusWeight > 0 ? ` <span style="color:#ff00ff">(+${c.bonusWeight.toFixed(1)}кг)</span>` : ''; 
             li.innerHTML = `${chestIcon}${icon} ${weightRank} ${c.name} ${c.weight > 0 ? c.weight.toFixed(1)+' кг' : ''} ${bonusStr}`; 
