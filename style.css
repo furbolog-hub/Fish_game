@@ -1,244 +1,238 @@
 body { 
-    font-family: sans-serif; 
-    margin: 0; 
-    padding: 0; 
-    min-height: 100vh; 
-    background-image: url('background.jpg'); 
-    background-size: cover; 
-    background-position: center; 
-    background-attachment: fixed; 
-    color: #fff; 
+font-family: sans-serif; 
+margin: 0; 
+padding: 0; 
+min-height: 100vh; 
+background-image: url('background.jpg'); 
+background-size: cover; 
+background-position: center; 
+background-attachment: fixed; 
+color: #fff; 
 }
 
 #game-container { 
-    padding: 15px; 
-    background: rgba(0, 0, 0, 0.75); 
-    min-height: 100vh; 
-    display: flex; 
-    flex-direction: column; 
-    position: relative;
+padding: 15px; 
+background: rgba(0, 0, 0, 0.75); 
+min-height: 100vh; 
+display: flex; 
+flex-direction: column; 
 }
 
 /* Элемент погоды */
 #weather-icon { 
-    font-size: 40px; 
-    position: absolute; 
-    top: 10px; 
-    right: 20px; 
-    cursor: pointer; 
-    z-index: 100; 
-    padding: 10px; /* Увеличенная зона клика */
+font-size: 40px; 
+position: absolute; 
+top: 10px; 
+right: 20px; 
+cursor: pointer; 
+z-index: 100; 
 }
 
 /* Кнопка действия */
 #action-btn { 
-    width: 100%; 
-    padding: 20px; 
-    margin: 15px 0 5px 0; 
-    background: #2481cc; 
-    color: #fff; 
-    border: none; 
-    border-radius: 12px; 
-    font-size: 20px; 
-    font-weight: bold; 
-    cursor: pointer; 
+width: 100%; 
+padding: 20px; 
+margin: 15px 0 5px 0; 
+background: #2481cc; 
+color: #fff; 
+border: none; 
+border-radius: 12px; 
+font-size: 20px; 
+font-weight: bold; 
+cursor: pointer; 
 }
 
 #action-btn:disabled { 
-    background: #555; 
+background: #555; 
 }
 
 /* Кнопка справочника */
 .secondary-btn {
-    width: 100%;
-    padding: 15px;
-    margin-bottom: 15px;
-    background: #4a4a4a;
-    color: #fff;
-    border: none;
-    border-radius: 12px;
-    font-size: 16px;
-    font-weight: bold;
-    cursor: pointer;
-    min-height: 50px;
+ width: 100%;
+ padding: 15px;
+ margin-bottom: 15px;
+ background: #4a4a4a;
+ color: #fff;
+ border: none;
+ border-radius: 12px;
+ font-size: 16px;
+ font-weight: bold;
+ cursor: pointer;
 }
 
 /* Счётчик улова */
 #score { 
-    font-size: 24px; 
-    margin-top: 40px; 
+font-size: 24px; 
+margin-top: 40px; 
 }
 
 /* История улова */
 #catch-history { 
-    border-top: 2px solid #444; 
-    margin-top: 20px; 
-    padding-top: 10px; 
+border-top: 2px solid #444; 
+margin-top: 20px; 
+padding-top: 10px; 
 }
 
 #history-list { 
-    list-style: none; 
-    padding: 0; 
-    font-size: 18px; 
+list-style: none; 
+padding: 0; 
+font-size: 18px; 
 }
 
 #history-list li { 
-    padding: 10px 0; 
-    border-bottom: 1px solid #333; 
-    display: flex; 
-    align-items: center; 
-    gap: 10px; 
+padding: 10px 0; 
+border-bottom: 1px solid #333; 
+display: flex; 
+align-items: center; 
+gap: 10px; 
 }
 
 /* Стили для типов элементов в истории */
 .log-bonus { 
-    color: #4caf50; 
-    font-weight: bold; 
+color: #4caf50; 
+font-weight: bold; 
 }
 
 .log-debuff { 
-    color: #ff5555; 
-    font-weight: bold; 
+color: #ff5555; 
+font-weight: bold; 
 }
 
 .log-legendary { 
-    color: #ff00ff; 
-    font-weight: bold; 
-    text-shadow: 1px 1px 2px #000, -1px -1px 2px #000; 
+color: #ff00ff; 
+font-weight: bold; 
+text-shadow: 1px 1px 2px #000, -1px -1px 2px #000, 1px -1px 2px #000, -1px 1px 2px #000; 
 }
 
-/* ЦВЕТ ХЛАМА ИСПРАВЛЕН НА СЕРЫЙ */
 .log-trash {
-    color: #888888; 
+ color: #aaaaaa;
 }
 
 .strikethrough { 
-    text-decoration: line-through; 
-    color: #ff5555; 
+text-decoration: line-through; 
+color: #ff5555; 
 }
 
 /* Модальное окно */
 .modal-content { 
-    background: #fff; 
-    padding: 20px; 
-    position: fixed; 
-    top: 10%; 
-    left: 5%; 
-    width: 90%; 
-    color: #000; 
-    border-radius: 15px; 
-    z-index: 2000;
+background: #fff; 
+padding: 20px; 
+position: fixed; 
+top: 10%; 
+left: 5%; 
+width: 90%; 
+color: #000; 
+border-radius: 15px; 
 }
 
 /* Специфические стили для контента справочника */
 .handbook-content {
-    max-height: 80vh;
-    overflow-y: auto;
-    background: #f9f9f9;
-    color: #000;
+ max-height: 80vh;
+ overflow-y: auto;
+ background: #f9f9f9;
+ color: #000;
 }
 
 #handbook-data h1 {
-    color: #2481cc;
-    font-size: 22px;
-    text-align: center;
+ color: #2481cc;
+ font-size: 22px;
+ text-align: center;
 }
 
 #handbook-data h2 {
-    color: #2481cc;
-    border-bottom: 2px solid #2481cc;
-    margin-top: 20px;
-    font-size: 18px;
+ color: #2481cc;
+ border-bottom: 2px solid #2481cc;
+ margin-top: 20px;
+ font-size: 18px;
 }
 
 #handbook-data ul {
-    padding-left: 20px;
-    text-align: left;
+ padding-left: 20px;
+ text-align: left;
 }
 
 #handbook-data li {
-    margin-bottom: 8px;
-    line-height: 1.4;
-    color: #333;
+ margin-bottom: 8px;
+ line-height: 1.4;
+ color: #333;
 }
 
 .fish-btn { 
-    width: 100%; 
-    padding: 15px; 
-    margin: 5px 0; 
-    font-size: 18px; 
-    cursor: pointer; 
+width: 100%; 
+padding: 15px; 
+margin: 5px 0; 
+font-size: 18px; 
+cursor: pointer; 
 }
 
 /* Вспомогательные классы */
 .hidden { 
-    display: none !important; 
+display: none !important; 
 }
 
 #final-result {
-    margin-top: 20px;
-    padding: 15px;
-    background: rgba(255, 255, 255, 0.1);
-    border-radius: 10px;
-    text-align: center;
+ margin-top: 20px;
+ padding: 15px;
+ background: rgba(255, 255, 255, 0.1);
+ border-radius: 10px;
+ text-align: center;
 }
 
 /* Окно погоды */
 #weather-help { 
-    position: fixed; 
-    top: 0; 
-    left: 0; 
-    width: 100%; 
-    height: 100%; 
-    background: rgba(0, 0, 0, 0.8); 
-    display: none; 
-    justify-content: center; 
-    align-items: center; 
-    z-index: 3000; 
+position: fixed; 
+top: 0; 
+left: 0; 
+width: 100%; 
+height: 100%; 
+background: rgba(0, 0, 0, 0.6); 
+display: none; 
+justify-content: center; 
+align-items: center; 
+z-index: 2000; 
 }
 
 #weather-help.active { 
-    display: flex; 
+display: flex; 
 }
 
 .help-content { 
-    background: #fff; 
-    color: #000; 
-    padding: 20px; 
-    border-radius: 15px; 
-    width: 80%; 
-    position: relative; 
-    text-align: center;
+background: rgba(255, 255, 255, 0.95); 
+color: #000; 
+padding: 20px; 
+border-radius: 15px; 
+width: 80%; 
+position: relative; 
+backdrop-filter: blur(5px); 
 }
 
 .close-btn { 
-    position: absolute; 
-    top: 10px; 
-    right: 15px; 
-    font-size: 24px; 
-    cursor: pointer; 
-    font-weight: bold; 
-    padding: 10px;
+position: absolute; 
+top: 10px; 
+right: 15px; 
+font-size: 20px; 
+cursor: pointer; 
+font-weight: bold; 
 }
 
 #status-effects {
-    margin: 10px 0;
-    font-size: 16px;
-    color: #ffd700;
+ margin: 10px 0;
+ font-size: 16px;
+ color: #ffd700;
 }
 
 #message {
-    font-size: 18px;
-    font-weight: 500;
-    margin: 10px 0;
-    color: #fff;
+ font-size: 18px;
+ font-weight: 500;
+ margin: 10px 0;
+ color: #fff;
 }
 
 h1, h3 {
-    margin: 5px 0;
+ margin: 5px 0;
 }
 
 @media (max-width: 400px) {
-    #action-btn { padding: 15px; }
-    #score { font-size: 20px; }
+ #action-btn { padding: 15px; }
+ #score { font-size: 20px; }
 }
