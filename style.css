@@ -1,122 +1,186 @@
+/* Основные стили страницы */
 body { 
-    font-family: sans-serif; 
-    margin: 0; 
-    padding: 0; 
-    min-height: 100vh; 
-    background-image: url('background.jpg'); 
-    background-size: cover; 
-    background-position: center; 
-    background-attachment: fixed; 
-    color: #fff; 
+font-family: sans-serif; 
+margin: 0; 
+padding: 0; 
+min-height: 100vh; 
+background-image: url('background.jpg'); 
+background-size: cover; 
+background-position: center; 
+background-attachment: fixed; 
+color: #fff; 
 }
 
 #game-container { 
-    padding: 15px; 
-    background: rgba(0, 0, 0, 0.75); 
-    min-height: 100vh; 
-    display: flex; 
-    flex-direction: column; 
-    position: relative;
+padding: 15px; 
+background: rgba(0, 0, 0, 0.75); 
+min-height: 100vh; 
+display: flex; 
+flex-direction: column; 
+position: relative;
 }
 
-/* ИСПРАВЛЕНО: Увеличена зона клика для мобильных устройств */
+/* Элемент погоды — увеличенная зона клика */
 #weather-icon { 
-    font-size: 40px; 
-    position: absolute; 
-    top: 5px; 
-    right: 5px; 
-    cursor: pointer; 
-    z-index: 1001; 
-    padding: 20px; /* Огромная область нажатия */
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    min-width: 44px;
-    min-height: 44px;
+font-size: 40px; 
+position: absolute; 
+top: 5px; 
+right: 5px; 
+cursor: pointer; 
+z-index: 1001; 
+padding: 20px;
+display: flex;
+align-items: center;
+justify-content: center;
+min-width: 44px;
+min-height: 44px;
 }
 
+/* Кнопка действия */
 #action-btn { 
-    width: 100%; 
-    padding: 20px; 
-    margin: 15px 0 10px 0; 
-    background: #2481cc; 
-    color: #fff; 
-    border: none; 
-    border-radius: 12px; 
-    font-size: 20px; 
-    font-weight: bold; 
-    cursor: pointer; 
-    min-height: 60px;
+width: 100%; 
+padding: 20px; 
+margin: 15px 0 10px 0; 
+background: #2481cc; 
+color: #fff; 
+border: none; 
+border-radius: 12px; 
+font-size: 20px; 
+font-weight: bold; 
+cursor: pointer; 
+min-height: 60px;
 }
 
-#action-btn:disabled { background: #555; }
+#action-btn:disabled { 
+background: #555; 
+}
 
+/* Кнопка справочника */
 .secondary-btn {
-    width: 100%;
-    padding: 15px;
-    margin-bottom: 20px;
-    background: #4a4a4a;
-    color: #fff;
-    border: none;
-    border-radius: 12px;
-    font-size: 16px;
-    font-weight: bold;
-    cursor: pointer;
-    min-height: 50px;
+ width: 100%;
+ padding: 15px;
+ margin-bottom: 20px;
+ background: #4a4a4a;
+ color: #fff;
+ border: none;
+ border-radius: 12px;
+ font-size: 16px;
+ font-weight: bold;
+ cursor: pointer;
+ min-height: 50px;
 }
 
-#score { font-size: 24px; margin-top: 50px; }
+/* Счётчик улова */
+#score { 
+font-size: 24px; 
+margin-top: 50px; 
+}
 
-#history-list { list-style: none; padding: 0; font-size: 18px; }
-#history-list li { padding: 10px 0; border-bottom: 1px solid #333; display: flex; align-items: center; gap: 10px; }
+/* История улова */
+#history-list { 
+list-style: none; 
+padding: 0; 
+font-size: 18px; 
+}
 
+#history-list li { 
+padding: 10px 0; 
+border-bottom: 1px solid #333; 
+display: flex; 
+align-items: center; 
+gap: 10px; 
+}
+
+/* Стили для типов элементов в истории */
 .log-bonus { color: #4caf50; font-weight: bold; }
 .log-debuff { color: #ff5555; font-weight: bold; }
-.log-legendary { color: #ff00ff; font-weight: bold; text-shadow: 1px 1px 2px #000; }
+.log-legendary { 
+color: #ff00ff; 
+font-weight: bold; 
+text-shadow: 1px 1px 2px #000; 
+}
 .log-unique { color: #ffd700; font-weight: bold; text-shadow: 0 0 5px #ffd700; }
 
-/* ИСПРАВЛЕНО: Серый цвет для хлама */
+/* Цвет хлама — серый */
 .log-trash { 
-    color: #888888 !important; 
+color: #888888 !important; 
 }
 
 .strikethrough { text-decoration: line-through; color: #ff5555; }
 
+/* Модальное окно */
 .modal-content { 
-    background: #fff; 
-    padding: 20px; 
-    position: fixed; 
-    top: 10%; 
-    left: 5%; 
-    width: 90%; 
-    color: #000; 
-    border-radius: 15px; 
-    z-index: 2000;
+background: #fff; 
+padding: 20px; 
+position: fixed; 
+top: 10%; 
+left: 5%; 
+width: 90%; 
+color: #000; 
+border-radius: 15px; 
+z-index: 2000;
+box-sizing: border-box;
+}
+
+/* Кнопки в модальном окне (Маска, Кость) — ТЕПЕРЬ ШИРОКИЕ */
+.fish-btn { 
+    width: 100%; 
+    min-height: 55px;
+    padding: 12px 20px; 
+    margin: 8px 0; 
+    font-size: 18px; 
+    font-weight: bold;
+    cursor: pointer; 
+    border-radius: 10px;
+    border: 1px solid #ccc;
+    background-color: #f8f8f8;
+    color: #333;
+    display: block;
     box-sizing: border-box;
+    transition: background 0.2s;
+}
+
+.fish-btn:active {
+    background-color: #e0e0e0;
 }
 
 .handbook-content { max-height: 75vh; overflow-y: auto; background: #f9f9f9; }
 
 #handbook-data h1 { color: #2481cc; font-size: 22px; text-align: center; }
 #handbook-data h2 { color: #2481cc; border-bottom: 2px solid #2481cc; margin-top: 15px; font-size: 18px; }
-#handbook-data ul { padding-left: 20px; }
-#handbook-data li { margin-bottom: 8px; color: #333; line-height: 1.4; }
 
 .close-btn { 
-    position: absolute; 
-    top: 5px; 
-    right: 10px; 
-    font-size: 28px; 
-    cursor: pointer; 
-    padding: 10px;
+position: absolute; 
+top: 5px; 
+right: 10px; 
+font-size: 28px; 
+cursor: pointer; 
+padding: 10px;
 }
 
 #weather-help { 
-    position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
-    background: rgba(0,0,0,0.8); display: none; z-index: 3000;
-    align-items: center; justify-content: center;
+position: fixed; 
+top: 0; 
+left: 0; 
+width: 100%; 
+height: 100%; 
+background: rgba(0,0,0,0.8); 
+display: none; 
+z-index: 3000; 
+align-items: center; 
+justify-content: center;
 }
+
 #weather-help.active { display: flex; }
-.help-content { background: #fff; color: #000; padding: 30px 20px; border-radius: 15px; width: 85%; position: relative; text-align: center; }
+
+.help-content { 
+background: #fff; 
+color: #000; 
+padding: 30px 20px; 
+border-radius: 15px; 
+width: 85%; 
+position: relative; 
+text-align: center;
+}
 
 .hidden { display: none !important; }
