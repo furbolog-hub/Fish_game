@@ -1,9 +1,7 @@
 // --- КОНФИГУРАЦИЯ ЗВУКОВ --- 
 const baseUrl = 'https://raw.githubusercontent.com/furbolog-hub/Fish_game/main/sounds/'; 
-
 const sounds = { 
-    
-throw: new Audio(baseUrl + 'throw.ogg'), 
+    throw: new Audio(baseUrl + 'throw.ogg'), 
     bonus: new Audio(baseUrl + 'bonus.ogg'), 
     debuff: new Audio(baseUrl + 'debuff.ogg'), 
     successfull: new Audio(baseUrl + 'successful.ogg'), 
@@ -40,11 +38,10 @@ let state = {
     leviathanBonus: 0, 
     hasMessageInBottle: false, 
     hasCompass: false, 
-    diceMultiplier: 1,
-    // Счетчики достижений
-    filtersUsed: 0,
-    wasAttacked: false,
-    transmutedCount: 0
+    diceMultiplier: 1, 
+    filtersUsed: 0, 
+    wasAttacked: false, 
+    transmutedCount: 0 
 }; 
 
 const fishes = ["Палтус", "Палия", "Белый амур", "Щука", "Семга", "Солнечник", "Подкаменщик", "Сом", "Окунь", "Плотва", "Кижуч", "Семотилус", "Меланотения", "Горчак", "Жерех", "Ринихт", "Лосось", "Корюшка", "Судак", "Арктический голец", "Красноперка", "Золотая форель", "Фундулюс", "Озерный сиг", "Карпиодес"]; 
@@ -65,59 +62,54 @@ function getWeightIcon(weight) {
 
 // ИНИЦИАЛИЗАЦИЯ СОБЫТИЙ (Важно для Telegram)
 document.addEventListener('DOMContentLoaded', () => { 
-    const actionBtn = document.getElementById('action-btn');
-    const handbookBtn = document.getElementById('handbook-btn');
-    const weatherIcon = document.getElementById('weather-icon');
-
-    if (actionBtn) actionBtn.addEventListener('click', (e) => { e.stopPropagation(); startFishing(); }); 
-    if (handbookBtn) handbookBtn.addEventListener('click', (e) => { e.stopPropagation(); toggleHandbook(); });
+    const actionBtn = document.getElementById('action-btn'); 
+    const handbookBtn = document.getElementById('handbook-btn'); 
+    const weatherIcon = document.getElementById('weather-icon'); 
     
-    if (weatherIcon) {
-        weatherIcon.addEventListener('click', (e) => {
-            e.stopPropagation();
-            toggleWeatherHelp();
-        });
-    }
-
+    if (actionBtn) actionBtn.addEventListener('click', (e) => { e.stopPropagation(); startFishing(); }); 
+    if (handbookBtn) handbookBtn.addEventListener('click', (e) => { e.stopPropagation(); toggleHandbook(); }); 
+    
+    if (weatherIcon) { 
+        weatherIcon.addEventListener('click', (e) => { 
+            e.stopPropagation(); 
+            toggleWeatherHelp(); 
+        }); 
+    } 
     updateWeather(); 
     setInterval(updateWeather, 7200000); 
     updateUI(); 
 }); 
 
-function toggleHandbook() {
-    const modal = document.getElementById('handbook-modal');
-    if (modal.classList.contains('hidden')) {
-        renderHandbook();
-        modal.classList.remove('hidden');
-    } else {
-        modal.classList.add('hidden');
-    }
-}
+function toggleHandbook() { 
+    const modal = document.getElementById('handbook-modal'); 
+    if (modal.classList.contains('hidden')) { 
+        renderHandbook(); 
+        modal.classList.remove('hidden'); 
+    } else { 
+        modal.classList.add('hidden'); 
+    } 
+} 
 
-function renderHandbook() {
-    const container = document.getElementById('handbook-data');
-    if (container.innerHTML !== "") return;
-
-    if (typeof gameHandbook === 'undefined') {
-        container.innerHTML = "Ошибка: handbook.js не загружен.";
-        return;
-    }
-
-    let html = "<h1>Справочник рыбака</h1>";
-    for (let section in gameHandbook) {
-        const data = gameHandbook[section];
-        html += `<h2>${data.title}</h2><ul>`;
-        if (Array.isArray(data.items)) {
-            data.items.forEach(item => { html += `<li>${item}</li>`; });
-        } else {
-            for (let key in data.items) {
-                html += `<li><strong>${key}:</strong> ${data.items[key]}</li>`;
-            }
-        }
-        html += "</ul>";
-    }
-    container.innerHTML = html;
-}
+function renderHandbook() { 
+    const container = document.getElementById('handbook-data'); 
+    if (container.innerHTML !== "") return; 
+    if (typeof gameHandbook === 'undefined') { 
+        container.innerHTML = "Ошибка: handbook.js не загружен."; 
+        return; 
+    } 
+    let html = "<h1>Справочник рыбака</h1>"; 
+    for (let section in gameHandbook) { 
+        const data = gameHandbook[section]; 
+        html += `<h2>${data.title}</h2><ul>`; 
+        if (Array.isArray(data.items)) { 
+            data.items.forEach(item => { html += `<li>${item}</li>`; }); 
+        } else { 
+            for (let key in data.items) { html += `<li><strong>${key}:</strong> ${data.items[key]}</li>`; } 
+        } 
+        html += "</ul>"; 
+    } 
+    container.innerHTML = html; 
+} 
 
 function toggleWeatherHelp() { 
     const el = document.getElementById('weather-help'); 
@@ -197,9 +189,7 @@ function startFishing() {
         } else { 
             catchFish(false); state.attempts--; 
         } 
-        triggerDebuff(); 
-        updateUI(); 
-        renderHistory(); 
+        triggerDebuff(); updateUI(); renderHistory(); 
         if (state.attempts === 0 && document.getElementById('modal').classList.contains('hidden')) { 
             endGame(); 
         } else { 
@@ -257,14 +247,14 @@ function handleLegendary() {
     let item = legendaryItems[Math.floor(Math.random() * legendaryItems.length)]; 
     logCatch(item, 0, false, 'legendary'); 
     if (item === "Чешуя Левиафана") { 
-        state.attempts += 5; state.leviathanBonus = 2.0; alert("Чешуя Левиафана! (+5 попыток)"); 
+        state.attempts += 5; state.leviathanBonus = 2.0; alert("🐉 Чешуя Левиафана! (+5 попыток)"); 
     } else if (item === "Послание в бутылке") { 
-        state.hasMessageInBottle = true; alert("Послание в бутылке!"); 
+        state.hasMessageInBottle = true; alert("📜 Послание в бутылке!"); 
     } else if (item === "Компас потерянных глубин") { 
-        state.hasCompass = true; alert("Компас!"); 
+        state.hasCompass = true; alert("🧭 Компас!"); 
     } else if (item === "Запечатанный сундук") { 
         let count = 3 + Math.floor(Math.random() * 3); for(let i = 0; i < count; i++) { catchFish(false, true); } 
-        alert("Запечатанный сундук!"); 
+        alert("📦 Запечатанный сундук!"); 
     } 
 } 
 
@@ -391,7 +381,7 @@ function endGame() {
     if (validCatches.length > 0 && validCatches.every(c => c.weight < 2.5)) achs.push("🐱 Аквариумный мастер"); 
     if (state.catches.length > 0 && state.catches.every(c => c.isTrash || c.isStolen)) achs.push("🗑️ Повелитель башмаков"); 
     
-    // Новые достижения 
+    // РАСШИРЕННЫЕ ДОСТИЖЕНИЯ 
     if (state.filtersUsed >= 2) achs.push("🌿 Эколог"); 
     if (total >= 500) achs.push("🐘 Тяжеловес"); 
     if (state.transmutedCount >= 5) achs.push("🔬 Трансмутатор"); 
