@@ -2,8 +2,7 @@
 const baseUrl = 'https://raw.githubusercontent.com/furbolog-hub/Fish_game/main/sounds/'; 
 
 const sounds = { 
-    throw: new Audio(baseUrl + 'throw.
-```ogg'), 
+    throw: new Audio(baseUrl + 'throw.ogg'), 
     bonus: new Audio(baseUrl + 'bonus.ogg'), 
     debuff: new Audio(baseUrl + 'debuff.ogg'), 
     successfull: new Audio(baseUrl + 'successful.ogg'), 
