@@ -406,7 +406,6 @@ function renderHistory() {
                 li.innerText = `${icon} ${c.name} (Украдено: ${c.weight.toFixed(1)} кг)`; 
             } 
         } else { 
-            // КРИТИЧЕСКИЙ ПРИОРИТЕТ: Мусор всегда серый
             if (c.isTrash) {
                 li.className = 'log-trash';
             } else {
