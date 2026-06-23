@@ -1,21 +1,20 @@
 // --- КОНФИГУРАЦИЯ ЗВУКОВ --- 
 const baseUrl = 'https://raw.githubusercontent.com/furbolog-hub/Fish_game/main/sounds/'; 
-
 const sounds = { 
-    throw: new Audio(baseUrl
-``` + 'throw.ogg'), 
-    bonus: new Audio(baseUrl + 'bonus.ogg'), 
+    throw: new Audio(baseUrl + 'throw.ogg'), 
+    bonus
+```: new Audio(baseUrl + 'bonus.ogg'), 
     debuff: new Audio(baseUrl + 'debuff.ogg'), 
     successfull: new Audio(baseUrl + 'successful.ogg'), 
     achievement: new Audio(baseUrl + 'achievement.ogg'), 
     legendary: new Audio(baseUrl + 'legendary.ogg'), 
     unique: new Audio(baseUrl + 'unique.ogg') 
-}; 
+};  
 
 function playSound(soundName) { 
     if (sounds[soundName]) { 
         sounds[soundName].currentTime = 0; 
-        sounds[soundName].play().catch(e => console.log("Audio play blocked:", e)); 
+        sounds[soundName].play().catch(e => console.log("Audio blocked:", e)); 
     } 
 }
 
@@ -30,33 +29,25 @@ try {
     tg = { HapticFeedback: { impactOccurred: () => {} } }; 
 }
 
-let state = { 
-    attempts: 3, 
-    catches: [], 
-    bonuses: { mask: false, aquaCount: 0, filter: false, fins: false }, 
-    activeDebuffs: [], 
-    weather: 'sunny', 
-    luckyFisher: false, 
-    bonusCount: 0, 
-    leviathanBonus: 0, 
-    hasMessageInBottle: false, 
-    hasCompass: false, 
-    diceMultiplier: 1 
-};
+let state = { attempts: 3, catches: [], bonuses: { mask: false, aquaCount: 0, filter: false, fins: false }, activeDebuffs: [], weather: 'sunny', luckyFisher: false, bonusCount: 0, leviathanBonus: 0, hasMessageInBottle: false, hasCompass: false, diceMultiplier: 1 }; 
 
-const fishes = [ "Палтус", "Палия", "Белый амур", "Щука", "Семга", "Солнечник", "Подкаменщик", "Сом", "Окунь", "Плотва", "Кижуч", "Семотилус", "Меланотения", "Горчак", "Жерех", "Ринихт", "Лосось", "Корюшка", "Судак", "Арктический голец", "Красноперка", "Золотая форель", "Фундулюс", "Озерный сиг", "Карпиодес" ];
-const trash = [ "Старый башмак", "Спутанная леска", "Сломанный поплавок", "Ржавый крючок", "Половина блесны", "Размокший кусок бумаги" ];
-const legendaryItems = [ "Чешуя Левиафана", "Послание в бутылке", "Компас потерянных глубин", "Запечатанный сундук" ];
-const uniqueItems = [ "Глубоководное нечто", "Игральная кость" ];
+const fishes = ["Палтус", "Палия", "Белый амур", "Щука", "Семга", "Солнечник", "Подкаменщик", "Сом", "Окунь", "Плотва", "Кижуч", "Семотилус", "Меланотения", "Горчак", "Жерех", "Ринихт", "Лосось", "Корюшка", "Судак", "Арктический голец", "Красноперка", "Золотая форель", "Фундулюс", "Озерный сиг", "Карпиодес"]; 
+const trash = ["Старый башмак", "Спутанная леска", "Сломанный поплавок", "Ржавый крючок", "Половина блесны", "Размокший кусок бумаги"]; 
+const legendaryItems = ["Чешуя Левиафана", "Послание в бутылке", "Компас потерянных глубин", "Запечатанный сундук"]; 
+const uniqueItems = ["Глубоководное нечто", "Игральная кость"]; 
+const icons = { "Палтус": "🐟", "Палия": "🐠", "Белый амур": "🐟", "Щука": "🦈", "Семга": "🍣", "Солнечник": "☀️", "Подкаменщик": "🐡", "Сом": "〰️", "Окунь": "🐟", "Плотва": "🐟", "Кижуч": "🐠", "Семотилус": "🐟", "Меланотения": "🌈", "Горчак": "🐟", "Жерех": "🐟", "Ринихт": "🐟", "Лосось": "🎣", "Корюшка": "🐟", "Судак": "🐟", "Арктический голец": "❄️", "Красноперка": "🎈", "Золотая форель": "✨", "Фундулюс": "🐟", "Озерный сиг": "🐟", "Карпиодес": "🐟", "Старый башмак": "👞", "Спутанная леска": "🧵", "Сломанный поплавок": "🪡", "Ржавый крючок": "🪝", "Половина блесны": "🪙", "Размокший кусок бумаги": "📄", "Чешуя Левиафана": "🐉", "Послание в бутылке": "📜", "Компас потерянных глубин": "🧭", "Запечатанный сундук": "📦", "Глубоководное нечто": "🐙", "Игральная кость": "🎲" }; 
 
-const icons = { 
-    "Палтус": "🐟", "Палия": "🐠", "Белый амур": "🐟", "Щука": "🦈", "Семга": "🍣", "Солнечник": "☀️", "Подкаменщик": "🐡", "Сом": "〰️", "Окунь": "🐟", 
-    "Плотва": "🐟", "Кижуч": "🐠", "Семотилус": "🐟", "Меланотения": "🌈", "Горчак": "🐟", "Жерех": "🐟", "Ринихт": "🐟", "Лосось": "🎣", "Корюшка": "🐟", "Судак": "🐟", 
-    "Арктический голец": "❄️", "Красноперка": "🎈", "Золотая форель": "✨", "Фундулюс": "🐟", "Озерный сиг": "🐟", "Карпиодес": "🐟", 
-    "Старый башмак": "👞", "Спутанная леска": "🧵", "Сломанный поплавок": "🪡", "Ржавый крючок": "🪝", "Половина блесны": "🪙", "Размокший кусок бумаги": "📄", 
-    "Чешуя Левиафана": "🐉", "Послание в бутылке": "📜", "Компас потерянных глубин": "🧭", "Запечатанный сундук": "📦", 
-    "Глубоководное нечто": "🐙", "Игральная кость": "🎲" 
-};
+document.addEventListener('DOMContentLoaded', () => { 
+    document.getElementById('action-btn').addEventListener('click', startFishing); 
+    document.getElementById('handbook-btn').addEventListener('click', toggleHandbook);
+    document.getElementById('weather-icon').addEventListener('click', (e) => {
+        e.stopPropagation();
+        toggleWeatherHelp();
+    }); 
+    updateWeather(); 
+    setInterval(updateWeather, 7200000); 
+    updateUI(); 
+});
 
 function getWeightIcon(weight) { 
     if (weight === 0) return ""; 
@@ -291,37 +282,21 @@ function logCatch(name, weight, isTrash, type, isRemoved = false, bonusWeight = 
 function renderHistory() { 
     const list = document.getElementById('history-list'); 
     list.innerHTML = ''; 
-
     state.catches.forEach(c => { 
         const li = document.createElement('li'); 
         const icon = icons[c.name] || "🎣"; 
-        const weightRank = getWeightIcon(c.weight); 
-        const isLegendary = legendaryItems.includes(c.name); 
-        const isUnique = uniqueItems.includes(c.name); 
-
+        
         if (c.isRemoved) { 
-            li.style.color = "#ffc107"; 
-            li.style.textDecoration = "line-through"; 
-            li.innerText = `${icon} ${c.name} (Удалено)`; 
+            li.style.color = "#ffc107"; li.style.textDecoration = "line-through"; li.innerText = `${icon} ${c.name} (Удалено)`; 
         } else if (c.isStolen) { 
-            if (state.hasMessageInBottle) { 
-                li.innerText = `${icon} ${c.name} (Вернуто: ${c.weight.toFixed(1)} кг)`; 
-            } else { 
-                li.className = 'strikethrough'; 
-                li.innerText = `${icon} ${c.name} (Украдено: ${c.weight.toFixed(1)} кг)`; 
-            } 
+            li.className = 'strikethrough'; li.innerText = `${icon} ${c.name} (Украдено)`; 
         } else { 
-            // КРИТИЧЕСКОЕ ИЗМЕНЕНИЕ: Если это хлам, присваиваем ТОЛЬКО класс log-trash
             if (c.isTrash) {
                 li.className = 'log-trash';
             } else {
-                // Все остальные классы назначаются только если это НЕ хлам
-                li.className = isUnique ? 'log-unique' : (isLegendary ? 'log-legendary' : (c.type === 'bonus' ? 'log-bonus' : (c.type === 'debuff' ? 'log-debuff' : ''))); 
+                li.className = uniqueItems.includes(c.name) ? 'log-unique' : (legendaryItems.includes(c.name) ? 'log-legendary' : (c.type === 'bonus' ? 'log-bonus' : (c.type === 'debuff' ? 'log-debuff' : ''))); 
             }
-            
-            let chestIcon = c.isFromChest ? "📦 " : ""; 
-            let bonusStr = c.bonusWeight > 0 ? ` <span style="color:#ff00ff">(+${c.bonusWeight.toFixed(1)}кг)</span>` : ''; 
-            li.innerHTML = `${chestIcon}${icon} ${weightRank} ${c.name} ${c.weight > 0 ? c.weight.toFixed(1)+' кг' : ''} ${bonusStr}`; 
+            li.innerHTML = `${icon} ${c.name} ${c.weight > 0 ? c.weight.toFixed(1)+' кг' : ''}`; 
         } 
         list.appendChild(li); 
     }); 
