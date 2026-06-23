@@ -22,9 +22,9 @@ const gameHandbook = {
 
 // --- КОНФИГУРАЦИЯ ЗВУКОВ ---
 const baseUrl = 'https://raw.githubusercontent.com/furbolog-hub/Fish_game/main/sounds/';
+
 const sounds = {
-    throw: new Audio(baseUrl + '
-```throw.ogg'),
+    throw: new Audio(baseUrl + 'throw.ogg'),
     bonus: new Audio(baseUrl + 'bonus.ogg'),
     debuff: new Audio(baseUrl + 'debuff.ogg'),
     successfull: new Audio(baseUrl + 'successful.ogg'),
@@ -41,19 +41,29 @@ function playSound(soundName) {
 }
 
 // --- ИГРОВОЙ КОД ---
+
 let tg;
 try {
     tg = window.Telegram.WebApp;
     tg.ready();
     tg.expand();
 } catch (e) {
-    tg = { HapticFeedback: { impactOccurred: () => {} } };
+    tg = {
+        HapticFeedback: {
+            impactOccurred: () => {}
+        }
+    };
 }
 
 let state = {
     attempts: 3,
     catches: [],
-    bonuses: { mask: false, aquaCount: 0, filter: false, fins: false },
+    bonuses: {
+        mask: false,
+        aquaCount: 0,
+        filter: false,
+        fins: false
+    },
     activeDebuffs: [],
     weather: 'sunny',
     luckyFisher: false,
@@ -67,20 +77,32 @@ let state = {
     transmutedCount: 0
 };
 
-const fishes = ["Палтус", "Палия", "Белый амур", "Щука", "Семга", "Солнечник", "Подкаменщик", "Сом", "Окунь", "Плотва", "Кижуч", "Семотилус", "Меланотения", "Горчак", "Жерех", "Ринихт", "Лосось", "Корюшка", "Судак", "Арктический голец", "Красноперка", "Золотая форель", "Фундулюс", "Озерный сиг", "Карпиодес"];
-const trash = ["Старый башмак", "Спутанная леска", "Сломанный поплавок", "Ржавый крючок", "Половина блесны", "Размокший кусок бумаги"];
-const legendaryItems = ["Чешуя Левиафана", "Послание в бутылке", "Компас потерянных глубин", "Запечатанный сундук"];
-const uniqueItems = ["Глубоководное нечто", "Игральная кость"];
+const fishes = [
+    "Палтус", "Палия", "Белый амур", "Щука", "Семга", "Солнечник", "Подкаменщик", "Сом", "Окунь",
+    "Плотва", "Кижуч", "Семотилус", "Меланотения", "Горчак", "Жерех", "Ринихт", "Лосось",
+    "Корюшка", "Судак", "Арктический голец", "Красноперка", "Золотая форель", "Фундулюс",
+    "Озерный сиг", "Карпиодес"
+];
+
+const trash = [
+    "Старый башмак", "Спутанная леска", "Сломанный поплавок", "Ржавый крючок", "Половина блесны", "Размокший кусок бумаги"
+];
+
+const legendaryItems = [
+    "Чешуя Левиафана", "Послание в бутылке", "Компас потерянных глубин", "Запечатанный сундук"
+];
+
+const uniqueItems = [
+    "Глубоководное нечто", "Игральная кость"
+];
 
 const icons = {
-    "Палтус": "🐟", "Палия": "🐠", "Белый амур": "🐟", "Щука": "🦈", "Семга": "🍣", "Солнечник": "☀️",
-    "Подкаменщик": "🐡", "Сом": "〰️", "Окунь": "🐟", "Плотва": "🐟", "Кижуч": "🐠", "Семотилус": "🐟",
-    "Меланотения": "🌈", "Горчак": "🐟", "Жерех": "🐟", "Ринихт": "🐟", "Лосось": "🎣", "Корюшка": "🐟",
-    "Судак": "🐟", "Арктический голец": "❄️", "Красноперка": "🎈", "Золотая форель": "✨", "Фундулюс": "🐟",
-    "Озерный сиг": "🐟", "Карпиодес": "🐟", "Старый башмак": "👞", "Спутанная леска": "🧵", 
-    "Сломанный поплавок": "🪡", "Ржавый крючок": "🪝", "Половина блесны": "🪙", "Размокший кусок бумаги": "📄",
-    "Чешуя Левиафана": "🐉", "Послание в бутылке": "📜", "Компас потерянных глубин": "🧭", 
-    "Запечатанный сундук": "📦", "Глубоководное нечто": "🐙", "Игральная кость": "🎲"
+    "Палтус": "🐟", "Палия": "🐠", "Белый амур": "🐟", "Щука": "🦈", "Семга": "🍣", "Солнечник": "☀️", "Подкаменщик": "🐡", "Сом": "〰️", "Окунь": "🐟",
+    "Плотва": "🐟", "Кижуч": "🐠", "Семотилус": "🐟", "Меланотения": "🌈", "Горчак": "🐟", "Жерех": "🐟", "Ринихт": "🐟", "Лосось": "🎣", "Корюшка": "🐟", "Судак": "🐟",
+    "Арктический голец": "❄️", "Красноперка": "🎈", "Золотая форель": "✨", "Фундулюс": "🐟", "Озерный сиг": "🐟", "Карпиодес": "🐟",
+    "Старый башмак": "👞", "Спутанная леска": "🧵", "Сломанный поплавок": "🪡", "Ржавый крючок": "🪝", "Половина блесны": "🪙", "Размокший кусок бумаги": "📄",
+    "Чешуя Левиафана": "🐉", "Послание в бутылке": "📜", "Компас потерянных глубин": "🧭", "Запечатанный сундук": "📦",
+    "Глубоководное нечто": "🐙", "Игральная кость": "🎲"
 };
 
 function getWeightIcon(weight) {
@@ -93,30 +115,9 @@ function getWeightIcon(weight) {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-    // Исправление: Назначаем обработчики через addEventListener и проверяем существование элементов
-    const actionBtn = document.getElementById('action-btn');
-    const handbookBtn = document.getElementById('handbook-btn');
-    const weatherIcon = document.getElementById('weather-icon');
-
-    if (actionBtn) actionBtn.addEventListener('click', startFishing);
-    
-    if (handbookBtn) {
-        handbookBtn.addEventListener('click', (e) => {
-            e.preventDefault();
-            toggleHandbook();
-        });
-    }
-
-    if (weatherIcon) {
-        weatherIcon.addEventListener('click', (e) => {
-            e.preventDefault();
-            if (state.hasCompass) {
-                changeWeather();
-            } else {
-                toggleWeatherHelp();
-            }
-        });
-    }
+    document.getElementById('action-btn').addEventListener('click', startFishing);
+    document.getElementById('handbook-btn').addEventListener('click', toggleHandbook);
+    document.getElementById('weather-icon').onclick = toggleWeatherHelp;
 
     updateWeather();
     setInterval(updateWeather, 7200000);
@@ -125,8 +126,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
 function toggleHandbook() {
     const modal = document.getElementById('handbook-modal');
-    if (!modal) return;
-    
     if (modal.classList.contains('hidden')) {
         renderHandbook();
         modal.classList.remove('hidden');
@@ -137,14 +136,14 @@ function toggleHandbook() {
 
 function renderHandbook() {
     const container = document.getElementById('handbook-data');
-    if (!container || container.innerHTML !== "") return;
-    
-    let html = "<h3 style='margin-top:0'>Справочник рыбака</h3>";
+    if (container.innerHTML !== "") return;
+
+    let html = "<h1>Справочник рыбака</h1>";
     for (let section in gameHandbook) {
         const data = gameHandbook[section];
-        html += `<h4>${data.title}</h4><ul style="list-style:none;padding:0;font-size:14px;">`;
+        html += `<h2>${data.title}</h2><ul>`;
         for (let key in data.items) {
-            html += `<li style="margin-bottom:5px;"><strong>${key}:</strong> ${data.items[key]}</li>`;
+            html += `<li><strong>${key}:</strong> ${data.items[key]}</li>`;
         }
         html += "</ul>";
     }
@@ -153,11 +152,8 @@ function renderHandbook() {
 
 function toggleWeatherHelp() {
     const el = document.getElementById('weather-help');
-    const helpTextContainer = document.getElementById('help-text');
-    if (!el || !helpTextContainer) return;
-
     if (!el.classList.contains('active')) {
-        const helpTexts = {
+        const helpText = {
             'sunny': '☀️ Солнечно: Шанс атаки чайки!',
             'rain': '🌧️ Дождь: Появление утки (снижает вес).',
             'calm': '🌊 Штиль: Высокий шанс бонусов.',
@@ -167,12 +163,13 @@ function toggleWeatherHelp() {
             'golden': '✨ Золотой час: Рыба тяжелее на +2.0 кг.',
             'thunder': '⚡ Гроза: Риск молнии (потеря попытки) без Акваланга.'
         };
-        
-        let htmlContent = `<div style="padding:10px;">${helpTexts[state.weather]}</div>`;
+
+        let htmlContent = `<p>${helpText[state.weather]}</p>`;
         if (state.hasCompass) {
-            htmlContent += `<div style="font-size:12px;color:#aaa;">(У вас есть компас: нажмите еще раз, чтобы сменить погоду)</div>`;
+            htmlContent += `<button onclick="changeWeather()" style="width:100%; padding:10px; margin-top:10px; border-radius:10px;">Сменить погоду</button>`;
         }
-        helpTextContainer.innerHTML = htmlContent;
+
+        document.getElementById('help-text').innerHTML = htmlContent;
         el.classList.add('active');
     } else {
         el.classList.remove('active');
@@ -181,35 +178,36 @@ function toggleWeatherHelp() {
 
 function changeWeather() {
     updateWeather();
-    const weatherHelp = document.getElementById('weather-help');
-    if (weatherHelp) weatherHelp.classList.remove('active');
-    alert("Погода изменена благодаря Компасу!");
+    document.getElementById('weather-help').classList.remove('active');
 }
 
 function updateWeather() {
     const weathers = ['sunny', 'sunny', 'rain', 'rain', 'calm', 'calm', 'storm', 'fog', 'eclipse', 'golden', 'thunder'];
     state.weather = weathers[Math.floor(Math.random() * weathers.length)];
-    const iconEl = document.getElementById('weather-icon');
-    if (iconEl) {
-        iconEl.innerText = {
-            'sunny': '☀️', 'rain': '🌧️', 'calm': '🌊', 'storm': '🌪️', 
-            'fog': '🌫️', 'eclipse': '🌑', 'golden': '✨', 'thunder': '⚡'
-        }[state.weather];
-    }
+
+    document.getElementById('weather-icon').innerText = {
+        'sunny': '☀️',
+        'rain': '🌧️',
+        'calm': '🌊',
+        'storm': '🌪️',
+        'fog': '🌫️',
+        'eclipse': '🌑',
+        'golden': '✨',
+        'thunder': '⚡'
+    }[state.weather];
 }
 
 function startFishing() {
     playSound('throw');
     if (state.attempts <= 0) return;
 
-    const btn = document.getElementById('action-btn');
-    btn.disabled = true;
+    document.getElementById('action-btn').disabled = true;
 
     if (state.weather === 'thunder' && Math.random() < 0.2 && state.bonuses.aquaCount === 0) {
         alert("⚡ Молния ударила в воду! Попытка потеряна.");
         state.attempts--;
         updateUI();
-        btn.disabled = false;
+        document.getElementById('action-btn').disabled = false;
         return;
     }
 
@@ -234,6 +232,7 @@ function startFishing() {
         } else if (rand < ((state.weather === 'storm' || state.weather === 'thunder') ? 0.7 : 0.4)) {
             let item = trash[Math.floor(Math.random() * trash.length)];
             logCatch(item, 0, true, 'catch');
+
             if (state.bonuses.filter) {
                 state.bonuses.filter = false;
                 state.filtersUsed++;
@@ -252,7 +251,7 @@ function startFishing() {
         if (state.attempts === 0 && document.getElementById('modal').classList.contains('hidden')) {
             endGame();
         } else {
-            btn.disabled = false;
+            document.getElementById('action-btn').disabled = false;
         }
     }, 600);
 }
@@ -261,6 +260,7 @@ function handleUnique() {
     let uItem = uniqueItems[Math.floor(Math.random() * uniqueItems.length)];
     logCatch(uItem, 0, false, 'unique');
     alert("Редкий артефакт: " + uItem);
+
     if (uItem === "Глубоководное нечто") {
         let count = 0;
         state.catches.forEach(c => {
@@ -283,25 +283,31 @@ function showDiceModal() {
     document.getElementById('action-btn').disabled = true;
     const modal = document.getElementById('modal');
     const list = document.getElementById('modal-fish-list');
-    list.innerHTML = '<div style="margin-bottom:15px; font-weight:bold;">Игральная кость</div>';
-    
+    list.innerHTML = '<h3>Игральная кость</h3>';
+
     const rollBtn = document.createElement('button');
     rollBtn.className = 'fish-btn';
     rollBtn.innerText = "Бросить кость";
     rollBtn.onclick = () => {
         let points = Math.floor(Math.random() * 6) + 1;
-        list.innerHTML = `<div style="font-size:24px;margin-bottom:10px;">🎲 Выпало: ${points}</div>`;
-        
+        list.innerHTML = `<p>Выпало: ${points}</p>`;
+
         const btn1 = document.createElement('button');
         btn1.className = 'fish-btn';
         btn1.innerText = `+${points} попыток`;
-        btn1.onclick = () => { state.attempts += points; closeDice(); };
-        
+        btn1.onclick = () => {
+            state.attempts += points;
+            closeDice();
+        };
+
         const btn2 = document.createElement('button');
         btn2.className = 'fish-btn';
         btn2.innerText = `Множитель x${(1 + (points * 0.1)).toFixed(1)}`;
-        btn2.onclick = () => { state.diceMultiplier = (1 + (points * 0.1)); closeDice(); };
-        
+        btn2.onclick = () => {
+            state.diceMultiplier = (1 + (points * 0.1));
+            closeDice();
+        };
+
         list.appendChild(btn1);
         list.appendChild(btn2);
     };
@@ -318,6 +324,7 @@ function closeDice() {
 function handleLegendary() {
     let item = legendaryItems[Math.floor(Math.random() * legendaryItems.length)];
     logCatch(item, 0, false, 'legendary');
+
     if (item === "Чешуя Левиафана") {
         state.attempts += 5;
         state.leviathanBonus = 2.0;
@@ -340,6 +347,7 @@ function handleLegendary() {
 function catchFish(isMasked, isFromChest = false) {
     let isDuck = state.activeDebuffs.some(d => d.includes("Утка"));
     let isRak = state.activeDebuffs.some(d => d.includes("Рак"));
+
     let name = fishes[Math.floor(Math.random() * fishes.length)];
     let weight;
 
@@ -373,16 +381,18 @@ function catchFish(isMasked, isFromChest = false) {
         }
     }
 
-    if (weight >= 10.0) playSound('successfull');
-    
+    if (weight >= 10.0) {
+        playSound('successfull');
+    }
+
     logCatch(name, weight, (weight === 0), 'catch', false, bonusWeight, isFromChest);
-    const msgEl = document.getElementById('message');
-    if (msgEl) msgEl.innerText = `Поймал: ${name} (${weight.toFixed(1)} кг)`;
+    document.getElementById('message').innerText = `Поймал: ${name} (${weight.toFixed(1)} кг)`;
 }
 
 function handleBonus() {
     state.bonusCount++;
     let b = Math.random();
+
     if (b < 0.2) {
         alert("Катушка!");
         logCatch("Бонус: Катушка (+1)", 0, true, 'bonus');
@@ -413,8 +423,10 @@ function getBonusChance() {
 
 function triggerDebuff() {
     if (state.weather === 'storm' || state.weather === 'thunder' || Math.random() > 0.25) return;
+
     let type = Math.random();
     let debuffText = "";
+
     if (type < 0.33 && state.weather === 'calm') {
         debuffText = "Дебаф: Рак (вес до 2.5кг)";
     } else if (type < 0.66 && state.weather === 'sunny') {
@@ -428,6 +440,7 @@ function triggerDebuff() {
         debuffText = "Дебаф: Утка (малый вес/хлам)";
         state.wasAttacked = true;
     }
+
     if (debuffText && !state.activeDebuffs.includes(debuffText)) {
         playSound('debuff');
         state.activeDebuffs.push(debuffText);
@@ -436,13 +449,22 @@ function triggerDebuff() {
 }
 
 function logCatch(name, weight, isTrash, type, isRemoved = false, bonusWeight = 0, isFromChest = false) {
-    state.catches.push({ name, weight, isTrash, type, isStolen: false, isRemoved, bonusWeight, isFromChest });
+    state.catches.push({
+        name,
+        weight,
+        isTrash,
+        type,
+        isStolen: false,
+        isRemoved: isRemoved,
+        bonusWeight: bonusWeight,
+        isFromChest: isFromChest
+    });
 }
 
 function renderHistory() {
     const list = document.getElementById('history-list');
-    if (!list) return;
     list.innerHTML = '';
+
     state.catches.forEach(c => {
         const li = document.createElement('li');
         const icon = icons[c.name] || "🎣";
@@ -467,27 +489,25 @@ function renderHistory() {
             else if (c.type === 'debuff') li.className = 'log-debuff';
             else if (isUnique) li.className = 'log-unique';
             else if (isLegendary) li.className = 'log-legendary';
-            
+
             let chestIcon = c.isFromChest ? "📦 " : "";
-            let bonusStr = c.bonusWeight > 0 ? ` (+${c.bonusWeight.toFixed(1)}кг)` : '';
-            li.innerHTML = `${chestIcon}${icon} ${weightRank} ${c.name} ${c.weight > 0 ? c.weight.toFixed(1)+' кг' : ''}${bonusStr}`;
+            let bonusStr = c.bonusWeight > 0 ? ` <span style="color:#ff00ff">(+${c.bonusWeight.toFixed(1)}кг)</span>` : '';
+            li.innerHTML = `${chestIcon}${icon} ${weightRank} ${c.name} ${c.weight > 0 ? c.weight.toFixed(1)+' кг' : ''} ${bonusStr}`;
         }
         list.appendChild(li);
     });
 }
 
 function updateUI() {
-    const scoreEl = document.getElementById('score');
-    if (!scoreEl) return;
     let currentSum = state.catches
         .filter(c => !c.isRemoved && (c.type !== 'catch' || !c.isStolen || state.hasMessageInBottle))
         .reduce((s, c) => s + c.weight, 0);
-    scoreEl.innerText = `Улов: ${(currentSum * state.diceMultiplier).toFixed(1)} кг | Попыток: ${state.attempts}`;
+
+    document.getElementById('score').innerText = `Улов: ${(currentSum * state.diceMultiplier).toFixed(1)} кг | Попыток: ${state.attempts}`;
 }
 
 function showModal() {
     document.getElementById('action-btn').disabled = true;
-    const modal = document.getElementById('modal');
     const list = document.getElementById('modal-fish-list');
     list.innerHTML = '';
 
@@ -495,9 +515,8 @@ function showModal() {
     cancelBtn.className = 'fish-btn';
     cancelBtn.innerText = "Ничего не удалять";
     cancelBtn.onclick = () => {
-        modal.classList.add('hidden');
-        if (state.attempts === 0) endGame();
-        else document.getElementById('action-btn').disabled = false;
+        document.getElementById('modal').classList.add('hidden');
+        if (state.attempts === 0) endGame(); else document.getElementById('action-btn').disabled = false;
     };
     list.appendChild(cancelBtn);
 
@@ -508,26 +527,28 @@ function showModal() {
         btn.innerText = `Удалить: ${label}`;
         btn.onclick = () => {
             c.isRemoved = true;
-            modal.classList.add('hidden');
+            document.getElementById('modal').classList.add('hidden');
             updateUI();
             renderHistory();
-            if (state.attempts === 0) endGame();
-            else document.getElementById('action-btn').disabled = false;
+            if (state.attempts === 0) endGame(); else document.getElementById('action-btn').disabled = false;
         };
         list.appendChild(btn);
     });
-    modal.classList.remove('hidden');
+
+    document.getElementById('modal').classList.add('hidden');
 }
 
 function endGame() {
     let validCatches = state.catches.filter(c => !c.isRemoved && (c.type !== 'catch' || !c.isStolen || state.hasMessageInBottle) && c.weight > 0);
     let totalBase = validCatches.reduce((s, c) => s + c.weight, 0);
     let maxWeight = validCatches.length > 0 ? Math.max(...validCatches.map(c => c.weight)) : 0;
+
     let total = totalBase * state.diceMultiplier;
 
     if (state.bonuses.aquaCount > 0 && validCatches.length > 0) {
         total = ((totalBase - maxWeight) + (maxWeight * 3 * state.bonuses.aquaCount)) * state.diceMultiplier;
     }
+
     if (state.bonuses.fins) total *= 2;
 
     let achs = [];
@@ -536,39 +557,25 @@ function endGame() {
     if (validCatches.length > 0 && validCatches.every(c => c.weight >= 10.0)) achs.push("🦈 Акула бизнеса");
     if (validCatches.length > 0 && validCatches.every(c => c.weight < 2.5)) achs.push("🐱 Аквариумный мастер");
     if (state.catches.length > 0 && state.catches.every(c => c.isTrash || c.isStolen)) achs.push("🗑️ Повелитель башмаков");
+
     if (state.transmutedCount >= 5) achs.push("🔬 Трансмутатор");
     if (!state.wasAttacked && state.catches.length > 5) achs.push("🛡️ Неуловимый");
     if (total >= 500) achs.push("🐘 Тяжеловес");
     if (state.filtersUsed >= 2) achs.push("🌿 Эколог");
 
-    if (achs.length > 0) playSound('achievement');
+    if (achs.length > 0) {
+        playSound('achievement');
+    }
 
     const now = new Date();
     const dateStr = now.toLocaleDateString('ru-RU');
     const timeStr = now.toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' });
 
-    const finalRes = document.getElementById('final-result');
-    if (finalRes) {
-        finalRes.innerHTML = `<div>Итог: ${total.toFixed(2)} кг</div><div style="font-size:14px;color:#ffd700;margin:10px 0;">${achs.join('<br>')}</div><div style="font-size:12px;color:#888;">${dateStr} | ${timeStr}</div>`;
-        finalRes.classList.remove('hidden');
-    }
-}
-Основные исправления:
-Область клика (padding): В JavaScript-коде я добавил встроенные стили для некоторых генерируемых элементов. Чтобы кнопки «Погода» и «Справочник» в вашем HTML стали кликабельными, убедитесь, что в вашем CSS-файле или в теге <style> есть следующие правила:
-/* Увеличиваем область нажатия для иконки погоды */
-#weather-icon {
-    display: inline-block;
-    padding: 10px; /* Важно: делает область клика больше */
-    cursor: pointer;
-    font-size: 24px;
-    min-width: 44px; /* Стандарт для мобильных интерфейсов */
-    min-height: 44px;
-    text-align: center;
-}
-
-/* Исправляем кнопку справочника */
-#handbook-btn {
-    padding: 8px 15px;
-    min-height: 44px;
-    cursor: pointer;
+    document.getElementById('final-result').innerHTML = `
+        <strong>Итог: ${total.toFixed(2)} кг</strong>
+        <div style="margin-top:10px;">${achs.join('<br>')}</div>
+        <div style="margin-top: 10px; padding: 5px; background: rgba(128, 128, 128, 0.2); border-radius: 5px; color: #fff; font-weight: bold;">
+            ${dateStr} | ${timeStr}
+        </div>`;
+    document.getElementById('final-result').classList.remove('hidden');
 }
